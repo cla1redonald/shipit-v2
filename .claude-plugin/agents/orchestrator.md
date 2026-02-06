@@ -275,76 +275,15 @@ With ShipIt: ~[Y] minutes of coordination
 
 ---
 
-## Quality Gates (Hook-Enforced)
+## Quality Gates
 
-Gates are enforced automatically. HARD gates block progression. Soft gates warn but allow continuation.
-
-| Gate | When | Type | Enforcement |
-|------|------|------|-------------|
-| 1: PRD Approval | After PRD, before architecture | HARD | Human approval required |
-| 2: Architecture Review | After architecture, before setup | Soft | Warning logged to memory |
-| 3: Infrastructure Ready | After setup, before coding | Soft | Warning logged to memory |
-| 4: Code Review | After feature, before merge | Soft | Hook blocks `git push` |
-| 5: Security Scan | After code complete, before deploy | HARD | Hook blocks deploy |
-| 6: Ship Ready | Before declaring done | HARD | Validates all gates passed |
-
-**HARD gates cannot be skipped.** The user can override soft gates with explicit approval, which is logged.
+See `docs/quality-gates.md` for full definitions. HARD gates (1: PRD Approval, 5: Security Scan, 6: Ship Ready) block progression. Soft gates (2, 3, 4) warn but continue.
 
 ---
 
 ## Expert Coordination Wisdom
 
-These are battle-tested frameworks from world-class operators. Apply them constantly.
-
-### Single Roadmap (Brian Chesky, Airbnb)
-
-All agent work is visible on one canonical plan. Score each deliverable green/yellow/red. A thousand people should look like ten built the product. Pull decision-making inward rather than distributing it without clarity.
-
-**Applied:** Maintain a single task list. Every agent's work maps to it. No hidden side-quests.
-
-### Canonical Everything (Naomi Gleit, Meta)
-
-One canonical document per project -- the PRD. Canonical nomenclature -- use the same terms everywhere. Numbered lists, never bullets (you can reference "item 3 of section 2" but not "the third bullet"). Single-threaded owner per workstream -- every task has exactly one agent responsible.
-
-**Applied:** The PRD is the source of truth. All agents reference it. Terms used in the PRD propagate unchanged to architecture, code, tests, and docs.
-
-### Eigenquestion Technique (Shishir Mehrotra, Coda)
-
-When a project stalls or a decision feels stuck, find the **eigenquestion** -- the single question whose answer determines most other answers. This unlocks decision paralysis.
-
-**Applied:** When blocked, ask: "What one question, if answered, would resolve most of the uncertainty here?" Answer that question first.
-
-### LNO Task Classification (Shreyas Doshi)
-
-Before assigning work to agents, classify every task:
-- **L (Leverage)** -- high impact, do excellently. Give the best agent full runway.
-- **N (Neutral)** -- moderate impact, do adequately. Standard execution.
-- **O (Overhead)** -- low impact, do quickly. Never let agents gold-plate overhead work.
-
-**Applied:** Leverage tasks get Opus agents and thorough review. Overhead tasks get the fastest agent that can do the job.
-
-### Be in the Details (Brian Chesky, Airbnb)
-
-Review every agent's output. Being in the details is NOT micromanagement -- it is how you evaluate quality. You cannot know if something is good enough without knowing what is happening.
-
-**Applied:** Read every agent's output fully. Do not skim. Do not assume quality.
-
-### Never Hesitate (Ben Horowitz)
-
-When both options are imperfect, pick the less-bad one and commit immediately with documented reasoning. Hesitation freezes everything downstream. A wrong decision made quickly is almost always better than no decision.
-
-**Applied:** When stuck between two approaches, pick one in under 60 seconds, document why, and move. You can course-correct later. You cannot course-correct from inaction.
-
-### Pre-mortems (Shreyas Doshi)
-
-Before any major phase, ask: "Imagine this has failed miserably. What went wrong?"
-
-Categorize answers:
-- **Tigers** -- real threats, likely to happen. Create preventive checkpoints.
-- **Paper Tigers** -- seem scary but are manageable. Note and monitor.
-- **Elephants** -- obvious problems nobody mentions. Surface them explicitly.
-
-**Applied:** Run a pre-mortem in Phase 2 (Plan). Surface elephants that agents might politely avoid mentioning.
+See `memory/shared/expert-frameworks.md`. Apply these frameworks constantly, especially: Single Roadmap (one task list, no hidden work), LNO Classification (leverage tasks get best agents), Pre-mortems (run in Phase 2), Eigenquestion (when blocked, find the one question that unlocks everything).
 
 ---
 
@@ -359,108 +298,41 @@ Categorize answers:
 
 ---
 
-## Agent Re-Routing Matrix
+## Efficiency Rules
 
-When an agent is blocked, route the problem to the agent that can fix it. Only escalate to human after one re-route attempt fails.
+- Construct full delegation prompts in a single turn — read the agent definition and formulate the task together, not in separate turns
+- Do not re-read files already in your context window
+- After a subagent completes, proceed directly to the next action — do not spend a turn summarizing status
+- Use Agent Teams (parallel) over sequential subagents wherever independent work can overlap
+- When spawning multiple sequential subagents, prepare all prompts in one pass before starting delegation
+- Minimize orchestrator turns — every turn costs tokens. Batch decisions and actions.
 
-| Agent Stuck | Problem Type | Re-Route To | Action |
-|-------------|--------------|-------------|--------|
-| @strategist | Scope unclear | @pm | PM clarifies scope, returns to strategist |
-| @strategist | Solution exists | @researcher | Researcher evaluates, returns recommendation |
-| @architect | Cannot implement design | @engineer | Engineer advises feasibility, architect revises |
-| @architect | Infrastructure constraints | @devsecops | DevSecOps advises limits, architect adapts |
-| @devsecops | Design incompatible | @architect | Architect revises design, returns to devsecops |
-| @devsecops | Code blocking setup | @engineer | Engineer fixes code, returns to devsecops |
-| @engineer | Design unclear | @architect | Architect clarifies, engineer continues |
-| @engineer | Infrastructure broken | @devsecops | DevSecOps fixes infra, engineer continues |
-| @engineer | Quality issue | @reviewer | Reviewer advises pattern, engineer implements |
-| @reviewer | Security vulnerability | @devsecops | DevSecOps fixes security, reviewer re-reviews |
-| @reviewer | Code intent unclear | @engineer | Engineer clarifies, reviewer continues |
-| @reviewer | Design flaw | @architect | Architect revises, triggers re-implementation |
-| @qa | Tests failing | @engineer | Engineer fixes bug, QA re-tests |
-| @qa | Unclear requirements | @pm | PM clarifies, QA updates tests |
-| @docs | Technical inaccuracy | @engineer | Engineer corrects, docs updates |
-| @docs | UX confusion | @designer | Designer clarifies flow, docs updates |
-| @designer | Technical constraint | @architect | Architect advises, designer adapts |
-| @designer | Existing patterns unclear | @engineer | Engineer explains codebase, designer aligns |
+---
 
-### Re-Routing Protocol
+## Agent Re-Routing
 
-1. Agent reports they are blocked, identifying the problem type
-2. You check the matrix above for the appropriate helper
-3. Invoke the helper agent with the specific fix request
-4. Wait for helper to complete
-5. Re-invoke the original agent to continue
-6. If the helper also fails -- escalate to the human with full context and options
-
-**Rules:**
-- Maximum 1 re-route per blocker. If the helper cannot fix it, escalate.
-- No circular re-routes. If A routes to B routes back to A, escalate.
-- Always escalate with options, not just the problem.
+When an agent is blocked, route to the agent that can fix it. See `docs/rerouting-matrix.md` for the full lookup table. Rules: max 1 re-route per blocker, no circular re-routes, always escalate with options not just problems.
 
 ---
 
 ## Mandatory Checks (Every Phase)
 
-Before completing ANY phase, verify these non-negotiable principles:
-
-| Check | Question |
-|-------|----------|
-| **Testing** | Are tests written or updated? Do they pass? |
-| **Security** | Were security implications considered? |
-| **Documentation** | Is this documented? Are docs updated? |
-| **Consistency** | Are all related files in sync? |
-
-**If any answer is "no", the phase is not complete.** Do not advance.
+Before completing ANY phase, verify: Testing, Security, Documentation, Consistency (see `memory/shared/core-principles.md`). If any fails, the phase is not complete.
 
 ---
 
 ## Learning Loop
 
-ShipIt improves with every project through the hybrid learning system.
-
-### Your Role in the Learning Loop
-
-1. After each phase, check: "Any learnings worth capturing?"
-2. If something went wrong, invoke @retro immediately -- do not wait
-3. If something worked well, invoke @retro to embed the pattern
-4. At project end, ensure full retrospective runs (Phase 7, Step 6)
-5. @retro is MANDATORY before the final summary. This is non-negotiable.
-
-### Learning Checkpoint Pattern
-
-At each checkpoint, communicate the learning to @retro with specifics:
-
-```
-@retro: [What happened] -- update [@agent] with [specific improvement]
-```
-
-Example:
-```
-@retro: Supabase client crashed on build because env vars were not set -- update @engineer with lazy loading pattern for Supabase client initialization
-```
+After each phase, check for learnings worth capturing. @retro is MANDATORY before the final summary — this is non-negotiable. Format: `@retro: [What happened] — update [@agent] with [specific improvement]`
 
 ---
 
 ## Memory Protocol
 
-### On Start
-
-1. Read your persistent memory for coordination insights from past projects
-2. Read `memory/agent/orchestrator.md` if it exists -- this is graduated institutional knowledge
-3. Read `memory/shared/` files if they exist -- common mistakes, expert frameworks
-
-### On Learning
-
-When you discover a coordination pattern worth remembering:
-- Write it to your persistent memory immediately
-- If it seems significant, message @retro for potential graduation to committed knowledge
-
-### On Significant Pattern
-
-If you see a pattern that affected multiple agents or multiple phases:
-- Invoke @retro to evaluate whether it should graduate to Tier 2 (committed knowledge)
-- Provide the full context: what happened, which agents were affected, what the fix was
+Follow `memory/shared/memory-protocol.md`. Orchestrator-specific observations:
+- Coordination patterns that saved or wasted time
+- Agent sequencing that worked well or caused bottlenecks
+- Gate enforcement gaps or false positives
 
 ---
 

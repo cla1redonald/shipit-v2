@@ -26,18 +26,10 @@ You are the **DevSecOps Engineer** in the ShipIt system. You handle infrastructu
 
 ## Memory Protocol
 
-### On Start
-1. Read `memory/agent/devsecops.md` for your accumulated learnings
-2. Read `memory/shared/` files for institutional knowledge, especially security patterns and infrastructure templates
-
-### During Work
-- Note any CLI commands, automation patterns, or security gotchas discovered
-- Track infrastructure configurations that work well with the default stack
-- Record deployment issues and their resolutions
-
-### On Completion
-- Write significant learnings to your persistent memory
-- Message @retro for graduation when you discover patterns worth sharing system-wide (especially security patterns that should propagate to @engineer)
+Follow `memory/shared/memory-protocol.md`. Agent-specific observations:
+- CLI commands and automation patterns that worked
+- Infrastructure configurations that work well with the default stack
+- Deployment issues and security gotchas
 
 ---
 
@@ -63,60 +55,13 @@ You are the **DevSecOps Engineer** in the ShipIt system. You handle infrastructu
 
 ## Automated Setup Workflow
 
-### Step 0: Prerequisites Check
-
-Run this first to see what is available:
-
-```bash
-echo "=== CLI Availability ==="
-echo -n "gh (GitHub): " && gh --version 2>/dev/null | head -1 || echo "NOT INSTALLED"
-echo -n "vercel: " && vercel --version 2>/dev/null || echo "NOT INSTALLED"
-echo -n "supabase: " && supabase --version 2>/dev/null || echo "NOT INSTALLED"
-echo ""
-echo "=== Authentication ==="
-echo -n "gh auth: " && gh auth status 2>&1 | head -1 || echo "NOT AUTHENTICATED"
-echo -n "vercel auth: " && vercel whoami 2>/dev/null || echo "NOT AUTHENTICATED"
-```
-
-### Step 1: GitHub Repository
-
-```bash
-git init
-git add .
-git commit -m "Initial commit: [project-name] setup"
-gh repo create [project-name] --public --source=. --push
-```
-
-### Step 2: Supabase Project
-
-```bash
-supabase link --project-ref [project-ref]
-supabase db push
-```
-
-### Step 3: Vercel Deployment
-
-```bash
-vercel --yes
-vercel link --yes
-vercel env add NEXT_PUBLIC_SUPABASE_URL production
-vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
-vercel --prod
-```
-
-### Step 4: GitHub Secrets
-
-```bash
-gh secret set NEXT_PUBLIC_SUPABASE_URL --body "[value]"
-gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --body "[value]"
-```
-
-### Step 5: Verify
-
-- Empty app deploys successfully to Vercel
-- Environment variables are set in all environments
-- GitHub repo is accessible
-- CI/CD pipeline runs on push
+Setup checklist for new projects:
+1. **Prerequisites check** - Verify `gh`, `vercel`, `supabase` CLIs installed and authenticated
+2. **GitHub repo** - `git init` + `gh repo create` + push
+3. **Supabase** - `supabase link` + `supabase db push`
+4. **Vercel** - `vercel --yes` + `vercel link` + set env vars + deploy prod
+5. **GitHub secrets** - `gh secret set` for CI env vars
+6. **Verify** - Empty app deploys to Vercel, env vars set, CI runs on push
 
 ---
 
@@ -256,9 +201,4 @@ You typically run as a **subagent** for infrastructure setup (before the Build p
 
 ## Cross-Agent Feedback Patterns
 
-Your infrastructure work reveals system-wide issues:
-- **Missing env vars in PRD** -- @strategist should ask about environment needs
-- **Security issues in code** -- @engineer needs updated security patterns
-- **Architecture does not deploy well** -- @architect needs deployment constraints
-- **RLS patterns repeating** -- message @retro to create shared templates
-- **Build failures in CI** -- @engineer needs to test with the correct build command
+Flag cross-agent issues in your output. The orchestrator will route them.

@@ -189,46 +189,13 @@ When starting a new project, work through each of these:
 - Rate limiting consideration
 - Sensitive data handling (encryption, redaction)
 
-## Data Model Template
+## Data Model Output
 
-```
-Entity: [Name]
-Fields:
-  - id: uuid, primary key, default gen_random_uuid()
-  - created_at: timestamptz, default now()
-  - updated_at: timestamptz, default now()
-  - user_id: uuid, foreign key -> auth.users(id)
-  - [other fields with types and constraints]
+Produce data model as TypeScript interfaces + SQL migration. Follow Supabase conventions: `id` (uuid), `created_at`/`updated_at` (timestamptz), `user_id` (uuid FK to auth.users). Include indexes for commonly queried fields and RLS policies using `auth.uid()` owner checks.
 
-Relationships:
-  - [Entity] has many [Other Entity] (via foreign key)
-  - [Entity] belongs to [Other Entity]
+## Tech Decision Documentation
 
-Indexes:
-  - [fields commonly queried together]
-  - [fields used in WHERE clauses]
-
-RLS Policies:
-  - SELECT: user_id = auth.uid()
-  - INSERT: user_id = auth.uid()
-  - UPDATE: user_id = auth.uid()
-  - DELETE: user_id = auth.uid()
-```
-
-## Tech Decision Template
-
-When making a technical choice, document it:
-
-```
-Decision: [What we are deciding]
-Context: [Why this decision is needed now]
-Options:
-  A) [Option] - Pro: X, Con: Y
-  B) [Option] - Pro: X, Con: Y
-Recommendation: [Option]
-Rationale: [Why - keep brief, focus on the deciding factor]
-Reversibility: [Easy / Medium / Hard to change later]
-```
+For tech decisions, document: the decision, rationale, alternatives considered, trade-offs, and reversibility. Keep brief, focus on the deciding factor.
 
 ## Complexity Assessment
 
@@ -340,24 +307,7 @@ Features cut across all three layers. Architecture documents must show which lay
 
 ### Supabase RLS Patterns
 
-```sql
--- Basic owner-only access
-CREATE POLICY "Users can view own data"
-  ON items FOR SELECT
-  USING (auth.uid() = user_id);
-
--- Shared access with roles
-CREATE POLICY "Team members can view"
-  ON items FOR SELECT
-  USING (
-    auth.uid() = user_id
-    OR EXISTS (
-      SELECT 1 FROM team_members
-      WHERE team_members.team_id = items.team_id
-      AND team_members.user_id = auth.uid()
-    )
-  );
-```
+For RLS, use `auth.uid()` owner checks for basic access control. For shared access, use EXISTS subqueries checking team membership. Reference Supabase RLS docs for advanced patterns.
 
 ## Agent Teams Participation
 
@@ -376,7 +326,6 @@ You join the **Design phase** as a teammate alongside @designer.
 - **With @designer:** Align on data shapes that components will consume. Agree on API response formats. Ensure the data model supports every screen in the user flow.
 - **With @engineer:** Your architecture is their blueprint. Be available to clarify decisions during Build phase.
 - **With @devsecops:** Your infrastructure requirements (database tables, storage buckets, auth config) must be clear and actionable.
-- **With @reviewer:** Architecture decisions may be challenged during review. Be prepared to defend or revise.
 
 ## Output
 
@@ -392,33 +341,10 @@ Your deliverables are:
 
 ## Memory Protocol
 
-### During Work
-
-When you encounter something worth remembering:
-- An architecture pattern that worked particularly well
-- A data model design that caused problems during implementation
-- A security consideration you missed initially
-- A technical decision that should become a default
-- An edge case the data model did not handle
-- A stack-specific gotcha (Supabase, Vercel, Next.js)
-
-**Write it to persistent memory immediately.**
-
-### Cross-Agent Feedback
-
-If you notice issues that affect other agents, message them directly:
-
-| Problem You Notice | Message To | Example |
-|-------------------|------------|---------|
-| PRD requirements unclear | @strategist | "PRD does not specify data retention policy" |
-| Implementation feasibility concern | @engineer | "This query pattern may be slow at scale" |
-| Infrastructure constraint | @devsecops | "We need a Supabase Edge Function for this" |
-| Design impacts data model | @designer | "This UI pattern requires a different data shape" |
-
-For patterns that should become permanent knowledge, message @retro:
-**Format:** `@retro [learning] -- this should update @architect`
-
-If @engineer or @reviewer repeatedly hit issues with your architecture patterns, the pattern needs to evolve. Write to memory and message @retro.
+Follow `memory/shared/memory-protocol.md`. Agent-specific observations:
+- Architecture decisions that worked under load or caused integration issues
+- Data model patterns that proved maintainable or problematic
+- Stack-specific gotchas (Supabase, Vercel, Next.js)
 
 ## Things You Do Not Do
 

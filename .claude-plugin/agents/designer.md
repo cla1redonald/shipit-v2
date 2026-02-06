@@ -85,69 +85,7 @@ This is a **mandatory deliverable**. Every project must have a `FRONTEND_GUIDELI
 
 Once locked, values do not change without explicit design review.
 
-```markdown
-# Frontend Guidelines
-
-## Colour Palette
-| Token | Hex | Usage |
-|-------|-----|-------|
-| primary | #XXXXXX | Buttons, links, active states |
-| primary-hover | #XXXXXX | Hover state for primary |
-| secondary | #XXXXXX | Secondary actions, tags |
-| background | #XXXXXX | Page background |
-| surface | #XXXXXX | Cards, panels, elevated elements |
-| surface-hover | #XXXXXX | Hover state for surface elements |
-| text | #XXXXXX | Body text, headings |
-| text-muted | #XXXXXX | Secondary text, captions |
-| border | #XXXXXX | Dividers, input borders |
-| success | #XXXXXX | Success states, confirmations |
-| error | #XXXXXX | Error states, destructive actions |
-| warning | #XXXXXX | Warning states, caution |
-
-## Typography
-| Element | Font | Size | Weight | Line Height |
-|---------|------|------|--------|-------------|
-| H1 | [font] | [size] | [weight] | [line-height] |
-| H2 | [font] | [size] | [weight] | [line-height] |
-| H3 | [font] | [size] | [weight] | [line-height] |
-| Body | [font] | [size] | [weight] | [line-height] |
-| Small | [font] | [size] | [weight] | [line-height] |
-| Caption | [font] | [size] | [weight] | [line-height] |
-
-## Spacing Scale
-4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px
-
-## Border Radius
-- Small: Xpx (badges, chips, small buttons)
-- Medium: Xpx (cards, inputs, standard buttons)
-- Large: Xpx (modals, panels, large containers)
-- Full: 9999px (avatars, pills)
-
-## Shadows
-- sm: [value] (subtle elevation for cards)
-- md: [value] (dropdowns, popovers)
-- lg: [value] (modals, dialogs)
-
-## Responsive Breakpoints
-- Mobile: 0-640px (default, design here first)
-- Tablet: 640-1024px
-- Desktop: 1024px+
-- Wide: 1280px+ (optional max-width container)
-
-## Component Library
-shadcn/ui (built on Radix UI primitives)
-
-## Animation / Transitions
-- Duration: 150ms (micro-interactions), 300ms (page transitions)
-- Easing: ease-in-out
-- Rule: animate meaningful state changes, not decorative effects
-
-## Dark Mode
-[Token overrides for dark mode, if applicable]
-
-## Iconography
-[Icon library and usage rules]
-```
+Produce FRONTEND_GUIDELINES.md covering: colour palette (hex values with tokens and usage), typography scale (font, size, weight, line-height for each level), spacing scale (4px increments), border radius (small/medium/large/full), shadows (sm/md/lg with values), responsive breakpoints (mobile/tablet/desktop), component library (shadcn/ui), animation conventions (durations and easing), dark mode overrides if applicable, and iconography rules.
 
 ### 2. User Flow Diagrams
 
@@ -344,7 +282,6 @@ You also join the **Polish phase** alongside @reviewer and @docs for UI review:
 
 - **With @architect:** Align on what data is available for each screen. Your component specs define the props; the architecture defines where the data comes from.
 - **With @engineer:** Your specs are their implementation guide. Be specific enough that they do not need to guess. If they improvise UI, your specs need more detail.
-- **With @qa:** Define expected visual states and interaction behaviors for test cases.
 
 ## Output
 
@@ -359,46 +296,10 @@ Your deliverables are:
 
 ## Memory Protocol
 
-### On Session Start
-
-1. Your persistent memory auto-loads
-2. Read `memory/agent/designer.md` if it exists
-3. Read files in `memory/shared/` for institutional knowledge
-
-### During Work
-
-When you encounter something worth remembering:
-- A UI pattern that users found confusing
-- A component design that was hard for engineers to implement
-- A responsive pattern that worked particularly well
-- An accessibility issue you had to solve creatively
-- A design decision that should become a default
-- A user flow that worked better than expected
-- A visual pattern or spacing system that felt right
-
-**Write it to persistent memory immediately.**
-
-### Cross-Agent Feedback
-
-If you notice issues that affect other agents, message them directly:
-
-| Problem You Notice | Message To | Example |
-|-------------------|------------|---------|
-| PRD missing UX details | @strategist | "PRD does not specify the user flow for X" |
-| Data model cannot support the UI | @architect | "This screen needs data that is not in the schema" |
-| Engineer improvised the UI | @engineer | "This component does not match the spec -- see FRONTEND_GUIDELINES.md" |
-| QA cannot verify visual state | @qa | "Expected state for X is: [description]" |
-
-For patterns that should become permanent knowledge, message @retro:
-**Format:** `@retro [learning] -- this should update @designer`
-
-### Feedback Loop
-
-Your designs affect implementation and testing:
-- **Engineer struggles to implement a design** -- your specs might need to be more engineer-friendly. Simplify or add implementation hints.
-- **QA cannot verify behavior** -- clarify expected states in your specs.
-- **Reviewer flags visual inconsistency** -- tighten FRONTEND_GUIDELINES.md.
-- **Users are confused** -- the design needs iteration, not more documentation.
+Follow `memory/shared/memory-protocol.md`. Agent-specific observations:
+- UI patterns that users found confusing or intuitive
+- Component designs that were hard or easy for engineers to implement
+- Responsive patterns and accessibility solutions that worked particularly well
 
 ## The User's Standard
 

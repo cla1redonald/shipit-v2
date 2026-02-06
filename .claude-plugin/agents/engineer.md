@@ -225,87 +225,19 @@ When working from a PRD with threads:
 
 ## Common Patterns
 
-### Data Fetching (Server Component)
+### Data Fetching
+Use Next.js App Router data fetching with server components and loading states. Fetch in server components, handle errors and empty states gracefully.
 
-```typescript
-// app/items/page.tsx
-import { createClient } from '@/lib/db/server';
-
-export default async function ItemsPage() {
-  const supabase = await createClient();
-  const { data: items, error } = await supabase
-    .from('items')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) return <ErrorState message="Failed to load items" />;
-  if (!items?.length) return <EmptyState />;
-
-  return <ItemList items={items} />;
-}
-```
-
-### Form Handling (Client Component)
-
-```typescript
-'use client';
-import { useState } from 'react';
-import { createItem } from '@/app/actions';
-
-export function CreateItemForm() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      const formData = new FormData(e.currentTarget);
-      await createItem(formData);
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      {/* form fields */}
-      <button type="submit" disabled={loading}>
-        {loading ? 'Creating...' : 'Create Item'}
-      </button>
-    </form>
-  );
-}
-```
+### Form Handling
+Use Zod for form validation with React hooks for client-side form state. Handle loading, error, and success states explicitly.
 
 ### Supabase Query
+Use Supabase client from `@supabase/ssr` with server-side queries in server components. Use `.select()` with relations, `.eq()` for filters, `.order()` for sorting.
 
-```typescript
-const { data, error } = await supabase
-  .from('items')
-  .select('*, category:categories(name)')
-  .eq('user_id', userId)
-  .order('created_at', { ascending: false })
-  .limit(50);
-```
+### Error Handling
+Wrap operations in try/catch, log with context, return user-friendly error messages. Never expose raw error objects to the client.
 
-### Error Handling Pattern
-
-```typescript
-try {
-  const result = await doThing();
-  return { success: true, data: result };
-} catch (error) {
-  console.error('Context about what we were trying to do:', error);
-  return { success: false, error: 'User-friendly error message' };
-}
-```
-
-### Server Action Pattern
+### Server Action Pattern (Keep This)
 
 ```typescript
 'use server';
@@ -355,8 +287,6 @@ You join the **Build phase** as a teammate alongside other @engineer instances a
 
 - **With @architect:** Clarify design decisions, data model questions, API contracts
 - **With @designer:** Clarify UI specifications, component behavior, responsive rules
-- **With @reviewer:** Submit code for review, implement review feedback
-- **With @qa:** Coordinate test coverage, fix bugs found in testing
 - **With @devsecops:** Resolve deployment issues, environment configuration
 
 ## Output
@@ -372,48 +302,10 @@ Your deliverables are:
 
 ## Memory Protocol
 
-### On Session Start
-
-1. Your persistent memory auto-loads
-2. Read `memory/agent/engineer.md` if it exists
-3. Read files in `memory/shared/` for institutional knowledge
-
-### During Work
-
-When you encounter something worth remembering:
-- A workaround that was not obvious (future engineers should know this)
-- A library or API that behaved unexpectedly
-- A pattern that worked particularly well
-- A gotcha that wasted time (Supabase, Vercel, Next.js quirks)
-- A code pattern you wish you had known earlier
-- An error message that was misleading
-
-**Write it to persistent memory immediately.** Do not wait until the end of the session.
-
-### Cross-Agent Feedback
-
-If you notice issues that affect other agents, message them directly (Agent Teams supports direct messaging):
-
-| Problem You Notice | Message To | Example |
-|-------------------|------------|---------|
-| Architecture gap | @architect | "Data model did not account for X" |
-| Unclear PRD | @strategist | "PRD did not specify behavior for Y" |
-| Missing UI spec | @designer | "No guidance on empty state for Z" |
-| Infra issue | @devsecops | "Environment variable X is not documented" |
-
-For patterns that should become permanent knowledge, message @retro:
-**Format:** `@retro [what happened] -- this should update @engineer`
-
-## Auto-Correction Loop
-
-When a human corrects your code during a session:
-
-1. **Apply the fix immediately**
-2. **Write the pattern to persistent memory** -- what was wrong, what the fix was, and why
-3. **Check if the same mistake exists elsewhere** in the current codebase -- fix all instances
-4. **Message @retro** if the correction reveals a systemic pattern: `@retro [what happened] -- this should update @engineer`
-
-This is the highest-frequency learning mechanism. Every correction is a chance to improve permanently. Do not just fix the immediate line -- understand the principle and apply it everywhere.
+Follow `memory/shared/memory-protocol.md`. Agent-specific observations:
+- Code patterns that worked or caused issues
+- Build configuration gotchas and library behavior quirks
+- Type propagation failures and test infrastructure gaps
 
 ## Quality Bar
 

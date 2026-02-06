@@ -20,6 +20,10 @@ When updating committed knowledge (memory/agent/ or memory/shared/), also check:
 - README.md agent tables and feature descriptions
 - plugin.json for metadata accuracy
 
+## Runtime Bugs Missed by Review
+- **Phaser PostFX pipeline init (Retro Pinball, 2026-02-06):** `new CRTFilter(game)` + `setPostPipeline(instance)` crashed at runtime because Phaser needs to instantiate the pipeline itself to compile the WebGL shader. Fix: pass the *class* to `setPostPipeline(CRTFilter)`, then retrieve with `getPostPipeline(CRTFilter)`. This passed code review and all 140 tests because unit tests don't run WebGL. **Lesson:** Framework lifecycle methods (Phaser pipelines, React refs, etc.) that require the framework to instantiate objects are invisible to static review and mocked tests — only caught by running the app.
+- **`Date.now()` vs game clock (Retro Pinball, 2026-02-06):** `GravityWell` used `Date.now()` for capture timing, which keeps ticking during pause. Fix: use `this.scene.time.now`. **Lesson:** Real-time clocks in pausable game loops are always wrong — use the engine's time source.
+
 ## Meta-Patterns About Learning
 - Corrections from users are highest-signal learning events — capture immediately
 - "We'll do it later" is the most common failure pattern across all categories

@@ -351,25 +351,10 @@ Outcome: [Shipped / Partial / Abandoned]
 
 ## Memory Protocol
 
-### On Start
-
-1. Read your persistent memory for meta-patterns about learning itself
-2. Read `memory/agent/retro.md` if it exists -- your own graduated knowledge about how to do retrospectives effectively
-3. Read `memory/shared/` files -- common mistakes, expert frameworks, patterns
-4. This context helps you evaluate new learnings against what is already known
-
-### On Learning About Learning
-
-When you discover something about the retrospective process itself:
-- Write it to your persistent memory immediately
-- Example: "Learnings captured at phase boundaries are more specific than learnings captured at project end" -- this is a meta-learning about when to invoke @retro
-
-### Track Graduation History
-
-In your persistent memory, maintain a rough log of what you have graduated and when. This helps you:
-- Avoid graduating duplicates
-- See which agents accumulate the most learnings (may indicate systemic issues)
-- Track the health of the learning system itself
+Follow `memory/shared/memory-protocol.md`. Agent-specific observations:
+- Meta-patterns about the retrospective process itself
+- Which agents accumulate the most learnings (may indicate systemic issues)
+- Graduation history to avoid duplicates and track learning system health
 
 ---
 
@@ -417,24 +402,9 @@ These ALWAYS graduate immediately:
 
 ---
 
-## When You Are Not Invoked (But Should Have Been)
+## Cross-Agent Feedback Patterns
 
-If you are invoked at end-of-project and discover that learning checkpoints were skipped during the build:
-
-1. Note this in your retrospective under Process Observations
-2. Graduate a learning to `memory/agent/orchestrator.md`:
-
-```
-## Missed Learning Checkpoints
-
-Context: [Project name] completed without mid-project @retro invocations
-Learning: Skipping mid-project @retro calls means learnings are lost or captured too late with insufficient detail
-Action: Orchestrator must invoke @retro at every phase boundary, not just at project end
-```
-
-3. Write to your own persistent memory: "Orchestrator skipped mid-project retros again. Escalate this pattern next time."
-
-This is how you enforce your own invocation.
+Flag cross-agent issues in your output. The orchestrator will route them.
 
 ---
 

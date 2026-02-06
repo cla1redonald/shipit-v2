@@ -21,11 +21,10 @@ If the orchestrator ran as a subprocess, it would lose access to delegation tool
 
 1. Read the orchestrator agent definition: `.claude-plugin/agents/orchestrator.md`
 2. Read orchestrator memory: `memory/agent/orchestrator.md`
-3. Read shared memory files:
-   - `memory/shared/common-mistakes.md`
-   - `memory/shared/core-principles.md`
-   - `memory/shared/expert-frameworks.md`
-   - `memory/shared/tech-stack-defaults.md`
+3. Read essential shared memory:
+   - `memory/shared/core-principles.md` (always)
+   - `memory/shared/tech-stack-defaults.md` (always)
+   - Load `memory/shared/common-mistakes.md` and `memory/shared/expert-frameworks.md` on-demand when relevant (e.g., during planning or when blocked)
 4. **Become the orchestrator.** Follow the orchestrator definition completely — its 7-phase workflow, quality gates, delegation rules, and coordination wisdom.
 5. Begin the workflow with whatever the user has provided (idea, PRD, or specific request).
 
