@@ -90,3 +90,15 @@ Look "wireframey." Use solid subtle borders or card shadows for polish.
 
 ### Low Contrast Text
 Always test text colors visually. `text-slate-800` on `bg-slate-100` can be hard to read despite looking fine in code.
+
+## Delegation Failures
+
+### Orchestrator Does Everything Itself
+In the first ShipIt v2 end-to-end test, the orchestrator made **zero Task tool calls** out of 123 total. It wrote code, created schemas, designed architecture, and role-played @retro — all things it is explicitly forbidden from doing. Root cause: the orchestrator was spawned as a **Task tool subprocess**, but subprocesses cannot spawn further subprocesses (single-level nesting constraint). It silently did everything itself instead of reporting the error.
+
+**Fix:** The orchestrator is now invoked via the `/orchestrate` skill, which loads it into the **main conversation** (team lead). As the top-level session, it has full access to Task tool (for subagents) and TeamCreate (for Agent Teams). The orchestrator definition includes a fail-safe: if it detects it's running as a subprocess, it reports an error instead of proceeding.
+
+**Prevention:** All documentation directs users to `/orchestrate` instead of `@orchestrator`. The README, CLAUDE.md, and global CLAUDE.md all explain the constraint.
+
+### README Omits Agents
+The README listed 9 of 12 agents, omitting @pm, @devsecops, and @retro. Nobody caught this because no review step checks the README agent list against the actual agent directory. Fix: verification step that counts agents in README vs files in `.claude-plugin/agents/`.

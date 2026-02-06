@@ -18,3 +18,10 @@
 - Supabase RLS policies must be designed into the schema from the start
 - Storage buckets can be created via SQL in schema.sql
 - Always define .env.example with all required variables
+
+## Supabase Typed Client: Database Type Shape
+
+**Context:** When using `createClient<Database>()` with @supabase/supabase-js v2.90+
+**Learning:** The Database type interface must include a `Relationships: []` field in each table definition. Omitting it causes TypeScript to infer `never` for all insert/update/select operations, producing cryptic "no overload matches this call" errors at build time.
+**Action:** Always include `Relationships: []` (or actual relationship definitions) in the Database type. Deliver a complete `database.types.ts` file as part of architecture deliverables, not just a conceptual schema.
+**Source:** Mood Journal project, 2026-02-06. Build failed on first attempt due to missing Relationships field.

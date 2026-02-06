@@ -23,6 +23,7 @@
     "agents/retro.md"
   ],
   "skills": [
+    "skills/orchestrate",
     "skills/prd-review",
     "skills/code-review",
     "skills/prd-threads"

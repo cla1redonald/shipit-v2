@@ -8,12 +8,15 @@ ShipIt gives you a full product development team inside Claude Code:
 
 - **@researcher** finds existing solutions before you build
 - **@strategist** shapes ideas into clear PRDs
+- **@pm** makes scope decisions and guards requirements
 - **@architect** designs the system
 - **@designer** specs the user experience
 - **@engineer** writes the code
+- **@devsecops** handles infrastructure, deployment, and security
 - **@reviewer** catches what others miss
 - **@qa** writes tests alongside features
 - **@docs** ensures knowledge survives
+- **@retro** runs retrospectives and graduates learnings into the system
 - **@orchestrator** coordinates the whole team
 
 Agents work in parallel using Claude Code's native Agent Teams, communicate directly via messaging, and improve over time through persistent memory.
@@ -79,7 +82,7 @@ You should see the agents listed in Claude Code's skill/agent list.
 
 ```
 # Full orchestrated build — PRD to shipped product
-Use @orchestrator to build [your idea]
+/orchestrate build [your idea]
 
 # Individual agents for specific tasks
 Use @researcher to find existing solutions for [problem]
@@ -89,9 +92,12 @@ Use @engineer to implement [feature]
 Use @reviewer to review the code
 ```
 
+> **Important:** Use `/orchestrate` (not `@orchestrator`) to start a full build. The orchestrator must run as the main session to delegate to other agents. See [Troubleshooting](#orchestrator-not-delegating) if agents aren't being invoked.
+
 ### Skills
 
 ```
+/orchestrate    — Launch a full orchestrated build (main session)
 /prd-review     — Review and improve a PRD
 /code-review    — Structured code review
 /prd-threads    — Convert a PRD into executable implementation threads
@@ -226,6 +232,15 @@ Or add the hooks to your **user-level** `~/.claude/settings.json` to apply them 
 - Hooks only activate on specific commands (`git push` and `vercel --prod`)
 - Check the hook output for the specific error message
 - If a hook is crashing, check that Node.js is available
+
+### Orchestrator not delegating
+
+The orchestrator must run as the **main conversation** (team lead), not as a subprocess. If agents aren't being invoked:
+
+- Use `/orchestrate` (or `/shipit:orchestrate`) to start a full build
+- Do NOT use `@orchestrator` or spawn it via Task tool — it will lose delegation ability
+- The Task tool only supports single-level nesting: the orchestrator needs to be top-level to spawn subagents
+- If the orchestrator is writing code itself instead of delegating, it was likely spawned as a subprocess
 
 ### Skills not found
 

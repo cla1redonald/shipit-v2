@@ -8,7 +8,7 @@ All agents are defined in `.claude-plugin/agents/` with YAML frontmatter. Claude
 
 | Agent | Model | Use For |
 |-------|-------|---------|
-| `@orchestrator` | opus | Coordinate full builds (Agent Teams + subagents) |
+| `@orchestrator` | opus | Coordinate full builds — invoke via `/orchestrate` skill, NOT as subprocess |
 | `@researcher` | haiku | Find existing solutions BEFORE building |
 | `@strategist` | opus | PRD creation from raw ideas |
 | `@pm` | opus | Scope decisions, requirements |
@@ -25,11 +25,20 @@ All agents are defined in `.claude-plugin/agents/` with YAML frontmatter. Claude
 
 | Skill | Use For |
 |-------|---------|
+| `/orchestrate` | Launch full orchestrated build (orchestrator as main session) |
 | `/prd-review` | Review and improve a PRD |
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |
 
-> **Note:** If installed as a plugin, skills may be invoked with the `shipit:` prefix (e.g., `/shipit:prd-review`).
+> **Note:** If installed as a plugin, skills may be invoked with the `shipit:` prefix (e.g., `/shipit:orchestrate`).
+
+## Orchestrator Invocation
+
+The orchestrator is the **only agent that must run as the main conversation** (team lead). All other agents can be spawned as subprocesses by the orchestrator or invoked directly by the user for standalone tasks.
+
+**To start a full build:** `/orchestrate` (or `/shipit:orchestrate`)
+
+**Do NOT** spawn @orchestrator via Task tool — it will be unable to delegate because the Task tool only supports single-level nesting. The `/orchestrate` skill loads the orchestrator into the current session so it has full access to Task tool and TeamCreate for delegation.
 
 ## Agent Teams (Parallel Execution)
 
