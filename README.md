@@ -146,13 +146,17 @@ Six gates enforced automatically via hooks:
 
 ```
 shipit-v2/
-├── .claude-plugin/          # Plugin package
-│   ├── plugin.json          # Manifest
-│   ├── agents/              # 12 agent definitions
-│   ├── skills/              # 3 skills (prd-review, code-review, prd-threads)
-│   └── hooks/               # Quality gate enforcement
+├── .claude-plugin/
+│   └── plugin.json          # Plugin manifest (auto-discovers components)
 ├── .claude/
-│   └── settings.json        # Project-level settings (Agent Teams, permissions, hooks)
+│   └── settings.json        # Project-level settings (Agent Teams, permissions)
+├── agents/                  # 12 agent definitions (YAML frontmatter)
+├── skills/                  # 4 skills (orchestrate, prd-review, code-review, prd-threads)
+├── hooks/                   # Quality gate enforcement
+│   ├── hooks.json           # Hook configuration
+│   ├── pre-push-check.js    # Gate 4: blocks push without review
+│   ├── security-scan.js     # Gate 5: blocks deploy without security check
+│   └── post-completion.js   # Gate 6: validates on agent stop
 ├── docs/                    # Reference materials
 │   ├── prd-template.md      # PRD format
 │   ├── prd-questions.md     # 17-step questioning flow
@@ -171,9 +175,9 @@ shipit-v2/
 
 ### Project-Level Settings (`.claude/settings.json`)
 
-The repo includes a project-level settings file that enables Agent Teams, configures permissions, and registers quality gate hooks. This file is used when you work **inside** the shipit-v2 repo itself (e.g., to develop or test agents).
+The repo includes a project-level settings file that enables Agent Teams and configures permissions. This file is used when you work **inside** the shipit-v2 repo itself (e.g., to develop or test agents).
 
-When ShipIt is installed as a **plugin** in another project, the plugin hooks are registered via `plugin.json`. You still need Agent Teams enabled in your user-level or project-level settings.
+When ShipIt is installed as a **plugin** in another project, hooks are auto-discovered from `hooks/hooks.json`. You still need Agent Teams enabled in your user-level or project-level settings.
 
 ### Hooks
 
@@ -187,32 +191,7 @@ All hooks are **fail-closed**: if a hook crashes, it blocks the action rather th
 
 ### Setting Up Hooks in Your Project
 
-If the plugin hooks don't auto-register in your project, add this to your project's `.claude/settings.json` (adjust the path to where you cloned shipit-v2):
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          { "type": "command", "command": "node ~/shipit-v2/.claude-plugin/hooks/pre-push-check.js" },
-          { "type": "command", "command": "node ~/shipit-v2/.claude-plugin/hooks/security-scan.js" }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          { "type": "command", "command": "node ~/shipit-v2/.claude-plugin/hooks/post-completion.js" }
-        ]
-      }
-    ]
-  }
-}
-```
-
-Or add the hooks to your **user-level** `~/.claude/settings.json` to apply them globally.
+Hooks are auto-discovered from `hooks/hooks.json` when the plugin is loaded. No manual hook configuration needed in your project's settings.
 
 ## Troubleshooting
 
@@ -220,7 +199,7 @@ Or add the hooks to your **user-level** `~/.claude/settings.json` to apply them 
 
 - Ensure the plugin is installed: `claude --plugin-dir ~/shipit-v2`
 - Start a fresh session after installing
-- Check that `.claude-plugin/plugin.json` exists and lists agents
+- Check that `.claude-plugin/plugin.json` exists and `agents/` directory contains agent definitions
 
 ### Agent Teams not working
 

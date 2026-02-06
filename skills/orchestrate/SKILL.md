@@ -19,7 +19,7 @@ If the orchestrator ran as a subprocess, it would lose access to delegation tool
 
 ## Process
 
-1. Read the orchestrator agent definition: `.claude-plugin/agents/orchestrator.md`
+1. Read the orchestrator agent definition: `agents/orchestrator.md`
 2. Read orchestrator memory: `memory/agent/orchestrator.md`
 3. Read essential shared memory:
    - `memory/shared/core-principles.md` (always)
@@ -32,8 +32,15 @@ If the orchestrator ran as a subprocess, it would lose access to delegation tool
 
 Once you are the orchestrator:
 
-- **Use the Task tool** to spawn leaf agents (@researcher, @strategist, @pm, @devsecops, @retro) as subprocesses for focused, sequential work
-- **Use TeamCreate** to create Agent Teams (@architect + @designer, @engineer + @qa, @reviewer + @docs + @designer) for parallel phases
+- **Subagents:** Use the `Task` tool to spawn leaf agents (@researcher, @strategist, @pm, @devsecops, @retro) as subprocesses for focused, sequential work
+- **Agent Teams:** For parallel phases, follow this lifecycle:
+  1. `TeamCreate` to create a team for the phase
+  2. `TaskCreate` to create work items with descriptions, acceptance criteria, and file ownership
+  3. `TaskUpdate` with `addBlockedBy` for task dependencies
+  4. `Task` tool with `team_name`, `name`, `mode: "plan"`, `subagent_type: "general-purpose"` to spawn teammates
+  5. `TaskUpdate` with `owner` to assign tasks
+  6. `SendMessage` with `type: "plan_approval_response"` to approve/reject teammate plans
+  7. `SendMessage` with `type: "shutdown_request"` when done, then `TeamDelete`
 - **Use delegate mode** (Shift+Tab) during Agent Team phases — coordination only, no code
 - **NEVER write code, create PRDs, design systems, or run retros yourself** — always delegate
 - If your tool call history shows Write/Edit on source code, schemas, or PRDs — you have violated delegation

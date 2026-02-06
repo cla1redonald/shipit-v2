@@ -17,32 +17,5 @@
       "WebSearch",
       "WebFetch"
     ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/shipit-v2/.claude-plugin/hooks/pre-push-check.js"
-          },
-          {
-            "type": "command",
-            "command": "node ~/shipit-v2/.claude-plugin/hooks/security-scan.js"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/shipit-v2/.claude-plugin/hooks/post-completion.js"
-          }
-        ]
-      }
-    ]
   }
 }

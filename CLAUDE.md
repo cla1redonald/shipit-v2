@@ -4,7 +4,7 @@ ShipIt is a team of 12 specialist AI agents for building products from idea to s
 
 ## Agents
 
-All agents are defined in `.claude-plugin/agents/` with YAML frontmatter. Claude auto-delegates based on task context, or you can invoke directly.
+All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates based on task context, or you can invoke directly.
 
 | Agent | Model | Use For |
 |-------|-------|---------|
@@ -42,19 +42,27 @@ The orchestrator is the **only agent that must run as the main conversation** (t
 
 ## Agent Teams (Parallel Execution)
 
-Agent Teams is enabled via settings. The orchestrator uses it for parallel phases:
+The orchestrator uses Agent Teams for parallel phases. Teams use Claude Code's native tools:
 
-- **Design:** @architect + @designer simultaneously
-- **Build:** Multiple @engineer teammates on independent features + @qa
-- **Polish:** @reviewer + @docs + @designer concurrently
+| Tool | Purpose |
+|------|---------|
+| `TeamCreate` | Create a team with shared task list |
+| `Task` (with `team_name`, `name`, `mode: "plan"`) | Spawn teammates into the team |
+| `TaskCreate` / `TaskUpdate` / `TaskList` | Manage shared work items, assign owners, set dependencies |
+| `SendMessage` | Direct messages (`type: "message"`), shutdown (`type: "shutdown_request"`), plan approval (`type: "plan_approval_response"`) |
+| `TeamDelete` | Clean up team resources (after all teammates shut down) |
 
-The orchestrator uses **delegate mode** (coordination-only) and **plan approval** (teammates plan before implementing).
+**Phases that use teams:** Design (@architect + @designer), Build (@engineer x3 + @qa), Polish (@reviewer + @docs + @designer)
+
+**Required setting:** `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` (already configured).
+
+Teammates are spawned with `mode: "plan"` (plan before implementing) and `subagent_type: "general-purpose"` (full tool access). The lead uses delegate mode (Shift+Tab) for coordination only. Teammates load CLAUDE.md and project context automatically but do NOT inherit the lead's conversation history.
 
 For focused single-agent tasks (research, PRD creation, infrastructure), the orchestrator uses subagents instead.
 
 ## Quality Gates (Hook-Enforced)
 
-Gates are enforced automatically via hooks. No manual checking needed. All hooks are registered globally in `.claude/settings.json` (the canonical location) and fire for every agent. There is no per-agent hook mechanism.
+Gates are enforced automatically via hooks. No manual checking needed. Hooks are configured in `hooks/hooks.json` and fire for every agent.
 
 | Gate | Type | Enforcement |
 |------|------|-------------|
@@ -112,7 +120,7 @@ These concepts were deliberately removed from ShipIt. They must not appear in an
 | `shipit-sdk/` TypeScript SDK | Eliminated — native features replace it |
 | `/shipit-init`, `/shipit-resume`, `/shipit-handoff`, `/shipit-status`, `/shipit-mail` | Eliminated — native features replace them |
 | `.claude/commands/` bridge files | Native agent invocation |
-| `hooks:` in agent YAML frontmatter | Hooks registered globally in `.claude/settings.json` and `plugin.json` |
+| `hooks:` in agent YAML frontmatter | Hooks configured in `hooks/hooks.json` |
 | `lessons-learned.md` (single file) | Hybrid memory system (`memory/shared/` + `memory/agent/`) |
 
 If you find any of these terms in ShipIt files (outside this table), it is a bug. Fix it.

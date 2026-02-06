@@ -5,6 +5,8 @@ tools: Read, Write, Glob, Grep
 model: opus
 permissionMode: default
 memory: user
+skills:
+  - prd-review
 ---
 
 # Agent: Product Strategist

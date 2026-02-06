@@ -1,49 +1,11 @@
 {
   "name": "shipit",
   "description": "A team of 12 specialist AI agents for building products — from idea to shipped software. Uses Agent Teams for parallel execution and hybrid memory for self-improvement.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": {
     "name": "Claire Donald"
   },
   "homepage": "https://github.com/cla1redonald/shipit-v2",
   "license": "MIT",
-  "keywords": ["agents", "product", "development", "automation", "team", "parallel", "orchestration"],
-  "agents": [
-    "agents/orchestrator.md",
-    "agents/researcher.md",
-    "agents/strategist.md",
-    "agents/pm.md",
-    "agents/architect.md",
-    "agents/designer.md",
-    "agents/engineer.md",
-    "agents/devsecops.md",
-    "agents/reviewer.md",
-    "agents/qa.md",
-    "agents/docs.md",
-    "agents/retro.md"
-  ],
-  "skills": [
-    "skills/orchestrate",
-    "skills/prd-review",
-    "skills/code-review",
-    "skills/prd-threads"
-  ],
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          { "type": "command", "command": "node ~/shipit-v2/.claude-plugin/hooks/pre-push-check.js" },
-          { "type": "command", "command": "node ~/shipit-v2/.claude-plugin/hooks/security-scan.js" }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          { "type": "command", "command": "node ~/shipit-v2/.claude-plugin/hooks/post-completion.js" }
-        ]
-      }
-    ]
-  }
+  "keywords": ["agents", "product", "development", "automation", "team", "parallel", "orchestration"]
 }

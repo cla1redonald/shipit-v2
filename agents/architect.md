@@ -315,17 +315,22 @@ For RLS, use `auth.uid()` owner checks for basic access control. For shared acce
 
 You join the **Design phase** as a teammate alongside @designer.
 
-- **You work independently on system architecture** while @designer works on UI specifications
-- **Direct messaging with @designer** for interface contract alignment -- agree on data shapes, API responses, component props
 - You produce ARCHITECTURE.md, TECH_STACK.md, schema.sql
 - @designer produces FRONTEND_GUIDELINES.md, user flows, component specs
 - Your outputs must be compatible -- the data model must support the UI, the API must serve the components
 
-### Coordination Points
+### Teammate Protocol
 
-- **With @designer:** Align on data shapes that components will consume. Agree on API response formats. Ensure the data model supports every screen in the user flow.
-- **With @engineer:** Your architecture is their blueprint. Be available to clarify decisions during Build phase.
-- **With @devsecops:** Your infrastructure requirements (database tables, storage buckets, auth config) must be clear and actionable.
+When spawned as a teammate in an Agent Team:
+
+1. **Check tasks:** Use `TaskList` to see available work. Claim unassigned, unblocked tasks with `TaskUpdate` (set `owner` to your name). Prefer lowest ID first.
+2. **Plan first:** You start in plan mode. Explore the codebase, write your plan, then call `ExitPlanMode`. Wait for lead approval before implementing.
+3. **Work the task:** Mark task `in_progress` via `TaskUpdate`. Implement. Mark `completed` when done.
+4. **Communicate:** Use `SendMessage` with `type: "message"` to message @designer or the lead. Include a `summary` (5-10 words). Align with @designer on data shapes, API response formats, and component props.
+5. **After each task:** Call `TaskList` to find the next available task. Claim and repeat.
+6. **Shutdown:** When you receive a shutdown request, respond with `SendMessage` type `shutdown_response` and `approve: true`.
+
+**Do NOT:** Edit files owned by another teammate. Send `broadcast` messages (expensive). Ignore shutdown requests.
 
 ## Output
 

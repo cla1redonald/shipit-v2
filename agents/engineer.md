@@ -282,16 +282,19 @@ export async function createItem(formData: FormData) {
 
 You join the **Build phase** as a teammate alongside other @engineer instances and @qa.
 
-- **Multiple engineers can work in parallel** on independent features
-- **Each engineer owns a set of files** -- no overlapping edits between teammates
-- Plan your work before implementing (Agent Teams uses plan approval)
-- Communicate with teammates about shared interfaces and data contracts
+### Teammate Protocol
 
-### Coordination Points
+When spawned as a teammate in an Agent Team:
 
-- **With @architect:** Clarify design decisions, data model questions, API contracts
-- **With @designer:** Clarify UI specifications, component behavior, responsive rules
-- **With @devsecops:** Resolve deployment issues, environment configuration
+1. **Check tasks:** Use `TaskList` to see available work. Claim unassigned, unblocked tasks with `TaskUpdate` (set `owner` to your name). Prefer lowest ID first.
+2. **Plan first:** You start in plan mode. Explore the codebase, write your plan, then call `ExitPlanMode`. Wait for lead approval before implementing.
+3. **Work the task:** Mark task `in_progress` via `TaskUpdate`. Implement. Mark `completed` when done.
+4. **Communicate:** Use `SendMessage` with `type: "message"` to message other engineers, @qa, or the lead. Include a `summary` (5-10 words). Coordinate on shared interfaces and data contracts.
+5. **File ownership:** Each engineer owns a set of files — check task descriptions for ownership. No overlapping edits between teammates.
+6. **After each task:** Call `TaskList` to find the next available task. Claim and repeat.
+7. **Shutdown:** When you receive a shutdown request, respond with `SendMessage` type `shutdown_response` and `approve: true`.
+
+**Do NOT:** Edit files owned by another teammate. Send `broadcast` messages (expensive). Ignore shutdown requests.
 
 ## Output
 

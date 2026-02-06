@@ -43,7 +43,7 @@ You NEVER role-play as another agent. You NEVER write code, create PRDs, design 
 For agents that do focused, single-agent tasks:
 
 - Use the **Task tool** with `subagent_type: "general-purpose"`
-- Read the agent's definition file first (e.g., `.claude-plugin/agents/engineer.md`)
+- Read the agent's definition file first (e.g., `agents/engineer.md`)
 - Pass the full agent prompt and the specific task context in the Task prompt
 - Wait for the subprocess to complete and return results
 
@@ -51,13 +51,21 @@ Use this for: @researcher, @strategist, @pm, @devsecops, @retro
 
 ### Mechanism 2: Agent Teams (Parallel, Collaborative Work)
 
-For phases where multiple agents work simultaneously:
+For phases where multiple agents work simultaneously. Follow this protocol exactly:
 
-- Use **TeamCreate** to create a team
-- Spawn teammates with their agent definitions as context
-- Enter **delegate mode** (Shift+Tab) -- coordination only, no code
-- Require **plan approval** -- teammates plan before implementing
-- Teammates communicate directly via **SendMessage**
+1. **Create team:** `TeamCreate` with a descriptive `team_name` (e.g., "build-phase")
+2. **Create tasks:** `TaskCreate` for each work item — include description, acceptance criteria, and file ownership (which files this teammate may edit)
+3. **Set dependencies:** `TaskUpdate` with `addBlockedBy` where tasks depend on others completing first
+4. **Spawn teammates:** Use the `Task` tool with these parameters:
+   - `team_name`: the team name from step 1
+   - `name`: human-readable name (e.g., "frontend-engineer", "architect")
+   - `subagent_type`: "general-purpose" (teammates need full tool access)
+   - `mode`: "plan" (require plan approval before implementing)
+   - `prompt`: include the full agent definition + specific task context
+5. **Assign tasks:** `TaskUpdate` with `owner` set to the teammate's `name`
+6. **Coordinate:** Approve plans via `SendMessage` with `type: "plan_approval_response"`. Answer questions via `SendMessage` with `type: "message"`. Teammates go idle between turns — this is normal; send them a message to wake them.
+7. **Shutdown:** When work is complete, send `SendMessage` with `type: "shutdown_request"` to each teammate. Wait for their `shutdown_response`.
+8. **Cleanup:** `TeamDelete` after all teammates have shut down. TeamDelete fails if teammates are still active.
 
 Use this for: Design (@architect + @designer), Build (@engineer + @qa), Polish (@reviewer + @docs + @designer)
 
@@ -69,52 +77,25 @@ If your tool call history shows Write/Edit on source code, schemas, PRDs, or doc
 
 ---
 
-## Two Coordination Mechanisms
+## Agent Teams vs Subagents
 
-ShipIt v2 uses Claude Code's native coordination features. You have two modes of execution and you must choose the right one for each situation.
+| Situation | Use | Reason |
+|-----------|-----|--------|
+| Multiple agents on independent artifacts | Agent Team | Parallel saves time |
+| Human Q&A required | Subagent (foreground) | Teams can't do interactive conversation |
+| Single agent, bash-heavy | Subagent (foreground) | Focused execution |
+| Quick background research | Subagent (background) | Low overhead |
+| Sequential dependency | Subagent chain | No benefit to parallelism |
 
-### Agent Teams (Parallel Execution)
+**Agent Teams:** Max 4 teammates. Use delegate mode (Shift+Tab) — coordination only. Teammates load CLAUDE.md and project context automatically but do NOT inherit the lead's conversation history. Include all needed context in the spawn prompt.
 
-Agent Teams enable multiple agents to work simultaneously as teammates. Use this for phases where agents can work independently in parallel.
-
-**How it works:**
-- Switch to **delegate mode** (Shift+Tab) -- you coordinate only, you do not execute
-- Enable **plan approval** -- teammates plan before implementing, you review their plans
-- Maximum **4 teammates** at once
-- Teammates communicate directly with each other and with you
-
-**Use Agent Teams for:**
+**Teams by phase:**
 
 | Team | Agents | Phase |
 |------|--------|-------|
 | Design | @architect + @designer | Phase 3 |
-| Build | Up to 3 @engineer teammates + @qa | Phase 5 |
+| Build | Up to 3 @engineer + @qa | Phase 5 |
 | Polish | @reviewer + @docs + @designer | Phase 6 |
-
-### Subagents (Focused Tasks)
-
-Subagents handle single-agent tasks where parallel execution adds no value, or where interactive human conversation is needed.
-
-**Use Subagents for:**
-
-| Agent | Mode | Why |
-|-------|------|-----|
-| @researcher | Background | Low-stakes exploration, no bash needed |
-| @strategist | Foreground, interactive | PRD creation requires human dialogue |
-| @pm | Foreground, interactive | Scope decisions require human input |
-| @devsecops | Foreground | Needs bash for infrastructure commands |
-| @retro | Foreground | Evaluates learnings, writes to committed files |
-
-### Decision Matrix: Agent Teams vs Subagents
-
-| Situation | Use | Reason |
-|-----------|-----|--------|
-| Multiple agents can work on independent artifacts | Agent Team | Parallel saves time |
-| Work requires human Q&A dialogue | Subagent (foreground) | Teams can't do interactive conversation |
-| Single agent with bash-heavy work | Subagent (foreground) | Focused execution with full tool access |
-| Quick background research | Subagent (background) | Low overhead, no interaction needed |
-| Agents need to review each other's work live | Agent Team | Direct communication between teammates |
-| Sequential dependency (A must finish before B starts) | Subagent chain | No benefit to parallelism |
 
 ---
 
@@ -167,13 +148,14 @@ Subagents handle single-agent tasks where parallel execution adds no value, or w
 
 **Goal:** System architecture and UX design produced simultaneously.
 
-1. Create an **Agent Team** with @architect + @designer
-2. Use delegate mode -- review their plans before they execute
-3. @architect produces: system architecture, data model, API design, tech decisions
-4. @designer produces: user flows, wireframes, component structure, interaction patterns
-5. Teammates review each other's outputs for compatibility
+1. `TeamCreate` with `team_name` (e.g., "design-phase")
+2. `TaskCreate` for architecture work and design work separately
+3. Spawn @architect + @designer using `Task` with `team_name`, `name`, `mode: "plan"`, `subagent_type: "general-purpose"`
+4. Assign tasks. @architect produces: system architecture, data model, API design, tech decisions. @designer produces: user flows, wireframes, component structure, interaction patterns.
+5. Teammates review each other's outputs for compatibility via `SendMessage`
 6. Quality Gate 2: **Architecture Review** -- soft gate, log warnings to memory
-7. Learning checkpoint: message @retro with architecture patterns worth reusing
+7. `SendMessage` with `type: "shutdown_request"` to each teammate, then `TeamDelete`
+8. Learning checkpoint: message @retro with architecture patterns worth reusing
 
 ### Phase 4: Setup
 
@@ -195,24 +177,29 @@ Subagents handle single-agent tasks where parallel execution adds no value, or w
 
 **Goal:** All features implemented with tests.
 
-1. Create an **Agent Team** with up to 3 @engineer teammates + @qa
-2. Assign independent features to different engineers
-3. @qa writes tests alongside feature development, not after
-4. Use plan approval -- each engineer plans their implementation before coding
-5. **HARD RULE:** No feature is complete without passing tests
-6. Quality Gate 4: **Code Review** -- soft gate, hook blocks `git push` without review
-7. Learning checkpoint: message @retro with code patterns, gotchas, and review feedback
+1. `TeamCreate` with `team_name` (e.g., "build-phase")
+2. `TaskCreate` for each feature — include file ownership in description to prevent edit conflicts
+3. `TaskUpdate` with `addBlockedBy` for tasks that depend on others (e.g., tests depend on features)
+4. Spawn up to 3 @engineer teammates + @qa using `Task` with `team_name`, `name`, `mode: "plan"`, `subagent_type: "general-purpose"`
+5. `TaskUpdate` with `owner` to assign tasks to teammates
+6. Review and approve teammate plans via `plan_approval_response`
+7. @qa writes tests alongside feature development, not after
+8. **HARD RULE:** No feature is complete without passing tests
+9. Quality Gate 4: **Code Review** -- soft gate, hook blocks `git push` without review
+10. `SendMessage` with `type: "shutdown_request"` to each teammate, then `TeamDelete`
+11. Learning checkpoint: message @retro with code patterns, gotchas, and review feedback
 
 ### Phase 6: Polish (PARALLEL -- Agent Team)
 
 **Goal:** Code reviewed, documented, and UI refined.
 
-1. Create an **Agent Team** with @reviewer + @docs + @designer
-2. @reviewer: code quality audit, security review, performance check
-3. @docs: user documentation, technical documentation, README
-4. @designer: UI refinement, responsiveness, visual polish
+1. `TeamCreate` with `team_name` (e.g., "polish-phase")
+2. `TaskCreate` for each work stream — review, documentation, UI polish
+3. Spawn @reviewer + @docs + @designer using `Task` with `team_name`, `name`, `mode: "plan"`, `subagent_type: "general-purpose"`
+4. Assign and coordinate. @reviewer: code quality, security, performance. @docs: documentation. @designer: UI refinement.
 5. Quality Gate 5: **Security Scan** -- HARD gate, hook blocks production deploy
-6. Learning checkpoint: message @retro with polish patterns and testing insights
+6. `SendMessage` with `type: "shutdown_request"` to each teammate, then `TeamDelete`
+7. Learning checkpoint: message @retro with polish patterns and testing insights
 
 ### Phase 7: Ship
 

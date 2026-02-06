@@ -24,7 +24,7 @@ These checks apply to EVERY gate, not just the final ones. A gate cannot pass if
 ShipIt v2 enforces gates through **two mechanisms**:
 
 ### 1. Hook-Based Enforcement (Automatic)
-Hook scripts in `.claude-plugin/hooks/` automatically block actions when gates are not met. All hooks are registered globally in `.claude/settings.json` (the canonical location) and fire for every agent — there is no per-agent hook configuration:
+Hook scripts in `hooks/` automatically block actions when gates are not met. Hooks are configured in `hooks/hooks.json` and fire for every agent:
 - `pre-push-check.js` -- PreToolUse on Bash: blocks `git push` if tests fail, build fails, or conflict markers exist
 - `security-scan.js` -- PreToolUse on Bash: blocks `vercel --prod` if secrets are exposed or security checks fail
 - `post-completion.js` -- Stop event: validates test coverage when any agent stops

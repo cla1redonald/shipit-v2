@@ -23,6 +23,16 @@ async function main() {
     input += chunk;
   }
 
+  // Prevent infinite Stop hook loops
+  try {
+    const hookInput = JSON.parse(input);
+    if (hookInput.stop_hook_active) {
+      process.exit(0);
+    }
+  } catch (e) {
+    // If input isn't valid JSON, continue with checks
+  }
+
   // This hook runs on Stop events — no tool_input to parse
   // Just verify the current state of the project
 

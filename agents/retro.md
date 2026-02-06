@@ -280,7 +280,7 @@ After any update to committed knowledge, verify all affected files are in sync. 
 
 | If You Updated... | Also Check... |
 |-------------------|---------------|
-| `memory/agent/{agent}.md` | The agent definition in `.claude-plugin/agents/{agent}.md` (does it conflict?) |
+| `memory/agent/{agent}.md` | The agent definition in `agents/{agent}.md` (does it conflict?) |
 | `memory/shared/common-mistakes.md` | All agents that could trigger this mistake |
 | `memory/shared/expert-frameworks.md` | `CLAUDE.md` if the framework affects project-wide behavior |
 | Any `memory/` file | `plugin.json` (are all agents still listed?) |
