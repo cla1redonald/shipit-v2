@@ -24,3 +24,7 @@ Thumbs.db
 dist/
 build/
 *.tgz
+
+# Test projects built with ShipIt
+counter-app/
+mood-journal/
