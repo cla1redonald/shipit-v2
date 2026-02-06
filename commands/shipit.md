@@ -1,5 +1,4 @@
 ---
-name: shipit
 description: Enforced commit workflow — test, typecheck, build, commit, retro, docs, push. Ensures quality gates pass and mandatory agents run before shipping.
 ---
 

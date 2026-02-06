@@ -1,5 +1,4 @@
 ---
-name: code-review
 description: Structured code review for quality and security. Use before merging code or when you want a security/quality audit.
 ---
 
@@ -8,7 +7,7 @@ description: Structured code review for quality and security. Use before merging
 Structured code review for quality and security.
 
 ## When to Use
-Use `/shipit:code-review` before merging code or when you want a security/quality audit.
+Use `/code-review` before merging code or when you want a security/quality audit.
 
 ## What This Skill Does
 

@@ -1,6 +1,6 @@
 ---
-name: orchestrate
 description: Launch a full ShipIt orchestrated build. The orchestrator runs as the main session so it can delegate to all specialist agents via Task tool and Agent Teams.
+argument-hint: Your idea or PRD
 ---
 
 # /orchestrate

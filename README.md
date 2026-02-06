@@ -104,7 +104,7 @@ Use @reviewer to review the code
 /prd-threads    — Convert a PRD into executable implementation threads
 ```
 
-> **Note:** If installed as a plugin, skills may use the `shipit:` prefix (e.g., `/shipit:prd-review`).
+> **Note:** If installed as a plugin, commands use the `shipit:` prefix (e.g., `/shipit:prd-review`).
 
 ## Architecture
 
@@ -154,7 +154,7 @@ shipit-v2/
 ├── .claude/
 │   └── settings.json        # Project-level settings (Agent Teams, permissions)
 ├── agents/                  # 12 agent definitions (YAML frontmatter)
-├── skills/                  # 5 skills (orchestrate, shipit, prd-review, code-review, prd-threads)
+├── commands/                # 5 commands (orchestrate, shipit, prd-review, code-review, prd-threads)
 ├── hooks/                   # Quality gate enforcement
 │   ├── hooks.json           # Hook configuration
 │   ├── pre-push-check.js    # Gate 4: blocks push without review

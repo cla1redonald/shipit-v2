@@ -1,5 +1,4 @@
 ---
-name: prd-review
 description: Review and improve a Product Requirements Document before starting development. Use when validating a PRD for completeness, clarity, and feasibility.
 ---
 
@@ -8,7 +7,7 @@ description: Review and improve a Product Requirements Document before starting 
 Review and improve a Product Requirements Document.
 
 ## When to Use
-Use `/shipit:prd-review` when you have a PRD that needs validation before starting development.
+Use `/prd-review` when you have a PRD that needs validation before starting development.
 
 ## What This Skill Does
 

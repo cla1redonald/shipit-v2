@@ -1,6 +1,6 @@
 ---
-name: prd-threads
 description: Convert a PRD into discrete, executable threads optimized for AI pair programming and parallel agent execution. Use when breaking down a PRD into implementable work units.
+argument-hint: Path to PRD file
 ---
 
 # PRD Threads
@@ -9,7 +9,7 @@ Convert a PRD into discrete, executable threads optimized for AI pair programmin
 
 ## When to Use
 
-Use `/shipit:prd-threads` when:
+Use `/prd-threads` when:
 - You have a completed PRD and want to break it into executable work units
 - You want to optimize by assigning reasoning levels and models
 - You need self-contained threads that can be done in single conversations

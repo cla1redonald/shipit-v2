@@ -31,7 +31,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |
 
-> **Note:** If installed as a plugin, skills may be invoked with the `shipit:` prefix (e.g., `/shipit:orchestrate`).
+> **Note:** If installed as a plugin, commands are invoked with the `shipit:` prefix (e.g., `/shipit:orchestrate`).
 
 ## Orchestrator Invocation
 
