@@ -5,6 +5,16 @@ tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "jq -r '.tool_input.file_path' | xargs npx prettier --write 2>/dev/null; exit 0"
+  Stop:
+    - hooks:
+        - type: command
+          command: "node ${CLAUDE_PLUGIN_ROOT}/hooks/post-completion.js"
 ---
 
 # Agent: Software Engineer

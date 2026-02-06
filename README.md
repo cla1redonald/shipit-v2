@@ -98,6 +98,7 @@ Use @reviewer to review the code
 
 ```
 /orchestrate    — Launch a full orchestrated build (main session)
+/shipit         — Enforced commit workflow (test → typecheck → build → commit → retro → docs → push)
 /prd-review     — Review and improve a PRD
 /code-review    — Structured code review
 /prd-threads    — Convert a PRD into executable implementation threads
@@ -107,15 +108,17 @@ Use @reviewer to review the code
 
 ## Architecture
 
-### Two Coordination Modes
+### How It Works
 
-**Agent Teams** — for parallel phases where multiple agents work simultaneously:
-- Design: @architect + @designer
-- Build: multiple @engineer teammates + @qa
-- Polish: @reviewer + @docs + @designer
+ShipIt provides **expert agents** and **quality enforcement**. Claude Code handles coordination natively.
 
-**Subagents** — for focused single-agent tasks:
-- Research, PRD creation, infrastructure setup, retrospectives
+**Expert Agents** — 12 specialist agent definitions with deep domain knowledge (security checklists, test strategies, review patterns, architecture principles). Each agent is 150-400 lines of expertise loaded on demand.
+
+**Quality Hooks** — Automatic enforcement that blocks pushes without tests, deploys without security review, and validates on agent stop.
+
+**Hybrid Memory** — Agents learn session-to-session. @retro graduates proven patterns to git-committed knowledge files.
+
+**Native Coordination** — Claude Code's Agent Teams and Task tool handle team creation, parallelization, and messaging. ShipIt doesn't duplicate this — it provides the specialists and the standards.
 
 ### Hybrid Learning System
 
@@ -151,7 +154,7 @@ shipit-v2/
 ├── .claude/
 │   └── settings.json        # Project-level settings (Agent Teams, permissions)
 ├── agents/                  # 12 agent definitions (YAML frontmatter)
-├── skills/                  # 4 skills (orchestrate, prd-review, code-review, prd-threads)
+├── skills/                  # 5 skills (orchestrate, shipit, prd-review, code-review, prd-threads)
 ├── hooks/                   # Quality gate enforcement
 │   ├── hooks.json           # Hook configuration
 │   ├── pre-push-check.js    # Gate 4: blocks push without review
@@ -162,7 +165,8 @@ shipit-v2/
 │   ├── prd-questions.md     # 17-step questioning flow
 │   ├── reasoning-levels.md  # Task complexity assessment
 │   ├── quality-gates.md     # Gate definitions
-│   └── phase-checklists.md  # Phase checklists and deliverables
+│   ├── phase-checklists.md  # Phase checklists and deliverables
+│   └── recommended-hooks.md # Recommended project hooks
 ├── memory/                  # Hybrid learning system
 │   ├── shared/              # Institutional knowledge (all agents read)
 │   └── agent/               # Per-agent knowledge (graduated by @retro)
@@ -248,7 +252,7 @@ ShipIt coordinates multiple agents, each consuming tokens. Usage scales with pro
 
 - **Max plan gives the best experience.** Full orchestrated builds with Agent Teams and multiple Opus agents work comfortably on Max. Pro plan users may hit usage limits on larger projects.
 - **Start with individual agents** (`@engineer`, `@reviewer`) to get value without the full orchestration overhead
-- **The orchestrator right-sizes automatically** — for simple tasks it skips unnecessary agents rather than burning tokens on ceremony
+- **The orchestrator is lightweight** — it delegates to specialists and lets Claude coordinate natively
 - **Use `/orchestrate` for real projects**, individual agents for quick tasks
 
 ## License

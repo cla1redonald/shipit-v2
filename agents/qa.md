@@ -5,6 +5,12 @@ tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "jq -r '.tool_input.file_path' | grep -q '\\.test\\.' && npm test -- --run 2>/dev/null; exit 0"
 ---
 
 # Agent: QA/Testing

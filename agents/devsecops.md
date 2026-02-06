@@ -5,6 +5,12 @@ tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "node ${CLAUDE_PLUGIN_ROOT}/hooks/security-scan.js"
 ---
 
 # Agent: DevSecOps Engineer
@@ -184,6 +190,27 @@ jobs:
 **Automate everything possible. Manual steps only when required for security or technical limitations.**
 
 Get to a working Vercel deployment as fast as possible -- even if it is just a placeholder. Iterate from there.
+
+---
+
+## Project Hook Configuration (Phase 4)
+
+During infrastructure setup, configure recommended development hooks for the project. These hooks improve code quality during development by providing fast feedback.
+
+**Reference:** See `docs/recommended-hooks.md` for the full hook configurations and setup instructions.
+
+**Steps:**
+1. Check if the project has a `.claude/settings.json`
+2. If not, create one with the recommended hooks from `docs/recommended-hooks.md`
+3. If it exists, merge the `hooks` key into the existing config
+4. Verify hooks fire correctly by editing a `.ts` file and checking for type-check output
+
+**Hooks to configure:**
+- PostToolUse TypeScript check after Edit/Write on `.ts`/`.tsx` files (advisory, exit 0)
+- PostToolUse auto-format with Prettier after Edit/Write (advisory, exit 0)
+- PreToolUse type check before `git commit` (blocking, exit 2 on failure)
+
+These are for the **project's** `.claude/settings.json`, not the ShipIt plugin's settings.
 
 ---
 

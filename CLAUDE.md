@@ -26,6 +26,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | Skill | Use For |
 |-------|---------|
 | `/orchestrate` | Launch full orchestrated build (orchestrator as main session) |
+| `/shipit` | Enforced commit workflow — test, typecheck, build, commit, retro, docs, push |
 | `/prd-review` | Review and improve a PRD |
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |
@@ -120,10 +121,37 @@ These concepts were deliberately removed from ShipIt. They must not appear in an
 | `shipit-sdk/` TypeScript SDK | Eliminated — native features replace it |
 | `/shipit-init`, `/shipit-resume`, `/shipit-handoff`, `/shipit-status`, `/shipit-mail` | Eliminated — native features replace them |
 | `.claude/commands/` bridge files | Native agent invocation |
-| `hooks:` in agent YAML frontmatter | Hooks configured in `hooks/hooks.json` |
+| `hooks:` in agent YAML as replacement for global hooks | Global hooks in `hooks/hooks.json`; agent-scoped hooks in agent frontmatter per official docs |
 | `lessons-learned.md` (single file) | Hybrid memory system (`memory/shared/` + `memory/agent/`) |
 
 If you find any of these terms in ShipIt files (outside this table), it is a bug. Fix it.
+
+## When to Use What
+
+| Need | Invoke |
+|------|--------|
+| Single focused task (write code, review, research) | Individual agent (`@engineer`, `@reviewer`, etc.) |
+| Multi-perspective exploration or brainstorm | Native Agent Teams — create a team with custom roles |
+| Full product build or complex multi-phase feature | `/orchestrate` — loads orchestrator as team lead |
+| Commit and push with quality verification | `/shipit` — test, typecheck, build, commit, retro, docs, push |
+
+The orchestrator delegates to specialist agents — it never does the work itself. For simple tasks, invoke agents directly without the orchestrator.
+
+## Code Changes
+
+Never over-engineer or broadly refactor UX/features beyond what was explicitly requested. When fixing a bug or adding a feature, keep changes minimal and scoped. If a larger refactor seems warranted, propose it first and wait for approval.
+
+## Performance & Reliability
+
+When spawning parallel background agents (Task tool), limit concurrency to 3 at a time to avoid API 400 concurrency errors. If errors occur, fall back to sequential execution immediately rather than retrying parallel.
+
+## Languages & Tools
+
+This project uses TypeScript and Markdown as primary languages. Always ensure TypeScript compiles cleanly (`tsc --noEmit`) before committing. For Markdown content in Obsidian, use the Obsidian MCP tools (patch_note, etc.) rather than direct file writes.
+
+## Writing & Analysis Style
+
+When analyzing business strategy or market dynamics, always present balanced multi-factor analysis. Never over-attribute outcomes to a single cause. Use evidence-based language ('evidence suggests' rather than absolute claims) unless data directly supports a strong conclusion.
 
 ## Reference Docs
 
@@ -132,4 +160,5 @@ If you find any of these terms in ShipIt files (outside this table), it is a bug
 - `docs/reasoning-levels.md` — Task complexity assessment
 - `docs/quality-gates.md` — Gate definitions and requirements
 - `docs/phase-checklists.md` — Phase checklists and deliverables
+- `docs/recommended-hooks.md` — Recommended project hooks for development workflow
 - `memory/shared/` — Institutional knowledge (principles, frameworks, mistakes)

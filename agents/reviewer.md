@@ -7,6 +7,12 @@ permissionMode: default
 memory: user
 skills:
   - code-review
+hooks:
+  PreToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "echo 'Reviewer must not edit source files. Write findings to a review report instead.' >&2; exit 2"
 ---
 
 # Agent: Code Reviewer
