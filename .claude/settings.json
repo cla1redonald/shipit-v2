@@ -25,11 +25,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude-plugin/hooks/pre-push-check.js"
+            "command": "node ~/shipit-v2/.claude-plugin/hooks/pre-push-check.js"
           },
           {
             "type": "command",
-            "command": "node .claude-plugin/hooks/security-scan.js"
+            "command": "node ~/shipit-v2/.claude-plugin/hooks/security-scan.js"
           }
         ]
       }
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude-plugin/hooks/post-completion.js"
+            "command": "node ~/shipit-v2/.claude-plugin/hooks/post-completion.js"
           }
         ]
       }
