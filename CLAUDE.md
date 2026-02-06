@@ -45,7 +45,7 @@ For focused single-agent tasks (research, PRD creation, infrastructure), the orc
 
 ## Quality Gates (Hook-Enforced)
 
-Gates are enforced automatically via hooks. No manual checking needed.
+Gates are enforced automatically via hooks. No manual checking needed. All hooks are registered globally in `.claude/settings.json` (the canonical location) and fire for every agent. There is no per-agent hook mechanism.
 
 | Gate | Type | Enforcement |
 |------|------|-------------|
@@ -87,11 +87,28 @@ Read `SOUL.md` for ShipIt's philosophy and identity. It defines the system's app
 - **Stack:** TypeScript, Next.js (App Router), Vercel, Supabase, Tailwind CSS, shadcn/ui, GitHub
 - **Quality Bar:** Modern polished UI, professional palette, mobile-responsive, core works e2e, not embarrassing to show
 
+## Eliminated Concepts (Do Not Reference)
+
+These concepts were deliberately removed from ShipIt. They must not appear in any file:
+
+| Eliminated Concept | Replacement |
+|---|---|
+| HANDOFF.md | Native inter-agent messaging |
+| Task tool enforcement / hub-and-spoke | Agent Teams + subagents |
+| `.shipit/` state directory | Native task list |
+| `shipit-sdk/` TypeScript SDK | Eliminated — native features replace it |
+| `/shipit-init`, `/shipit-resume`, `/shipit-handoff`, `/shipit-status`, `/shipit-mail` | Eliminated — native features replace them |
+| `.claude/commands/` bridge files | Native agent invocation |
+| `hooks:` in agent YAML frontmatter | Hooks registered globally in `.claude/settings.json` and `plugin.json` |
+| `lessons-learned.md` (single file) | Hybrid memory system (`memory/shared/` + `memory/agent/`) |
+
+If you find any of these terms in ShipIt files (outside this table), it is a bug. Fix it.
+
 ## Reference Docs
 
 - `docs/prd-template.md` — PRD format
 - `docs/prd-questions.md` — PRD questioning flow
 - `docs/reasoning-levels.md` — Task complexity assessment
 - `docs/quality-gates.md` — Gate definitions and requirements
-- `docs/handoff-checklists.md` — Phase transition checklists
+- `docs/phase-checklists.md` — Phase checklists and deliverables
 - `memory/shared/` — Institutional knowledge (principles, frameworks, mistakes)

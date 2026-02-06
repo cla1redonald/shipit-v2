@@ -5,9 +5,6 @@ tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user
-hooks:
-  - event: Stop
-    command: node .claude-plugin/hooks/post-completion.js
 ---
 
 # Agent: Software Engineer

@@ -24,7 +24,7 @@ These checks apply to EVERY gate, not just the final ones. A gate cannot pass if
 ShipIt v2 enforces gates through **two mechanisms**:
 
 ### 1. Hook-Based Enforcement (Automatic)
-Hook scripts in `.claude-plugin/hooks/` automatically block actions when gates are not met. All hooks are registered in `.claude/settings.json` (the canonical location):
+Hook scripts in `.claude-plugin/hooks/` automatically block actions when gates are not met. All hooks are registered globally in `.claude/settings.json` (the canonical location) and fire for every agent — there is no per-agent hook configuration:
 - `pre-push-check.js` -- PreToolUse on Bash: blocks `git push` if tests fail, build fails, or conflict markers exist
 - `security-scan.js` -- PreToolUse on Bash: blocks `vercel --prod` if secrets are exposed or security checks fail
 - `post-completion.js` -- Stop event: validates test coverage when any agent stops
@@ -199,6 +199,23 @@ The orchestrator verifies gates at phase transitions before spawning the next ag
 - Gate 2: Log concerns, continue to setup
 - Gate 3: Log issues, continue if basic setup works
 - Gate 4: Flag issues for later, continue to QA
+
+---
+
+## Gate 0: Platform Feature Verification (ShipIt Development Only)
+
+**When:** Before using any Claude Code feature in agent definitions or documentation
+**Gatekeeper:** @engineer or @devsecops
+**Type:** HARD — do not document features that do not work
+
+### Required Checks
+
+| Check | Pass Criteria |
+|-------|---------------|
+| Frontmatter fields verified | Every YAML field in agent definitions has been tested to confirm it affects behavior. Untested fields are removed. |
+| Hook registration verified | Every hook is confirmed to fire by testing with a trigger action |
+| Feature flags verified | Experimental features (e.g., Agent Teams) are tested in a fresh session |
+| Eliminated concepts absent | Grep codebase against CLAUDE.md eliminated concepts table — zero matches |
 
 ---
 

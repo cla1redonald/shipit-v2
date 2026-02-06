@@ -1,4 +1,4 @@
-> *Seed knowledge from ShipIt v1/v2 development, 2025-2026*
+> *Seed knowledge from ShipIt development, 2025-2026*
 
 # Common Mistakes to Avoid
 
@@ -64,7 +64,18 @@ When @docs is skipped, no one checks if existing docs are still accurate. Always
 Agents spawned in background mode have bash auto-denied. Agents needing bash (@engineer, @devsecops, @qa) must run in foreground.
 
 ### Documenting Before Testing
-We documented "agents can invoke each other via Task tool" without testing it. They can't — only the parent has Task tool. Always test capabilities before documenting them.
+We documented agent capabilities without testing them. The documented feature did not actually work. Always verify capabilities before documenting them.
+
+## Rewrite Contamination
+
+### Predecessor Concepts Leak Into Rewrites
+When rewriting a system, the builder has the predecessor in context. Architecture changes successfully (new patterns adopted) but content does not (old terminology, old concepts, old comparison tables leak through). The fix is an explicit "eliminated concepts" list in CLAUDE.md that is greppable, plus a review step that checks for references to eliminated concepts.
+
+### Comparison Tables in READMEs
+A product's README should describe that product. A "Differences from v1" table makes the product define itself through its predecessor, which is not how standalone products work. If migration guidance is needed, put it in a separate MIGRATION.md.
+
+### Hallucinated Platform Features
+When building on a platform (Claude Code, Vercel, Supabase), do not assume features exist without testing them. The `hooks:` YAML frontmatter field was added to agent definitions without verifying it was a real Claude Code feature — it was not. Always test platform capabilities before documenting or building on them.
 
 ## UX/UI Failures
 

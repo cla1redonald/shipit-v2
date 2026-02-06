@@ -1,10 +1,10 @@
-> *Seed knowledge from ShipIt v1/v2 development, 2025-2026*
+> *Seed knowledge from ShipIt development, 2025-2026*
 
 # Orchestrator Memory Seed
 
 ## Coordination Patterns That Work
 - Architecture-led builds produce clean implementations — detailed specs with line-level references eliminate ambiguity
-- Task tool enforcement creates real separation and visible handoffs
+- Agent Teams with delegate mode creates real separation — teammates work independently with their own context
 - Agent disposition tables (all agents listed, Skip requires justification) prevent accidental omissions
 - @retro must run BEFORE the final summary — the summary feels like "done" and triggers early stopping
 

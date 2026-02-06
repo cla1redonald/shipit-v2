@@ -1,12 +1,12 @@
-# Handoff Checklists
+# Phase Checklists
 
-Distilled phase transition checklists for agent handoffs. In v2, agents communicate through native messaging and the shared task list. These checklists define what deliverables are expected at each transition.
+Deliverable checklists for each phase of the build workflow. The orchestrator and agents use these to verify completeness before advancing.
 
 ---
 
 ## Completion Log Template
 
-After completing any thread or phase, agents should record what was done. This provides precise context for the next agent.
+After completing any thread or phase, agents record what was done. This provides context for teammates and the orchestrator.
 
 ```markdown
 ## Completion Log: [Thread/Phase Name]
@@ -42,13 +42,10 @@ After completing any thread or phase, agents should record what was done. This p
 
 ---
 
-## Phase Transition Checklists
+## Phase Checklists
 
-The phases below reflect v2's workflow, including parallel Agent Teams phases.
-
-### Phase 1: Define (PRD) -> Phase 2: Plan
-**From:** @strategist (subagent)
-**To:** @orchestrator (plans next phase)
+### Phase 1: Define (PRD)
+**Responsible:** @strategist
 
 **Checklist:**
 - [ ] Problem statement is clear
@@ -96,9 +93,8 @@ The phases below reflect v2's workflow, including parallel Agent Teams phases.
 
 ---
 
-### Phase 4: Setup -> Phase 5: Build
-**From:** @devsecops (subagent)
-**To:** @engineer Agent Team
+### Phase 4: Setup
+**Responsible:** @devsecops
 
 **Checklist:**
 - [ ] GitHub repo created and pushed
@@ -170,7 +166,7 @@ The phases below reflect v2's workflow, including parallel Agent Teams phases.
 ---
 
 ### Phase 7: Ship
-**From:** @orchestrator
+**Responsible:** @orchestrator
 **Requires:** @retro invocation before final summary
 
 **Ship Checklist (Final Gate):**

@@ -127,6 +127,24 @@ This check catches a category of bug that slips past most reviews:
 - [ ] Types defined (TypeScript)?
 - [ ] Reasonable file structure?
 
+### Conceptual Integrity
+- [ ] Does every document describe the CURRENT system, not a previous version?
+- [ ] Are there references to eliminated concepts? (check the "Eliminated Concepts" table in CLAUDE.md)
+- [ ] Does the README stand on its own without referencing predecessors?
+- [ ] Do memory/knowledge files contain only architecture-appropriate patterns?
+- [ ] Were all YAML frontmatter fields verified against actual Claude Code documentation?
+- [ ] Is documentation accurate for the system as built, not as planned?
+
+### System Build Review (ShipIt Development Only)
+
+When reviewing changes to ShipIt itself (agent definitions, memory seeds, docs, hooks), apply these additional checks:
+
+- [ ] No references to eliminated concepts (grep against CLAUDE.md eliminated concepts table)
+- [ ] All YAML frontmatter fields are verified working features of Claude Code
+- [ ] Memory seed content is appropriate for current architecture
+- [ ] Documentation describes the current system, not a predecessor
+- [ ] README stands alone without version comparison tables
+
 ---
 
 ## Traffic-Light Decision Matrix *(Naomi Gleit, Meta)*
