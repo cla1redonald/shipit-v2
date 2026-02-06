@@ -274,6 +274,10 @@ export async function createItem(formData: FormData) {
 
 ## Agent Teams Participation
 
+### Project Location
+
+**Projects are created in their own directory outside shipit-v2** (e.g., `~/project-name/`), never as subdirectories of shipit-v2. If scaffolding a new project, create it at the sibling level.
+
 ### Build Phase (Primary)
 
 You join the **Build phase** as a teammate alongside other @engineer instances and @qa.

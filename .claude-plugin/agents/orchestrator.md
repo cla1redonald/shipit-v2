@@ -179,6 +179,8 @@ Subagents handle single-agent tasks where parallel execution adds no value, or w
 
 **Goal:** Working infrastructure, deployed (even if empty).
 
+**IMPORTANT:** Projects are created in their own directory outside shipit-v2 (e.g., `~/project-name/`), never as subdirectories. ShipIt is a framework/plugin, not a workspace.
+
 1. Invoke **@devsecops** (subagent, foreground) for:
    - GitHub repo creation
    - Vercel project setup

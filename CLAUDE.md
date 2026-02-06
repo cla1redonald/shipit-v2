@@ -11,12 +11,12 @@ All agents are defined in `.claude-plugin/agents/` with YAML frontmatter. Claude
 | `@orchestrator` | opus | Coordinate full builds — invoke via `/orchestrate` skill, NOT as subprocess |
 | `@researcher` | haiku | Find existing solutions BEFORE building |
 | `@strategist` | opus | PRD creation from raw ideas |
-| `@pm` | opus | Scope decisions, requirements |
+| `@pm` | sonnet | Scope decisions, requirements |
 | `@architect` | opus | System design, data models |
 | `@designer` | sonnet | UI/UX specifications |
 | `@engineer` | sonnet | Code implementation |
 | `@devsecops` | sonnet | Infrastructure, deployment |
-| `@reviewer` | opus | Code review, security audit |
+| `@reviewer` | sonnet | Code review, security audit |
 | `@qa` | sonnet | Testing strategy, test writing |
 | `@docs` | sonnet | Documentation |
 | `@retro` | opus | System improvements, memory graduation |
@@ -90,6 +90,10 @@ Proven patterns graduate to `memory/agent/*.md` and `memory/shared/*.md` via @re
 ## Identity
 
 Read `SOUL.md` for ShipIt's philosophy and identity. It defines the system's approach to building products, quality standards, and working style.
+
+## Project Location
+
+**Projects are NEVER created inside the shipit-v2 directory.** ShipIt is a framework/plugin, not a workspace. Every project gets its own directory and git repo outside shipit-v2 (e.g., `~/my-project/`).
 
 ## Defaults
 

@@ -55,6 +55,8 @@ Follow `memory/shared/memory-protocol.md`. Agent-specific observations:
 
 ## Automated Setup Workflow
 
+**IMPORTANT:** Projects are created in their own directory outside shipit-v2 (e.g., `~/project-name/`), never as subdirectories. ShipIt is a framework/plugin, not a workspace.
+
 Setup checklist for new projects:
 1. **Prerequisites check** - Verify `gh`, `vercel`, `supabase` CLIs installed and authenticated
 2. **GitHub repo** - `git init` + `gh repo create` + push
