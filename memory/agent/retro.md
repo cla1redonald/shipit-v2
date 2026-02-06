@@ -15,7 +15,7 @@
 
 ## Consistency Check After Any Update
 When updating committed knowledge (memory/agent/ or memory/shared/), also check:
-- Agent definitions in .claude-plugin/agents/ for alignment
+- Agent definitions in agents/ for alignment
 - CLAUDE.md for consistency
 - README.md agent tables and feature descriptions
 - plugin.json for metadata accuracy
@@ -29,3 +29,16 @@ When updating committed knowledge (memory/agent/ or memory/shared/), also check:
 - "We'll do it later" is the most common failure pattern across all categories
 - Structural enforcement beats documented rules every time
 - The summary/completion feeling triggers early stopping — put mandatory steps BEFORE the natural stopping point
+
+## Distinguish Fabrication from Misimplementation
+
+**Context:** When classifying platform-related failures for graduation
+**Learning:** "Hallucinated Platform Features" (inventing features that do not exist) and "Confident Misimplementation" (implementing real features with wrong structure) are distinct failure modes with different detection strategies. Fabrication is caught when the feature does not work at all. Misimplementation appears to work locally but fails at distribution/discovery time. ShipIt v2 had both: `hooks:` YAML was fabrication, `.claude-plugin/agents/` was misimplementation.
+**Action:** When evaluating a platform-related failure, classify it as one of three modes: (1) Fabrication — feature does not exist, (2) Misimplementation — feature exists but structure is wrong, (3) Docs-Say-But-Didn't-Read — user gave correct instruction, builder ignored it. Each requires different prevention: fabrication needs testing, misimplementation needs doc verification, docs-ignored needs process enforcement.
+**Source:** ShipIt v2 retro, 2026-02-06.
+
+## User Trust Erosion Is a Critical Failure
+
+**Context:** When evaluating severity of process failures
+**Learning:** When a user gives explicit instructions ("follow the official docs") and the system fails to follow them, the resulting trust erosion is itself a critical failure — independent of the technical severity of the bug. The user having to audit the system's work against docs they already referenced is a process failure that graduates immediately, regardless of how many times it has occurred.
+**Action:** Any failure where the user had to catch something the system should have caught — especially when the user gave explicit instructions that were acknowledged but not followed — is an immediate Tier 2 graduation. Do not wait for a second occurrence.

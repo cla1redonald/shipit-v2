@@ -17,3 +17,10 @@
 - Must Fix (blocks merge)
 - Should Fix (address before next release)
 - Nice to Have (suggestion for improvement)
+
+## Platform Source Verification
+
+**Context:** When reviewing any system that targets a specific platform (Claude Code plugin, Vercel integration, etc.)
+**Learning:** ShipIt v2 passed code review with the wrong plugin directory structure because no reviewer verified the structure against the official Anthropic documentation. The "Conceptual Integrity" checklist was added post-incident, but it still does not enforce actually fetching and comparing against official docs.
+**Action:** For every platform-specific structural decision in the code under review, ask: "Where is the documentation that says this is correct?" If the answer is "the builder's knowledge," flag it as Must Fix until the actual docs are consulted. Check the platform's "Common mistakes" or "Gotchas" section if one exists.
+**Source:** ShipIt v2 plugin structure failure, 2026-02-06.

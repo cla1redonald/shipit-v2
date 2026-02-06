@@ -77,6 +77,18 @@ A product's README should describe that product. A "Differences from v1" table m
 ### Hallucinated Platform Features
 When building on a platform (Claude Code, Vercel, Supabase), do not assume features exist without testing them. The `hooks:` YAML frontmatter field was added to agent definitions without verifying it was a real Claude Code feature — it was not. Always test platform capabilities before documenting or building on them.
 
+### Confident Misimplementation of Platform Conventions
+**What happens:** The builder implements real platform features with the wrong structure or configuration. The code appears to work in development but fails when the platform tries to auto-discover or distribute the artifacts. In ShipIt v2, agents/skills/hooks were placed inside `.claude-plugin/` instead of at the plugin root — exactly what the Anthropic docs call a "Common mistake."
+**Root cause:** The builder's mental model of how plugins work (from other ecosystems like VSCode, npm) produces a plausible-looking but incorrect structure. Unlike hallucinated features, misimplemented conventions do not immediately error — they silently fail at distribution/discovery time.
+**Prevention:** (1) Fetch and read the actual platform documentation before designing directory structures. (2) @architect must cite the specific documentation section justifying platform-specific structural decisions. (3) Run a plugin loading smoke test as part of Gate 3 (Infrastructure Ready).
+**Detection:** Integration test that verifies the platform can find and load all declared agents, skills, and hooks from their expected locations.
+
+### Docs-Say-But-Didn't-Read (Acknowledged Instructions, Ignored Execution)
+**What happens:** The user explicitly says "follow the documentation for X." The builder acknowledges this and proceeds to build from its own knowledge instead of actually fetching and reading the docs. The result diverges from the docs in ways the user has to discover themselves.
+**Root cause:** The builder has high confidence in its existing knowledge and interprets "follow the docs" as "I know the docs" rather than "go read the docs right now." For rapidly-evolving platforms, the builder's training data may be stale or incomplete.
+**Prevention:** When a user references specific documentation, the orchestrator must create a blocking task: "Fetch and summarize current documentation for [X]." This task must complete before the design phase begins. @researcher is invoked to fetch the actual docs via WebFetch, and the output is provided to @architect as a concrete reference.
+**Detection:** @reviewer's review checklist includes a "Source Verification" step: for every platform-specific structural decision, verify the cited documentation source exists and matches the implementation.
+
 ## UX/UI Failures
 
 ### Generic Styling
@@ -101,4 +113,4 @@ In the first ShipIt v2 end-to-end test, the orchestrator made **zero Task tool c
 **Prevention:** All documentation directs users to `/orchestrate` instead of `@orchestrator`. The README, CLAUDE.md, and global CLAUDE.md all explain the constraint.
 
 ### README Omits Agents
-The README listed 9 of 12 agents, omitting @pm, @devsecops, and @retro. Nobody caught this because no review step checks the README agent list against the actual agent directory. Fix: verification step that counts agents in README vs files in `.claude-plugin/agents/`.
+The README listed 9 of 12 agents, omitting @pm, @devsecops, and @retro. Nobody caught this because no review step checks the README agent list against the actual agent directory. Fix: verification step that counts agents in README vs files in `agents/`.

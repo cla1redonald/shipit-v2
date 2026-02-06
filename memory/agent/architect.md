@@ -19,6 +19,13 @@
 - Storage buckets can be created via SQL in schema.sql
 - Always define .env.example with all required variables
 
+## Platform Structure Decisions Must Cite Documentation
+
+**Context:** When defining directory structures, configuration formats, or conventions for a specific platform (Claude Code plugins, Vercel functions, Supabase Edge Functions, etc.)
+**Learning:** ShipIt v2 placed agents/skills/hooks inside `.claude-plugin/` instead of at the plugin root. This matched common plugin patterns from other ecosystems but violated the actual Anthropic documentation, which explicitly calls this a "Common mistake." The error was undetected until the user manually audited against the docs.
+**Action:** For every platform-specific structural decision, cite the exact documentation source. If no documentation has been fetched yet, request that @researcher fetch it before proceeding. "Based on common patterns" is not acceptable when official docs exist. "Based on [Platform] documentation, [section/URL]" is the standard. If the docs are unavailable, explicitly flag the decision as unverified.
+**Source:** ShipIt v2 plugin structure failure, 2026-02-06.
+
 ## Supabase Typed Client: Database Type Shape
 
 **Context:** When using `createClient<Database>()` with @supabase/supabase-js v2.90+

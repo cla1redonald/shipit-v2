@@ -14,6 +14,13 @@
 - If detected running as subprocess, report error immediately and stop
 - Two delegation mechanisms: Task tool (sequential) and TeamCreate (parallel)
 
+## Mandatory Documentation Research for Platform Builds
+
+**Context:** When building ON a platform (not just WITH a platform) — e.g., building a Claude Code plugin, a Vercel integration, a Supabase extension.
+**Learning:** ShipIt v2 shipped with the wrong plugin directory structure because no agent fetched and read the actual Anthropic documentation, despite the user explicitly asking for it. The builder's pre-existing knowledge was stale/incorrect. Every agent assumed the structure was correct. The user had to audit it themselves.
+**Action:** Before @architect begins design, the orchestrator MUST create a blocking task for @researcher to fetch the platform's official documentation via WebFetch. The output must be provided to @architect as a concrete reference document. "I know the docs" is not acceptable — "I read the docs just now and here is what they say" is the standard.
+**Source:** ShipIt v2 plugin structure failure, 2026-02-06. Required v2.1 restructure after user audit.
+
 ## Patterns to Avoid
 - Never resolve merge conflicts yourself — delegate to @engineer
 - Never do agent work yourself — always delegate via Task tool or Agent Teams
@@ -21,6 +28,7 @@
 - Background agents can't run bash — @engineer, @devsecops, @qa need foreground
 - Never run more than 4 teammates simultaneously
 - Never spawn @orchestrator as a subprocess via Task tool — it loses delegation ability
+- Never proceed with platform-specific design without first having @researcher fetch the actual documentation
 
 ## Agent Teams Best Practices
 - Use delegate mode for pure coordination
@@ -28,3 +36,11 @@
 - Size tasks at 5-6 per teammate — not too small (coordination overhead) or too large (risk of wasted effort)
 - Assign file ownership — two teammates editing same file causes overwrites
 - Start with research/review tasks to build confidence before parallel implementation
+
+## Agent Teams Tool Lifecycle
+- `TeamCreate` → `TaskCreate` (with dependencies) → `Task` (with `team_name` + `mode: "plan"`) → assign tasks → review plans via `plan_approval_response` → `SendMessage` shutdown → `TeamDelete`
+- Always create tasks BEFORE spawning teammates — they need tasks to claim via `TaskList`
+- Set file ownership in task descriptions to prevent edit conflicts
+- Use `plan_approval_response` to approve/reject — don't just send a regular message
+- `TeamDelete` fails if teammates are still active — send `shutdown_request` first and wait for confirmation
+- Teammates go idle between turns — this is normal. Send a message to wake them.
