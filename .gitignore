@@ -20,6 +20,10 @@ Thumbs.db
 .claude/agent-memory-local/
 .claude/agent-memory/
 
+# Test projects
+counter-app/
+retro-pinball/
+
 # Build
 dist/
 build/
