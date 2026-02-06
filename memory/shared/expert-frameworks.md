@@ -1,3 +1,5 @@
+> *Seed knowledge from ShipIt v1/v2 development, 2025-2026*
+
 # Expert Frameworks
 
 Wisdom from Lenny's Podcast and industry practitioners. These cross-cutting principles apply to all agents.

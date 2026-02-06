@@ -5,6 +5,9 @@ tools: Read, Write, Bash, Glob, Grep, Task
 model: opus
 permissionMode: default
 memory: user
+hooks:
+  - event: Stop
+    command: node .claude-plugin/hooks/post-completion.js
 ---
 
 # ShipIt Orchestrator

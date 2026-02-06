@@ -110,4 +110,7 @@ async function main() {
   process.exit(0);
 }
 
-main().catch(() => process.exit(0));
+main().catch((err) => {
+  process.stderr.write(`[ShipIt Gate 6] Hook error: ${err.message}\n`);
+  process.exit(2);
+});

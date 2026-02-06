@@ -3,6 +3,7 @@ name: devsecops
 description: Infrastructure setup, deployment, security hardening, and CI/CD. Use when setting up repos, deploying, or handling security concerns.
 tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
+permissionMode: default
 memory: user
 ---
 

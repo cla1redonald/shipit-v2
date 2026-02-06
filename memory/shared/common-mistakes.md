@@ -1,3 +1,5 @@
+> *Seed knowledge from ShipIt v1/v2 development, 2025-2026*
+
 # Common Mistakes to Avoid
 
 Patterns from past projects. Every agent should be aware of these.

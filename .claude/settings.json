@@ -26,6 +26,20 @@
           {
             "type": "command",
             "command": "node .claude-plugin/hooks/pre-push-check.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude-plugin/hooks/security-scan.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude-plugin/hooks/post-completion.js"
           }
         ]
       }

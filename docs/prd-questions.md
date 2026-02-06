@@ -1,6 +1,6 @@
 # PRD Questioning Flow
 
-This is the conversational flow for capturing a product idea and turning it into a build-ready PRD.
+This is the conversational flow for capturing a product idea and turning it into a build-ready PRD. The full 17-step sequence that @strategist follows.
 
 ## Principles
 
@@ -10,7 +10,7 @@ This is the conversational flow for capturing a product idea and turning it into
 - Check scope and push back if needed
 - Apply user's defaults automatically
 
-## The Flow
+## The 17-Step Flow
 
 ### 1. The Problem (Most Important)
 
@@ -27,7 +27,31 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 2. Current State
+### 2. Strategy Anchor *(Ravi Mehta -- Product Strategy Stack)*
+
+> "How does this connect to your company/product strategy?"
+
+If the user cannot articulate the strategic connection, the PRD is not ready. Every PRD must explicitly state which strategy pillar it serves.
+
+**Capture:**
+- Which strategy pillar this serves
+- How it advances the broader product/company direction
+
+---
+
+### 3. Opportunity Framing *(Teresa Torres -- Opportunity Solution Tree)*
+
+> "Let's separate the opportunity from the solution. What's the underlying opportunity here?"
+
+An opportunity is NOT a solution. "Users need a dashboard" is a solution. "Users struggle to understand their usage patterns" is an opportunity.
+
+**Capture:**
+- The opportunity (not the solution)
+- How the opportunity was discovered (user research, data, intuition)
+
+---
+
+### 4. Current State
 
 > "How do you handle this today? What's the workaround?"
 
@@ -37,7 +61,7 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 3. The Solution Idea
+### 5. The Solution Idea
 
 > "What's your idea for solving this? What have you got in mind?"
 
@@ -47,7 +71,20 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 4. The User
+### 6. Alternative Solutions *(Teresa Torres)*
+
+> "What are at least two other ways you could solve this?"
+
+Never commit to the first solution. Compare at least 3 approaches before selecting one.
+
+**Capture:**
+- At least 3 alternative approaches
+- Pros/cons of each
+- Rationale for selected approach
+
+---
+
+### 7. The User
 
 > "Who's this for? Just you, or will others use it too?"
 
@@ -60,17 +97,20 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 5. Success Criteria
+### 8. Success Criteria *(Melissa Perri)*
 
 > "If this works perfectly, what does that look like? How will you know it's solved your problem?"
+
+Ask: "What do we hope will happen when we release this?" If the answer is vague, dig deeper -- the PRD is not ready.
 
 **Capture:**
 - Concrete success criteria
 - What "done" looks like
+- Measurable outcomes
 
 ---
 
-### 6. Core Functionality (MVP)
+### 9. Core Functionality (MVP)
 
 > "What's the absolute minimum this needs to do to be useful? If you could only ship one thing, what would it be?"
 
@@ -83,7 +123,7 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 7. User Experience
+### 10. User Experience
 
 > "How should this feel to use? Walk me through what happens when you open it."
 
@@ -99,7 +139,7 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 8. Data
+### 11. Data
 
 > "What information does this need to store or remember?"
 
@@ -113,7 +153,7 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 9. Integrations
+### 12. Integrations
 
 > "Does this need to connect to anything else? Other apps, services, APIs?"
 
@@ -123,7 +163,7 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 10. Constraints
+### 13. Constraints
 
 > "Any constraints I should know about? Timeline, specific tech requirements, things to avoid?"
 
@@ -134,13 +174,56 @@ This is the conversational flow for capturing a product idea and turning it into
 
 ---
 
-### 11. Future Vision (Brief)
+### 14. Existing Code References
+
+> "Are we modifying an existing codebase? If so, which files and what's the current behaviour?"
+
+**Capture:**
+- File paths with line numbers: `src/components/List.tsx:45-80`
+- Why each file is relevant
+- Current behaviour vs desired behaviour
+
+Vague references like "check the config files" cause problems downstream. Get specifics.
+
+---
+
+### 15. Opportunity Cost *(Shreyas Doshi)*
+
+> "What will NOT happen if we pursue this? What gets delayed or abandoned?"
+
+Every PRD should acknowledge what gets delayed or abandoned.
+
+**Capture:**
+- What is being deprioritised
+- Impact of that deprioritisation
+- Whether stakeholders are aware
+
+---
+
+### 16. Future Vision (Brief)
 
 > "If v1 goes well, what might v2 look like? Just a sentence or two."
 
 **Capture:**
 - Direction of travel (helps inform architecture)
 - Not a commitment, just awareness
+
+---
+
+### 17. Commercial Intent
+
+> "Is this a personal tool or could it become a real product?"
+
+**Listen for signals:** "paid users", "monetization", "subscription", "App Store", "launch", "customers", "business", "startup", "scale"
+
+If detected, ask explicitly:
+> "It sounds like this could become a real product. Do you want me to include business validation frameworks?"
+
+**If yes, include:**
+- Value Proposition Design (Customer Profile + Value Map)
+- Business Model Canvas (all 9 blocks)
+- Hypothesis Testing Plan (testable hypotheses with success criteria)
+- Commercialization Roadmap (Validate > Beta > Launch > Scale)
 
 ---
 

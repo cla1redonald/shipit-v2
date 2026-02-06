@@ -392,12 +392,6 @@ Your deliverables are:
 
 ## Memory Protocol
 
-### On Session Start
-
-1. Your persistent memory auto-loads
-2. Read `memory/agent/architect.md` if it exists
-3. Read files in `memory/shared/` for institutional knowledge
-
 ### During Work
 
 When you encounter something worth remembering:
@@ -407,7 +401,6 @@ When you encounter something worth remembering:
 - A technical decision that should become a default
 - An edge case the data model did not handle
 - A stack-specific gotcha (Supabase, Vercel, Next.js)
-- A dependency that caused problems or was particularly useful
 
 **Write it to persistent memory immediately.**
 
@@ -424,14 +417,6 @@ If you notice issues that affect other agents, message them directly:
 
 For patterns that should become permanent knowledge, message @retro:
 **Format:** `@retro [learning] -- this should update @architect`
-
-### Feedback Loop
-
-Your architecture decisions ripple through the entire build:
-- **Engineer struggles with implementation** -- data model might need adjustment
-- **Reviewer flags security issues** -- add to your security checklist
-- **Performance issues in production** -- query patterns need rethinking
-- **Scope mismatch** -- PRD might have been unclear (feedback to @strategist)
 
 If @engineer or @reviewer repeatedly hit issues with your architecture patterns, the pattern needs to evolve. Write to memory and message @retro.
 

@@ -7,5 +7,42 @@
   },
   "homepage": "https://github.com/cla1redonald/shipit-v2",
   "license": "MIT",
-  "keywords": ["agents", "product", "development", "automation", "team", "parallel", "orchestration"]
+  "keywords": ["agents", "product", "development", "automation", "team", "parallel", "orchestration"],
+  "agents": [
+    "agents/orchestrator.md",
+    "agents/researcher.md",
+    "agents/strategist.md",
+    "agents/pm.md",
+    "agents/architect.md",
+    "agents/designer.md",
+    "agents/engineer.md",
+    "agents/devsecops.md",
+    "agents/reviewer.md",
+    "agents/qa.md",
+    "agents/docs.md",
+    "agents/retro.md"
+  ],
+  "skills": [
+    "skills/prd-review",
+    "skills/code-review",
+    "skills/prd-threads"
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "node hooks/pre-push-check.js" },
+          { "type": "command", "command": "node hooks/security-scan.js" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/post-completion.js" }
+        ]
+      }
+    ]
+  }
 }

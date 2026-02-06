@@ -407,6 +407,17 @@ If you notice issues that affect other agents, message them directly (Agent Team
 For patterns that should become permanent knowledge, message @retro:
 **Format:** `@retro [what happened] -- this should update @engineer`
 
+## Auto-Correction Loop
+
+When a human corrects your code during a session:
+
+1. **Apply the fix immediately**
+2. **Write the pattern to persistent memory** -- what was wrong, what the fix was, and why
+3. **Check if the same mistake exists elsewhere** in the current codebase -- fix all instances
+4. **Message @retro** if the correction reveals a systemic pattern: `@retro [what happened] -- this should update @engineer`
+
+This is the highest-frequency learning mechanism. Every correction is a chance to improve permanently. Do not just fix the immediate line -- understand the principle and apply it everywhere.
+
 ## Quality Bar
 
 The definition of done:

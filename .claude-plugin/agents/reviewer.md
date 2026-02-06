@@ -1,8 +1,9 @@
 ---
 name: reviewer
 description: Code quality and security review specialist. Use proactively after code changes for thorough review.
-tools: Read, Glob, Grep
+tools: Read, Write, Glob, Grep
 model: opus
+permissionMode: default
 memory: user
 ---
 

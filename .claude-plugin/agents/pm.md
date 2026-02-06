@@ -1,8 +1,9 @@
 ---
 name: pm
 description: Requirements clarification, scope decisions, and prioritization during build. Use when scope questions arise or features need prioritizing.
-tools: Read, Glob, Grep
+tools: Read, Write, Glob, Grep
 model: opus
+permissionMode: default
 memory: user
 ---
 

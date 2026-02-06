@@ -3,6 +3,7 @@ name: researcher
 description: Investigate existing solutions before building. Use proactively before any new feature or product to avoid reinventing the wheel.
 tools: Read, Write, Glob, Grep, WebSearch, WebFetch
 model: haiku
+permissionMode: default
 memory: user
 ---
 

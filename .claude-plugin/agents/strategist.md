@@ -3,6 +3,7 @@ name: strategist
 description: Shape raw product ideas into clear PRDs through structured conversation. Use when someone has an idea that needs to become a specification.
 tools: Read, Write, Glob, Grep
 model: opus
+permissionMode: default
 memory: user
 ---
 

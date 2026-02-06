@@ -1,6 +1,6 @@
 # Handoff Checklists
 
-Distilled phase transition checklists for agent handoffs. In v2, agents communicate through native messaging and the shared task list rather than a HANDOFF.md file, but the deliverables and verification at each transition remain the same.
+Distilled phase transition checklists for agent handoffs. In v2, agents communicate through native messaging and the shared task list. These checklists define what deliverables are expected at each transition.
 
 ---
 
@@ -44,11 +44,13 @@ After completing any thread or phase, agents should record what was done. This p
 
 ## Phase Transition Checklists
 
-### PRD Complete -> Architecture
-**From:** @strategist
-**To:** @architect
+The phases below reflect v2's workflow, including parallel Agent Teams phases.
 
-**Checklist before handoff:**
+### Phase 1: Define (PRD) -> Phase 2: Plan
+**From:** @strategist (subagent)
+**To:** @orchestrator (plans next phase)
+
+**Checklist:**
 - [ ] Problem statement is clear
 - [ ] Success criteria defined
 - [ ] MVP scope agreed (not creeping)
@@ -62,37 +64,52 @@ After completing any thread or phase, agents should record what was done. This p
 
 ---
 
-### Architecture Complete -> Setup
-**From:** @architect
-**To:** @devsecops
+### Phase 3: Design (PARALLEL — Agent Team)
+**Team:** @architect + @designer (simultaneous)
+**Coordinated by:** @orchestrator
 
-**Checklist before handoff:**
+**@architect checklist:**
 - [ ] Data model defined
 - [ ] API structure documented
 - [ ] Tech decisions made with rationale
 - [ ] Security considerations noted
 - [ ] Multi-user readiness considered
 
-**Deliverables:**
+**@architect deliverables:**
 - `ARCHITECTURE.md` - system design
 - `TECH_STACK.md` - locked dependency manifest with exact versions
 - `schema.sql` - database schema (if applicable)
 
+**@designer checklist:**
+- [ ] Colour palette and design tokens defined
+- [ ] Key user flows specified
+- [ ] Component patterns identified
+- [ ] Responsive breakpoints documented
+- [ ] Accessibility baseline set
+
+**@designer deliverables:**
+- `FRONTEND_GUIDELINES.md` - locked design system
+- User flow diagrams
+- Screen/component specifications
+
+**Coordination point:** @architect and @designer must align on data shapes that components will consume. Direct messaging during parallel work.
+
 ---
 
-### Setup Complete -> Build
-**From:** @devsecops
-**To:** @engineer (or Agent Team of engineers)
+### Phase 4: Setup -> Phase 5: Build
+**From:** @devsecops (subagent)
+**To:** @engineer Agent Team
 
-**Checklist before handoff:**
+**Checklist:**
 - [ ] GitHub repo created and pushed
 - [ ] Vercel project linked and deploying
 - [ ] Supabase project created (if needed)
 - [ ] Environment variables configured
 - [ ] CI pipeline created
 - [ ] Empty deployment working
-- [ ] `FRONTEND_GUIDELINES.md` exists (produced by @designer in Design phase)
-- [ ] `TECH_STACK.md` exists (produced by @architect in Design phase)
+- [ ] `FRONTEND_GUIDELINES.md` exists (from Phase 3)
+- [ ] `TECH_STACK.md` exists (from Phase 3)
+- [ ] Test infrastructure ready (runner, config, script)
 
 **Deliverables:**
 - Working deployment URL
@@ -101,75 +118,62 @@ After completing any thread or phase, agents should record what was done. This p
 
 ---
 
-### Build Complete -> Review
-**From:** @engineer (or Agent Team)
-**To:** @reviewer
+### Phase 5: Build (PARALLEL — Agent Team)
+**Team:** Multiple @engineer teammates + @qa (simultaneous)
+**Coordinated by:** @orchestrator
 
-**Checklist before handoff:**
-- [ ] Core features implemented
+**@engineer checklist (per feature thread):**
+- [ ] Feature implemented per PRD spec
 - [ ] Tests written and passing
 - [ ] Error handling in place
 - [ ] Loading/empty states handled
 - [ ] Mobile responsive
 
+**@qa checklist:**
+- [ ] Test strategy defined
+- [ ] Integration tests written
+- [ ] Edge cases covered
+
 **Deliverables:**
-- Working code
-- Test suite
-- List of files changed
+- Working code with tests
+- Completion logs per thread
 
 ---
 
-### Review Complete -> QA
-**From:** @reviewer
-**To:** @qa
+### Phase 6: Polish (PARALLEL — Agent Team)
+**Team:** @reviewer + @docs + @designer (simultaneous)
+**Coordinated by:** @orchestrator
 
-**Checklist before handoff:**
+**@reviewer checklist:**
 - [ ] Code review complete
 - [ ] Security issues addressed
-- [ ] Quality issues fixed
+- [ ] Quality issues flagged with severity
 - [ ] No must-fix items remaining
 
-**Deliverables:**
-- Review summary
-- List of any deferred items
-
----
-
-### QA Complete -> Docs
-**From:** @qa
-**To:** @docs
-
-**Checklist before handoff:**
-- [ ] All tests passing
-- [ ] Core flows verified
-- [ ] Edge cases tested
-- [ ] No blocking bugs
-
-**Deliverables:**
-- Test results summary
-- Known issues list (if any)
-
----
-
-### Docs Complete -> Ship
-**From:** @docs
-**To:** @orchestrator
-
-**Checklist before handoff:**
+**@docs checklist:**
 - [ ] README complete
 - [ ] Setup instructions work
 - [ ] API documented (if applicable)
 - [ ] Environment variables documented
 
+**@designer checklist (UI audit):**
+- [ ] Implemented UI matches specifications
+- [ ] No visual drift from FRONTEND_GUIDELINES.md
+- [ ] All states handled (empty, loading, error, success)
+- [ ] Responsive behaviour verified
+
 **Deliverables:**
+- Review summary
 - `README.md`
-- Any additional docs
+- UI audit findings (if any)
 
 ---
 
-## Ship Checklist (Final Gate)
+### Phase 7: Ship
+**From:** @orchestrator
+**Requires:** @retro invocation before final summary
 
-**@orchestrator verifies before declaring done:**
+**Ship Checklist (Final Gate):**
 
 - [ ] **Not embarrassing** - would show this to someone
 - [ ] **Works end-to-end** - core flow completes successfully
@@ -178,15 +182,4 @@ After completing any thread or phase, agents should record what was done. This p
 - [ ] **Documented** - README exists with setup instructions
 - [ ] **Secure** - RLS enabled, no exposed secrets, inputs validated
 - [ ] **Dogfooded** - creator has used it themselves
-
----
-
-## Agent Teams Note
-
-In v2, some of these phases run in parallel via Agent Teams:
-
-- **Design phase:** @architect + @designer run simultaneously (produces ARCHITECTURE.md, TECH_STACK.md, schema.sql, FRONTEND_GUIDELINES.md, APP_FLOW.md concurrently)
-- **Build phase:** Multiple @engineer teammates can work on independent features in parallel, with @qa
-- **Polish phase:** @reviewer + @docs + @designer run simultaneously for review, documentation, and UI audit
-
-The checklists above still apply -- each agent must meet their deliverables before the phase is considered complete, regardless of whether they ran sequentially or in parallel.
+- [ ] **Retro complete** - @retro invoked, learnings captured

@@ -1,3 +1,5 @@
+> *Seed knowledge from ShipIt v1/v2 development, 2025-2026*
+
 # Orchestrator Memory Seed
 
 ## Coordination Patterns That Work

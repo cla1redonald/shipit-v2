@@ -25,9 +25,11 @@ All agents are defined in `.claude-plugin/agents/` with YAML frontmatter. Claude
 
 | Skill | Use For |
 |-------|---------|
-| `/shipit:prd-review` | Review and improve a PRD |
-| `/shipit:code-review` | Structured code review |
-| `/shipit:prd-threads` | Convert PRD to executable threads |
+| `/prd-review` | Review and improve a PRD |
+| `/code-review` | Structured code review |
+| `/prd-threads` | Convert PRD to executable threads |
+
+> **Note:** If installed as a plugin, skills may be invoked with the `shipit:` prefix (e.g., `/shipit:prd-review`).
 
 ## Agent Teams (Parallel Execution)
 
@@ -52,12 +54,12 @@ Gates are enforced automatically via hooks. No manual checking needed.
 | 3: Infrastructure Ready | Soft | Warning logged to memory |
 | 4: Code Review | Soft | Hook blocks `git push` without review |
 | 5: Security Scan | HARD | Hook blocks production deploy |
-| 6: Ship Ready | HARD | Hook validates all gates on orchestrator stop |
+| 6: Ship Ready | HARD | Hook validates all gates on Stop event |
 
 ## Hybrid Learning System
 
 ### Tier 1: Persistent Memory (fast, automatic)
-Each agent has native persistent memory at `~/.claude/agent-memory/{agent}/`. Learnings are written immediately and auto-loaded next session.
+Each agent has native persistent memory (managed by Claude Code's `memory: user` setting). Learnings are written immediately and auto-loaded next session.
 
 ### Tier 2: Git-Committed Knowledge (durable, shareable)
 Proven patterns graduate to `memory/agent/*.md` and `memory/shared/*.md` via @retro. These are version-controlled and loaded via the `skills` frontmatter field.
@@ -75,6 +77,10 @@ Proven patterns graduate to `memory/agent/*.md` and `memory/shared/*.md` via @re
 | **Security** | Considered from day one. Enforced by security-scan hook. |
 | **Documentation** | If not documented, it doesn't exist. |
 | **Consistency** | All related files update together. |
+
+## Identity
+
+Read `SOUL.md` for ShipIt's philosophy and identity. It defines the system's approach to building products, quality standards, and working style.
 
 ## Defaults
 

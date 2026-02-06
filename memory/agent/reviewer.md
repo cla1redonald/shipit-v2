@@ -1,3 +1,5 @@
+> *Seed knowledge from ShipIt v1/v2 development, 2025-2026*
+
 # Reviewer Memory Seed
 
 ## Review Philosophy

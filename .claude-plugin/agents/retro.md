@@ -1,7 +1,7 @@
 ---
 name: retro
 description: System-wide improvements via hybrid learning. Evaluates learnings and graduates proven patterns from persistent memory to committed knowledge files. Use after corrections, phase completions, or when patterns emerge.
-tools: Read, Edit, Write, Glob, Grep
+tools: Read, Edit, Write, Bash, Glob, Grep
 model: opus
 permissionMode: default
 memory: user

@@ -3,6 +3,7 @@ name: qa
 description: Test strategy, test writing, and quality assurance. Use when defining testing approach or writing comprehensive tests.
 tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
+permissionMode: default
 memory: user
 ---
 
@@ -159,7 +160,7 @@ describe('Button', () => {
   });
 
   it('calls onClick when clicked', () => {
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click</Button>);
     fireEvent.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledTimes(1);

@@ -1,3 +1,5 @@
+> *Seed knowledge from ShipIt v1/v2 development, 2025-2026*
+
 # Core Principles (Non-Negotiable)
 
 These are fundamental to how ShipIt operates. Every agent must follow these.
