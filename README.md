@@ -247,6 +247,31 @@ The orchestrator must run as the **main conversation** (team lead), not as a sub
 - Try with the `shipit:` prefix: `/shipit:prd-review`
 - Verify the plugin is loaded by checking the skill list
 
+## Token Usage
+
+ShipIt coordinates multiple agents, each consuming tokens. Usage scales with project complexity and the number of agents invoked.
+
+### Estimates by Project Size
+
+| Project | Agents Invoked | Estimated Tokens | Example |
+|---------|---------------|-----------------|---------|
+| **Simple** | 2-3 | ~150-200k | Counter app, landing page |
+| **Medium** | 5-7 | ~400-800k | CRUD app, dashboard |
+| **Full build** | 8-12 (with Agent Teams) | ~700k-1.3M+ | Multi-feature product, PRD to production |
+
+### Why Token Usage Is High
+
+- **Opus agents** (orchestrator, strategist, pm, architect, reviewer, retro) use ~5x the quota of Sonnet agents
+- **Agent Teams** create separate Claude Code instances — each teammate has its own context window
+- The orchestrator reads agent definitions, memory files, and all agent output, adding coordination overhead
+
+### Recommendations
+
+- **Max plan gives the best experience.** Full orchestrated builds with Agent Teams and multiple Opus agents work comfortably on Max. Pro plan users may hit usage limits on larger projects.
+- **Start with individual agents** (`@engineer`, `@reviewer`) to get value without the full orchestration overhead
+- **The orchestrator right-sizes automatically** — for simple tasks it skips unnecessary agents rather than burning tokens on ceremony
+- **Use `/orchestrate` for real projects**, individual agents for quick tasks
+
 ## License
 
 MIT
