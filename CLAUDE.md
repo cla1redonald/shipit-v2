@@ -44,6 +44,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | `/prd-review` | Review and improve a PRD |
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |
+| `/tdd-build` | Test-driven build — write failing tests first, implement iteratively until green, refactor |
 
 > **Note:** If installed as a plugin, commands are invoked with the `shipit:` prefix (e.g., `/shipit:orchestrate`).
 
