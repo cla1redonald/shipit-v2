@@ -57,6 +57,15 @@ Security risk. Never expose service role keys client-side.
 **Prevention:** When fixing dependency versions, set `VERCEL_FORCE_NO_BUILD_CACHE=1` in Vercel environment variables or deploy with `--force`. After deploy, verify the production URL serves the new deployment.
 **Source:** London Transit Pulse, 2026-02-07. React 19 persisted in deployed bundle despite lockfile specifying React 18.
 
+## Debugging Failures
+
+### Missing Environment Variables Misdiagnosed as Code Bugs
+**What happens:** APIs return 503/500 and the developer spends extensive time debugging code logic (audio mute states, prompt engineering, caching layers, hardcoded mappings) when the actual root cause is missing environment variables. The app's fallback paths silently mask the real error — static preset data is served instead of AI-generated content, making it look like a code quality issue rather than a configuration issue.
+**Root cause:** (1) No `.env.local` file exists but `.env.example` does — the gap isn't caught. (2) API routes return 503 with a generic message like "unavailable" rather than explicitly logging "MISSING API KEY." (3) The developer chases symptoms (drony audio, static backgrounds) instead of checking the server logs first. (4) Fallback profiles create the illusion that the system "works" — it renders something, just not the right thing.
+**Prevention:** (1) **Always check server logs FIRST** when debugging — a `503` is a configuration problem, not a code problem. (2) When setting up a project, verify `.env.local` exists with required keys before any debugging session. (3) API routes should log `console.error('MISSING: ANTHROPIC_API_KEY')` not just return 503. (4) Add a startup check or health endpoint that validates required env vars are present.
+**Detection:** `grep -r "503"` in server logs. Any 503 from your own API routes is almost always a missing env var or service unavailability, not a code bug.
+**Source:** Weather Mood, 2026-02-07. Three debugging rounds (mute desync, prompt engineering, cache removal) before discovering both ANTHROPIC_API_KEY and ELEVENLABS_API_KEY were missing from `.env.local`.
+
 ## Code Failures
 
 ### Type Propagation Rule
@@ -191,3 +200,35 @@ In the first ShipIt v2 end-to-end test, the orchestrator made **zero Task tool c
 
 ### README Omits Agents
 The README listed 9 of 12 agents, omitting @pm, @devsecops, and @retro. Nobody caught this because no review step checks the README agent list against the actual agent directory. Fix: verification step that counts agents in README vs files in `agents/`.
+
+---
+
+## State Complexity Accumulation
+
+### Multiple State Variables Controlling the Same Behavior
+
+**What happens:** State variables proliferate to track what should be a single piece of state. In Weather Mood, the mute state grew to 4+ variables across 2 hooks: `isSynthMuted`, `isMuted` (page level), `elevenLabs.isMuted`, and `isMutedRef`. Each variable was added incrementally to fix a specific bug, but the accumulation indicated an architectural problem — two competing audio systems with unclear ownership.
+
+**Root cause:** Incremental bug fixes add state variables to patch issues rather than refactoring the underlying architecture. Each new variable feels like a small, isolated change, so the pattern accumulates without triggering a simplification review.
+
+**Prevention:** When the number of boolean state variables related to the same user action (mute, toggle, filter on/off) exceeds 2, it is a code smell indicating unclear ownership or competing systems. Before adding a third state variable, ask: "Why do we need multiple sources of truth?" The correct fix is usually to consolidate into a single source of truth with derived state, or to remove one of the competing systems entirely.
+
+**Detection:** Grep for related state variable names (e.g., `isMuted`, `muted`, `mute`) across the codebase. If 3+ variables with similar names exist, or if state synchronization logic appears (e.g., syncing A to B in a useEffect), state complexity has accumulated.
+
+**Source:** Weather Mood, 2026-02-07. Mute state grew to 4 variables before the synth was removed entirely, simplifying back to 1 variable.
+
+---
+
+## Feature Accumulation Without Removal
+
+### Replacement Features Added Without Removing Originals
+
+**What happens:** A new system replaces an old one (e.g., ElevenLabs replaces Web Audio synth, new formatter replaces old one, new auth layer replaces old one), but the original is not removed. The two systems coexist, causing bugs from conflicting behavior, state synchronization issues, or inconsistent outputs. In Weather Mood, the Web Audio synth (v1) lingered after ElevenLabs (v2) was added, causing mute-state bugs across multiple sessions. In Transit Pulse, multiple formatter functions duplicated across modules with inconsistent rounding. In ShipIt v1→v2, comparison tables and predecessor concepts leaked into the rewrite.
+
+**Root cause:** The replacement is added as a new feature in one thread, but removing the original is never explicitly tasked. Engineers assume someone else will clean up the old code, or that the old code is harmless if unused. But the old code often IS used in some edge case, or creates state complexity, or confuses future contributors.
+
+**Prevention:** When adding a replacement system, the task description or architecture spec must include a "Deprecated Features" section listing what will be REMOVED. "Add X to replace Y" should always trigger "remove Y" as a linked task. During code review, if a replacement feature is added but the original still exists in the codebase, flag it as "Should Fix: remove deprecated feature."
+
+**Detection:** Look for duplicate implementations of the same capability (two audio systems, two formatters, two authentication layers). If both exist after a "replacement" feature ships, the original was not removed.
+
+**Source:** Weather Mood (synth removal), 2026-02-07. Third occurrence across projects — pattern is proven.

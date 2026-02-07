@@ -67,3 +67,10 @@
 **Learning:** The Database type interface must include a `Relationships: []` field in each table definition. Omitting it causes TypeScript to infer `never` for all insert/update/select operations, producing cryptic "no overload matches this call" errors at build time.
 **Action:** Always include `Relationships: []` (or actual relationship definitions) in the Database type. Deliver a complete `database.types.ts` file as part of architecture deliverables, not just a conceptual schema.
 **Source:** Mood Journal project, 2026-02-06. Build failed on first attempt due to missing Relationships field.
+
+## Feature Removal When Adding Replacement Systems
+
+**Context:** When designing a replacement for an existing system component (audio engine, formatter library, authentication layer, etc.)
+**Learning:** Across 3 projects, replacement features were added without removing the original, causing downstream bugs. Weather Mood: Web Audio synth (v1) lingered after ElevenLabs (v2) was added, causing mute-state bugs across multiple sessions. Transit Pulse: multiple formatter functions duplicated with inconsistent behavior. ShipIt v1→v2: comparison tables and predecessor concepts leaked into rewrite. The replaced feature becomes technical debt that creates state complexity, inconsistent behavior, or UX confusion.
+**Action:** When designing a replacement system, the architecture spec must include a "Deprecated Features" section that explicitly lists which existing components/hooks/utilities will be REMOVED as part of the implementation. The spec should explain why the original is being replaced and what migration/cleanup work is required. If the original is intentionally kept for a transition period, specify the transition timeline and criteria for removal. "Adding X to replace Y" should always trigger "remove Y" as a linked task.
+**Source:** Weather Mood (synth removal), 2026-02-07. Third occurrence of this pattern.
