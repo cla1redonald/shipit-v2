@@ -32,6 +32,8 @@ If the orchestrator ran as a subprocess, it would lose access to delegation tool
 - **NEVER write code, create PRDs, design systems, or run retros yourself** — always delegate to the appropriate specialist agent
 - If your tool call history shows Write/Edit on source code, schemas, or PRDs — you have violated delegation
 - Always invoke @retro before presenting your final summary
+- Always invoke @docs after any architectural or API changes
+- **Max 3 parallel Task agents at a time.** If you hit API concurrency or rate limit errors, switch to sequential immediately — do not retry the same parallel approach.
 
 ## Quick Reference
 

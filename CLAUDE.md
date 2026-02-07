@@ -2,6 +2,20 @@
 
 ShipIt is a team of 12 specialist AI agents for building products from idea to shipped software. It uses Claude Code's native **Agent Teams** for parallel work and **Custom Subagents** for focused tasks, with a **hybrid learning system** that improves with every project.
 
+## Request Interpretation
+
+- When the user gives a direct action command (e.g., 'uninstall X', 'commit this', 'push to GitHub'), execute it immediately. Do not ask clarifying questions unless genuinely ambiguous.
+- Treat imperative statements as instructions, not conversation starters.
+
+## Agent Orchestration Protocol
+
+When using multi-agent workflows (orchestrator, ShipIt), ALWAYS:
+1. Invoke agents via the Task tool — never do agent work directly
+2. Run @retro agent after every large multi-file change set
+3. Run @docs agent after any architectural or API changes
+
+Never skip these steps even if they seem redundant.
+
 ## Agents
 
 All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates based on task context, or you can invoke directly.
@@ -137,17 +151,25 @@ If you find any of these terms in ShipIt files (outside this table), it is a bug
 
 The orchestrator delegates to specialist agents — it never does the work itself. For simple tasks, invoke agents directly without the orchestrator.
 
-## Code Changes
+## Editing Philosophy
 
-Never over-engineer or broadly refactor UX/features beyond what was explicitly requested. When fixing a bug or adding a feature, keep changes minimal and scoped. If a larger refactor seems warranted, propose it first and wait for approval.
+- Make minimal, targeted changes. Do NOT over-engineer or redesign UX unless explicitly asked.
+- When fixing a bug, fix ONLY that bug. Do not refactor surrounding code.
+- If a change touches more than 3 files, pause and confirm scope with the user before proceeding.
+- If a larger refactor seems warranted, propose it first and wait for approval.
 
-## Performance & Reliability
+## Concurrency Rules
 
-When spawning parallel background agents (Task tool), limit concurrency to 3 at a time to avoid API 400 concurrency errors. If errors occur, fall back to sequential execution immediately rather than retrying parallel.
+- Never spawn more than 3 parallel Task agents at once.
+- Use sequential execution when working with APIs or file-heavy operations.
+- If you hit API concurrency or rate limit errors, immediately switch to sequential processing rather than retrying the same parallel approach.
 
-## Languages & Tools
+## TypeScript & Build
 
-This project uses TypeScript and Markdown as primary languages. Always ensure TypeScript compiles cleanly (`tsc --noEmit`) before committing. For Markdown content in Obsidian, use the Obsidian MCP tools (patch_note, etc.) rather than direct file writes.
+- Primary language is TypeScript. Always check for type errors (`tsc --noEmit`) before committing.
+- Use bash 3.2-compatible syntax (no associative arrays) for any shell scripts targeting macOS.
+- Use `grep -E` instead of `grep` with complex regex patterns on macOS.
+- For Markdown content in Obsidian, use the Obsidian MCP tools (patch_note, etc.) rather than direct file writes.
 
 ## Writing & Analysis Style
 
