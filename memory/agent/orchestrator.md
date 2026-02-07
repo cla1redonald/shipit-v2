@@ -31,6 +31,7 @@
 - Never proceed with platform-specific design without first having @researcher fetch the actual documentation
 - Never deploy without a successful local build (`next build` or equivalent) — the first deploy is the highest-risk deployment
 - Never accept `legacy-peer-deps=true` in `.npmrc` as a solution — it hides real conflicts
+- If you observe an agent using Bash heredocs (`cat > file << 'EOF'`) to create files, stop them immediately — this corrupts `settings.local.json`. All file creation must use the Write tool, all file modification must use the Edit tool.
 
 ## Pre-Deploy Gate (Hard Requirement)
 Before authorizing @devsecops to deploy:

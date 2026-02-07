@@ -95,9 +95,37 @@ Blocks `git commit` if TypeScript has errors. This catches type errors before th
 
 ---
 
+## Hook 4: Block Bash Heredoc File Creation (Blocking)
+
+Blocks Bash commands that use heredoc syntax (`<< 'EOF'`, `<< EOF`) or redirect operators (`cat >`, `echo >`) to create files. These commands should use the Write tool instead. When heredoc commands are approved in the permission system, the entire multi-line command (including file content) gets saved as an allow pattern in `settings.local.json`, corrupting the file.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command' | grep -qE '(<<\\s*['\\'']?EOF|cat\\s+>|echo\\s+.*>\\s*[^ ])' && { echo 'BLOCKED: Do not use Bash heredocs or redirects to create files. Use the Write tool instead. Heredoc commands corrupt settings.local.json when saved as permission patterns.' >&2; exit 2; } || exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**What it does:** Before any Bash tool call, checks if the command contains heredoc patterns (`<< EOF`, `<< 'EOF'`) or file creation redirects (`cat >`, `echo > file`). If detected, blocks the command (exit 2) with an explanation. If the command is not a file creation, allows it (exit 0).
+
+**Why this matters:** During the London Transit Pulse build, 16 Bash heredoc commands containing full TypeScript source files were approved by the user and saved as permission patterns. Each pattern contained hundreds of lines of escaped source code. On next startup, Claude Code could not parse these patterns and refused to load the entire settings file.
+
+---
+
 ## Combined Configuration
 
-To use all three hooks together in a project's `.claude/settings.json`:
+To use all four hooks together in a project's `.claude/settings.json`:
 
 ```json
 {
@@ -121,6 +149,10 @@ To use all three hooks together in a project's `.claude/settings.json`:
       {
         "matcher": "Bash",
         "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command' | grep -qE '(<<\\s*['\\'']?EOF|cat\\s+>|echo\\s+.*>\\s*[^ ])' && { echo 'BLOCKED: Do not use Bash heredocs or redirects to create files. Use the Write tool instead. Heredoc commands corrupt settings.local.json when saved as permission patterns.' >&2; exit 2; } || exit 0"
+          },
           {
             "type": "command",
             "command": "jq -r '.tool_input.command' | grep -q 'git commit' && npx tsc --noEmit || exit 0; if [ $? -ne 0 ]; then echo 'TypeScript errors found. Fix before committing.' >&2; exit 2; fi"

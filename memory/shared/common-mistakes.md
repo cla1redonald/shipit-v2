@@ -132,6 +132,15 @@ When building on a platform (Claude Code, Vercel, Supabase), do not assume featu
 **Prevention:** Never hardcode slice parameters in components that consume filtered data. Use the filtered array length to determine the slice, or downsample the full filtered range to a target number of data points.
 **Source:** London Transit Pulse, 2026-02-07. Sparklines showed identical graphs for all date ranges.
 
+## Code Duplication Across Module Boundaries
+
+### Duplicate Utility Functions When Architecture Does Not Specify Shared Boundaries
+**What happens:** Multiple engineers independently create local copies of the same utility function (formatters, helpers, tooltips) in their own modules instead of importing from a shared location. The duplicates have subtly different behavior (e.g., one rounds to 0 decimals, another to 1), creating inconsistency and maintenance burden.
+**Root cause:** The architecture spec defines the shared module and city modules but does not explicitly list which utility functions belong where. Engineers working in parallel default to creating local copies to avoid blocking on shared code.
+**Prevention:** Architecture spec must include a "Shared Utilities" section that: (1) explicitly lists every shared function with its signature, (2) specifies import path, (3) notes which city-specific functions intentionally differ from the shared version and why. During @reviewer pass, grep for function names that appear in both shared and city modules -- duplicates with identical signatures are always bugs.
+**Detection:** Grep for common function names (`formatNumber`, `formatPercent`, `formatDate`) across all module boundaries. If the same function name appears in 3+ locations, consolidation is needed.
+**Seen in:** London Transit Pulse (CustomTooltip x4 files), Retro Pinball (duplicate high score logic in GameState + GameHUD), Transit Pulse combined (formatNumber/formatPercent/formatDate in 3 locations). Third occurrence -- pattern is proven.
+
 ## UX/UI Failures
 
 ### Hardcoded Theme Colors in Components
@@ -157,6 +166,19 @@ Look "wireframey." Use solid subtle borders or card shadows for polish.
 
 ### Low Contrast Text
 Always test text colors visually. `text-slate-800` on `bg-slate-100` can be hard to read despite looking fine in code.
+
+## Tool Misuse Failures
+
+### Bash Heredoc File Creation Corrupts settings.local.json
+**What happens:** An agent uses `cat > /path/to/file.tsx << 'EOF' ... EOF` via the Bash tool to create files instead of using the Write tool. When the user approves these Bash commands in the permission system, Claude Code saves the ENTIRE heredoc command -- including hundreds of lines of escaped source code -- as an "allow" pattern in `settings.local.json`. On next startup, Claude Code tries to parse these multi-hundred-line patterns, hits a `:*` pattern syntax error, and refuses to load the file entirely. The error message is: "The :* pattern must be at the end. Move :* to the end for prefix matching, or use * for wildcard matching. Files with errors are skipped entirely, not just the invalid settings."
+**Root cause:** The agent defaults to Bash shell commands for file creation because heredoc syntax is familiar and straightforward. But the Bash tool's permission system was not designed to handle multi-line file content as a command string. The Write tool exists specifically for file creation and does not interact with the permission allow-list in this way.
+**Impact:** All permission settings in `settings.local.json` become inaccessible. The user must manually edit the JSON file to remove corrupted entries before Claude Code will load any of their saved permissions. In the London Transit Pulse build, 16 malformed entries (containing full TypeScript components, test files, and markdown) corrupted the file.
+**Prevention:**
+1. **Never use `cat > file << 'EOF'`, `echo >`, or any Bash heredoc/redirect to create files.** Always use the Write tool for file creation and the Edit tool for file modification.
+2. **Never use Bash `for` loops to create or modify multiple files.** Use individual Write/Edit tool calls for each file.
+3. The ONLY acceptable use of Bash for file-related operations is: `mkdir -p` (creating directories), `cp`/`mv` (copying/moving files), `chmod` (permissions), and similar metadata operations.
+**Detection:** Grep for `cat >`, `cat >>`, `<< 'EOF'`, `<< EOF`, `echo >` in Bash commands being executed by agents. Any match involving file content creation is a bug.
+**Source:** London Transit Pulse, 2026-02-07. 16 corrupted entries in `settings.local.json` including full TSX components and test files.
 
 ## Delegation Failures
 
