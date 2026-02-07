@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, supabaseUrl, supabaseAnonKey } from './supabase';
 import type { Scan, ScanItem, ScanSummary, DietaryProfile } from '../types';
 import type { AnalysisResponse } from '../types/analysis';
 
@@ -29,15 +29,12 @@ export async function analyzeMenu(
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated');
 
-  const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
-  const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
-
   const response = await fetch(`${supabaseUrl}/functions/v1/analyze-menu`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${session.access_token}`,
-      'apikey': anonKey,
+      'apikey': supabaseAnonKey,
     },
     body: JSON.stringify({
       scanId,
