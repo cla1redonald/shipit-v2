@@ -44,25 +44,39 @@ If you already have a `~/.claude/settings.json`, merge the `env` key into it.
 
 ### Step 2: Install the Plugin
 
-**Option A — Local plugin (recommended for now):**
+**Clone the repo** (if you haven't already):
+
+```bash
+git clone https://github.com/cla1redonald/shipit-v2.git ~/shipit-v2
+```
+
+**Register as a local marketplace** in your **user-level** settings (`~/.claude/settings.json`):
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "shipit": {
+      "source": {
+        "source": "directory",
+        "path": "/absolute/path/to/shipit-v2"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "shipit@shipit": true
+  }
+}
+```
+
+> **Important:** Use the absolute path to your cloned `shipit-v2` directory. Merge these keys into your existing settings — don't replace the whole file.
+
+**Alternative — Single session (no persistent install):**
 
 ```bash
 claude --plugin-dir ~/shipit-v2
 ```
 
-Or add to your project's `.claude/settings.json`:
-
-```json
-{
-  "plugins": ["~/shipit-v2"]
-}
-```
-
-**Option B — From the plugin marketplace (when published):**
-
-```bash
-/plugin install shipit
-```
+This loads the plugin for one session only. Use the marketplace method above for persistent access across all projects.
 
 ### Step 3: Verify Installation
 

@@ -1,0 +1,13 @@
+{
+  "name": "shipit",
+  "owner": {
+    "name": "Claire Donald"
+  },
+  "plugins": [
+    {
+      "name": "shipit",
+      "source": ".",
+      "description": "A team of 12 specialist AI agents for building products — from idea to shipped software."
+    }
+  ]
+}
