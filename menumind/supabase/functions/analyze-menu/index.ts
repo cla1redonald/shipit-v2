@@ -3,6 +3,7 @@
 // Keeps ANTHROPIC_API_KEY server-side (never on the client)
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
+import { encode as base64Encode } from 'https://deno.land/std@0.208.0/encoding/base64.ts';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
@@ -54,19 +55,20 @@ Deno.serve(async (req: Request) => {
       .eq('id', scanId);
 
     // Fetch the image from Supabase Storage
-    const { data: imageData } = await supabase.storage
+    const { data: imageData, error: downloadError } = await supabase.storage
       .from('menu-photos')
       .download(imageUrl);
 
-    if (!imageData) {
-      throw new Error('Failed to fetch image from storage');
+    if (downloadError || !imageData) {
+      throw new Error(`Failed to download image: ${downloadError?.message || 'no data returned'}. Path: ${imageUrl}`);
     }
 
-    // Convert to base64
+    // Convert to base64 using Deno standard library (reliable for large files)
     const buffer = await imageData.arrayBuffer();
-    const base64Image = btoa(
-      new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-    );
+    if (buffer.byteLength === 0) {
+      throw new Error(`Downloaded image is empty (0 bytes). Path: ${imageUrl}`);
+    }
+    const base64Image = base64Encode(new Uint8Array(buffer));
 
     // Build the prompt
     const systemPrompt = buildSystemPrompt(dietaryProfile);
