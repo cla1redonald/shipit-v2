@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import * as FileSystem from 'expo-file-system';
 import type { Scan, ScanItem, ScanSummary, DietaryProfile } from '../types';
 import type { AnalysisResponse } from '../types/analysis';
 
@@ -20,15 +21,22 @@ export async function createScan(imageUrl: string): Promise<Scan> {
   return mapScan(data);
 }
 
+export async function readImageAsBase64(uri: string): Promise<string> {
+  const base64 = await FileSystem.readAsStringAsync(uri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  return base64;
+}
+
 export async function analyzeMenu(
   scanId: string,
-  imageUrl: string,
+  imageBase64: string,
   dietaryProfile: DietaryProfile
 ): Promise<AnalysisResponse> {
   const { data, error } = await supabase.functions.invoke('analyze-menu', {
     body: {
       scanId,
-      imageUrl,
+      imageBase64,
       dietaryProfile: {
         allergies: dietaryProfile.allergies,
         dietTypes: dietaryProfile.dietTypes,

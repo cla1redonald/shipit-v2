@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createScan, uploadMenuPhoto, analyzeMenu, fetchScanHistory, fetchScanDetail } from '../services/scans';
+import { createScan, readImageAsBase64, analyzeMenu, fetchScanHistory, fetchScanDetail } from '../services/scans';
 import type { ScanItem, ScanSummary, ScanStatus, DietaryProfile } from '../types';
 import type { AnalysisResponse } from '../types/analysis';
 
@@ -71,14 +71,14 @@ export const useScanStore = create<ScanStore>((set, get) => ({
         currentScan: { ...state.currentScan, scanId: scan.id, uploadProgress: 30 },
       }));
 
-      // Upload photo
-      const imagePath = await uploadMenuPhoto(imageUri, scan.id);
+      // Read image as base64 directly (skip storage upload)
+      const imageBase64 = await readImageAsBase64(imageUri);
       set((state) => ({
         currentScan: { ...state.currentScan, status: 'analyzing', uploadProgress: 60 },
       }));
 
-      // Analyze via Edge Function
-      const results = await analyzeMenu(scan.id, imagePath, dietaryProfile);
+      // Analyze via Edge Function with base64 image inline
+      const results = await analyzeMenu(scan.id, imageBase64, dietaryProfile);
 
       // Fetch the saved items from database
       const { items } = await fetchScanDetail(scan.id);

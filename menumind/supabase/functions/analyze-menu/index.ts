@@ -3,13 +3,12 @@
 // Keeps ANTHROPIC_API_KEY server-side (never on the client)
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
-import { encode as base64Encode } from 'https://deno.land/std@0.208.0/encoding/base64.ts';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
 interface AnalysisRequest {
   scanId: string;
-  imageUrl: string;
+  imageBase64: string;
   dietaryProfile: {
     allergies: string[];
     dietTypes: string[];
@@ -40,7 +39,11 @@ interface ClaudeResponse {
 
 Deno.serve(async (req: Request) => {
   try {
-    const { scanId, imageUrl, dietaryProfile } = (await req.json()) as AnalysisRequest;
+    const { scanId, imageBase64, dietaryProfile } = (await req.json()) as AnalysisRequest;
+
+    if (!imageBase64 || imageBase64.length === 0) {
+      throw new Error('imageBase64 is required and must not be empty');
+    }
 
     // Initialize Supabase admin client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -54,21 +57,8 @@ Deno.serve(async (req: Request) => {
       .update({ status: 'analyzing' })
       .eq('id', scanId);
 
-    // Fetch the image from Supabase Storage
-    const { data: imageData, error: downloadError } = await supabase.storage
-      .from('menu-photos')
-      .download(imageUrl);
-
-    if (downloadError || !imageData) {
-      throw new Error(`Failed to download image: ${downloadError?.message || 'no data returned'}. Path: ${imageUrl}`);
-    }
-
-    // Convert to base64 using Deno standard library (reliable for large files)
-    const buffer = await imageData.arrayBuffer();
-    if (buffer.byteLength === 0) {
-      throw new Error(`Downloaded image is empty (0 bytes). Path: ${imageUrl}`);
-    }
-    const base64Image = base64Encode(new Uint8Array(buffer));
+    // Image is already base64-encoded from the client
+    const base64Image = imageBase64;
 
     // Build the prompt
     const systemPrompt = buildSystemPrompt(dietaryProfile);
