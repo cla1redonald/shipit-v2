@@ -39,16 +39,13 @@ export async function analyzeMenu(
   });
 
   if (error) {
-    // Try to extract real error from FunctionsHttpError context
+    // context is a Response object — read its body for the real error
     let message = error.message;
     try {
       const ctx = (error as any).context;
-      if (ctx?.error) {
-        message = ctx.error;
-      } else if (typeof ctx === 'string') {
-        message = ctx;
-      } else if (ctx) {
-        message = JSON.stringify(ctx);
+      if (ctx && typeof ctx.json === 'function') {
+        const body = await ctx.json();
+        message = body?.error || JSON.stringify(body);
       }
     } catch {}
     throw new Error(message);
