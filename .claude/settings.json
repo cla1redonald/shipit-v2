@@ -4,18 +4,21 @@
   },
   "permissions": {
     "allow": [
-      "Bash(git:*)",
-      "Bash(npm:*)",
-      "Bash(npx:*)",
-      "Bash(node:*)",
-      "Bash(vercel:*)",
-      "Bash(supabase:*)",
-      "Bash(gh:*)",
-      "Bash(mkdir:*)",
-      "Bash(ls:*)",
-      "Bash(chmod:*)",
       "WebSearch",
       "WebFetch"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command' | grep -qE '<<\\s*EOF|cat\\s+>' && { echo 'BLOCKED: Do not use Bash heredocs or redirects to create files. Use the Write tool instead.' >&2; exit 2; } || exit 0"
+          }
+        ]
+      }
     ]
   }
 }
