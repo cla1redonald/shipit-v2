@@ -23,16 +23,22 @@ export default function AnalyzingScreen() {
       <SafeAreaView style={styles.errorContainer}>
         <View style={styles.errorContent}>
           <Text style={styles.errorEmoji}>❌</Text>
-          <Button title="Try Again" onPress={() => router.replace('/(tabs)/scan')} />
-          <View style={styles.cancelButtonWrapper}>
-            <Button
-              title="Cancel"
-              variant="text"
-              onPress={() => {
-                cancelScan();
-                router.replace('/(tabs)/scan');
-              }}
-            />
+          <Text style={styles.errorTitle}>Analysis Failed</Text>
+          {error ? (
+            <Text style={styles.errorMessage}>{error}</Text>
+          ) : null}
+          <View style={styles.errorActions}>
+            <Button title="Try Again" onPress={() => router.replace('/(tabs)/scan')} />
+            <View style={styles.cancelButtonWrapper}>
+              <Button
+                title="Cancel"
+                variant="text"
+                onPress={() => {
+                  cancelScan();
+                  router.replace('/(tabs)/scan');
+                }}
+              />
+            </View>
           </View>
         </View>
       </SafeAreaView>
@@ -73,7 +79,23 @@ const styles = StyleSheet.create({
   },
   errorEmoji: {
     fontSize: 48,
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 24,
+    paddingHorizontal: 16,
+  },
+  errorActions: {
+    width: '100%',
   },
   cancelButtonWrapper: {
     marginTop: 12,
