@@ -91,6 +91,18 @@ When building on a platform (Claude Code, Vercel, Supabase), do not assume featu
 
 ## UX/UI Failures
 
+### Hardcoded Theme Colors in Components
+**What happens:** Components use raw Tailwind gray scales (`text-gray-900`, `bg-gray-200`) or hex values (`#1a1a2e`) instead of CSS variable-based theme tokens (`text-foreground`, `hsl(var(--muted-foreground))`). Works in one theme, breaks in the other.
+**Root cause:** Engineers default to familiar Tailwind utility classes or copy colors from design mockups as literal values. The architecture doc does not explicitly forbid it.
+**Prevention:** Architecture doc must include a "Theming Rules" section: "All colors must use CSS variable tokens. Never use raw Tailwind color scales or hex values in components." @reviewer checks for hardcoded color patterns in every review.
+**Detection:** Grep for `text-gray-`, `bg-gray-`, `text-\[#`, `bg-\[#` in component files. Any match outside `globals.css` or theme config is a bug.
+
+### Non-Deterministic Data in React Render
+**What happens:** `Math.random()` called during render produces different output every render cycle, causing visual flickering (e.g., sparkline bars changing shape on every filter interaction).
+**Root cause:** Data generation logic placed inline in component render instead of being memoized or computed once.
+**Prevention:** Never call `Math.random()`, `Date.now()`, or other non-deterministic functions in the render path. Use `useMemo` with stable deps, or compute data outside the component.
+**Detection:** Grep for `Math.random()` in `.tsx` files. Any match inside a component body (not wrapped in `useMemo`) is a bug.
+
 ### Generic Styling
 Default Bootstrap/generic styling looks amateur. Use professional color palettes with proper contrast ratios.
 

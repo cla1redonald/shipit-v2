@@ -21,6 +21,8 @@
 - Silently swallowing API errors (`data.posts || []` hides failures)
 - Using future/incorrect model names with AI APIs — fails silently
 - Skipping empty states and loading states
+- Hardcoding color values (Tailwind grays, hex codes) instead of CSS variable theme tokens — causes dark/light mode breakage
+- Using `Math.random()` or non-deterministic data in React render paths — causes visual flickering on every re-render; memoize or use stable seeds
 
 ## Type Propagation Rule
 When adding a required field to a type, grep entire codebase. The missed places are always: migration functions, test fixtures, factory functions, mock data, seed scripts, default objects.
