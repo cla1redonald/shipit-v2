@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../src/stores/authStore';
@@ -31,51 +31,51 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="px-4 pt-6 pb-8 gap-4">
-        <Text className="text-2xl font-bold text-gray-900 px-2">Profile</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.pageTitle}>Profile</Text>
 
         {/* User info */}
         <Card>
-          <Text className="text-sm text-gray-500">Email</Text>
-          <Text className="text-base font-medium text-gray-900">{user?.email}</Text>
-          <Text className="text-xs text-gray-400 mt-1">
+          <Text style={styles.emailLabel}>Email</Text>
+          <Text style={styles.emailValue}>{user?.email}</Text>
+          <Text style={styles.scanCount}>
             Total scans: {history.length}
           </Text>
         </Card>
 
         {/* Dietary Profile */}
         <Card>
-          <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-base font-semibold text-gray-900">Dietary Profile</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Dietary Profile</Text>
             <TouchableOpacity onPress={() => router.push('/(tabs)/profile/edit-allergies')}>
-              <Text className="text-sm text-brand font-medium">Edit</Text>
+              <Text style={styles.editLink}>Edit</Text>
             </TouchableOpacity>
           </View>
 
-          <Text className="text-sm font-medium text-gray-500 mb-1.5">Allergies</Text>
+          <Text style={styles.fieldLabel}>Allergies</Text>
           {profile?.allergies && profile.allergies.length > 0 ? (
-            <View className="flex-row flex-wrap gap-1.5 mb-3">
+            <View style={styles.chipRow}>
               {profile.allergies.map((a) => (
-                <View key={a} className="bg-avoid-light px-2.5 py-0.5 rounded-full">
-                  <Text className="text-xs text-avoid-dark font-medium">
+                <View key={a} style={styles.allergyChip}>
+                  <Text style={styles.allergyChipText}>
                     {ALLERGEN_LABELS[a] || a}
                   </Text>
                 </View>
               ))}
             </View>
           ) : (
-            <Text className="text-sm text-gray-400 mb-3">None</Text>
+            <Text style={styles.noneText}>None</Text>
           )}
 
-          <Text className="text-sm font-medium text-gray-500 mb-1.5">Diet Types</Text>
+          <Text style={styles.fieldLabel}>Diet Types</Text>
           {profile?.dietTypes && profile.dietTypes.length > 0 ? (
-            <View className="flex-row flex-wrap gap-1.5 mb-3">
+            <View style={styles.chipRow}>
               {profile.dietTypes.map((d) => {
                 const opt = DIET_OPTIONS.find((o) => o.value === d);
                 return (
-                  <View key={d} className="bg-brand-light px-2.5 py-0.5 rounded-full">
-                    <Text className="text-xs text-brand-dark font-medium">
+                  <View key={d} style={styles.dietChip}>
+                    <Text style={styles.dietChipText}>
                       {opt?.label || d}
                     </Text>
                   </View>
@@ -83,14 +83,14 @@ export default function ProfileScreen() {
               })}
             </View>
           ) : (
-            <Text className="text-sm text-gray-400 mb-3">None</Text>
+            <Text style={styles.noneText}>None</Text>
           )}
 
           {profile?.customRestrictions && profile.customRestrictions.length > 0 && (
             <>
-              <Text className="text-sm font-medium text-gray-500 mb-1">Custom</Text>
+              <Text style={styles.customLabel}>Custom</Text>
               {profile.customRestrictions.map((r, i) => (
-                <Text key={i} className="text-sm text-gray-600">• {r}</Text>
+                <Text key={i} style={styles.customItem}>• {r}</Text>
               ))}
             </>
           )}
@@ -98,7 +98,7 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <Card>
-          <Text className="text-base font-semibold text-gray-900 mb-3">Settings</Text>
+          <Text style={styles.settingsTitle}>Settings</Text>
           {[
             { label: 'About MenuMind', route: '/(tabs)/profile/about' },
             { label: 'Privacy Policy', route: '/(tabs)/profile/privacy-policy' },
@@ -106,29 +106,170 @@ export default function ProfileScreen() {
           ].map((item) => (
             <TouchableOpacity
               key={item.label}
-              className="py-3 border-b border-gray-50 flex-row items-center justify-between"
+              style={styles.settingsItem}
               onPress={() => router.push(item.route as any)}
             >
-              <Text className="text-base text-gray-700">{item.label}</Text>
-              <Text className="text-gray-400">→</Text>
+              <Text style={styles.settingsItemText}>{item.label}</Text>
+              <Text style={styles.settingsArrow}>→</Text>
             </TouchableOpacity>
           ))}
 
           <TouchableOpacity
-            className="py-3 flex-row items-center justify-between"
+            style={styles.deleteItem}
             onPress={() => router.push('/(tabs)/profile/delete-account')}
           >
-            <Text className="text-base text-avoid">Delete Account</Text>
-            <Text className="text-avoid">→</Text>
+            <Text style={styles.deleteItemText}>Delete Account</Text>
+            <Text style={styles.deleteArrow}>→</Text>
           </TouchableOpacity>
         </Card>
 
         <Button title="Sign Out" variant="secondary" onPress={handleSignOut} />
 
-        <Text className="text-xs text-gray-400 text-center mt-2">
+        <Text style={styles.versionText}>
           MenuMind v1.0.0
         </Text>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 32,
+    gap: 16,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    paddingHorizontal: 8,
+  },
+  emailLabel: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  emailValue: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#111827',
+  },
+  scanCount: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginTop: 4,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  editLink: {
+    fontSize: 14,
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6B7280',
+    marginBottom: 6,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 12,
+  },
+  allergyChip: {
+    backgroundColor: '#FEE2E2',
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: 9999,
+  },
+  allergyChipText: {
+    fontSize: 12,
+    color: '#991B1B',
+    fontWeight: '500',
+  },
+  dietChip: {
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: 9999,
+  },
+  dietChipText: {
+    fontSize: 12,
+    color: '#065F46',
+    fontWeight: '500',
+  },
+  noneText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginBottom: 12,
+  },
+  customLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  customItem: {
+    fontSize: 14,
+    color: '#4B5563',
+  },
+  settingsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  settingsItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F9FAFB',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  settingsItemText: {
+    fontSize: 16,
+    color: '#374151',
+  },
+  settingsArrow: {
+    color: '#9CA3AF',
+  },
+  deleteItem: {
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  deleteItemText: {
+    fontSize: 16,
+    color: '#EF4444',
+  },
+  deleteArrow: {
+    color: '#EF4444',
+  },
+  versionText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+});

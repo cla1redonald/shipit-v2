@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -29,16 +29,16 @@ export default function DietTypeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-8" contentContainerClassName="pb-8">
-        <Text className="text-xs font-medium text-brand bg-brand-light px-2 py-0.5 rounded-full self-start mb-2">
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.stepBadge}>
           Step 2 of 5
         </Text>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-2">
+        <Text style={styles.title}>
           Do you follow a specific diet?
         </Text>
-        <Text className="text-base text-gray-500 mb-6">
+        <Text style={styles.subtitle}>
           Optional. Select one or more.
         </Text>
 
@@ -48,15 +48,15 @@ export default function DietTypeScreen() {
           onToggle={handleToggle}
         />
 
-        <View className="mt-4 mb-8">
+        <View style={styles.descriptionsContainer}>
           {DIET_OPTIONS.filter((d) => draftProfile.dietTypes.includes(d.value)).map((d) => (
-            <Text key={d.value} className="text-sm text-gray-500 mt-1">
+            <Text key={d.value} style={styles.descriptionText}>
               {d.label}: {d.description}
             </Text>
           ))}
         </View>
 
-        <View className="gap-3">
+        <View style={styles.buttonGroup}>
           <Button title="Next" onPress={handleNext} />
           <Button
             title="Back"
@@ -68,3 +68,53 @@ export default function DietTypeScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  stepBadge: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#10B981',
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 9999,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 24,
+  },
+  descriptionsContainer: {
+    marginTop: 16,
+    marginBottom: 32,
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  buttonGroup: {
+    gap: 12,
+  },
+});

@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 
 const messages = [
@@ -20,14 +20,37 @@ export function LoadingOverlay() {
   }, []);
 
   return (
-    <View className="flex-1 items-center justify-center bg-white p-8">
+    <View style={styles.container}>
       <ActivityIndicator size="large" color="#10B981" />
-      <Text className="text-lg font-medium text-gray-900 mt-6 text-center">
+      <Text style={styles.message}>
         {messages[messageIndex]}
       </Text>
-      <Text className="text-sm text-gray-500 mt-2 text-center">
+      <Text style={styles.subtitle}>
         Usually takes 3-5 seconds
       </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 32,
+  },
+  message: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#111827',
+    marginTop: 24,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+});

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
@@ -38,7 +38,7 @@ export default function DishDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
+      <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#10B981" />
       </SafeAreaView>
     );
@@ -46,67 +46,67 @@ export default function DishDetailScreen() {
 
   if (!item) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center px-6">
-        <Text className="text-lg text-gray-500">Dish not found</Text>
-        <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-brand font-medium">Go back</Text>
+      <SafeAreaView style={styles.notFoundContainer}>
+        <Text style={styles.notFoundText}>Dish not found</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.goBackButton}>
+          <Text style={styles.goBackText}>Go back</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
-        <View className="w-10" />
-        <View className="w-10 h-1 bg-gray-300 rounded-full" />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topBar}>
+        <View style={styles.topBarSpacer} />
+        <View style={styles.dragHandle} />
         <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-brand font-medium">Done</Text>
+          <Text style={styles.doneText}>Done</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-6" contentContainerClassName="pb-8">
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {/* Dish name */}
-        <Text className="text-2xl font-bold text-gray-900 mb-1">{item.dishName}</Text>
+        <Text style={styles.dishName}>{item.dishName}</Text>
         {item.originalName && (
-          <Text className="text-base text-gray-500 mb-3">{item.originalName}</Text>
+          <Text style={styles.originalName}>{item.originalName}</Text>
         )}
 
         {/* Classification & confidence */}
-        <View className="flex-row items-center gap-3 mb-6">
+        <View style={styles.badgeRow}>
           <ClassificationBadge classification={item.classification} size="lg" />
           <ConfidenceBadge confidence={item.confidence} />
         </View>
 
         {/* Allergens detected */}
         {item.allergensDetected.length > 0 && (
-          <View className="bg-avoid-light rounded-xl p-4 mb-4">
-            <Text className="text-sm font-semibold text-avoid-dark mb-2">
+          <View style={styles.allergensBox}>
+            <Text style={styles.allergensTitle}>
               Allergens Detected
             </Text>
             {item.allergensDetected.map((allergen, i) => (
-              <Text key={i} className="text-sm text-avoid-dark">• {allergen}</Text>
+              <Text key={i} style={styles.allergenItem}>• {allergen}</Text>
             ))}
           </View>
         )}
 
         {/* Reasoning */}
         {item.reasoning && (
-          <View className="mb-4">
-            <Text className="text-sm font-semibold text-gray-700 mb-1">
+          <View style={styles.reasoningSection}>
+            <Text style={styles.reasoningTitle}>
               Why this classification
             </Text>
-            <Text className="text-sm text-gray-600 leading-5">{item.reasoning}</Text>
+            <Text style={styles.reasoningBody}>{item.reasoning}</Text>
           </View>
         )}
 
         {/* Likely ingredients */}
         {item.likelyIngredients.length > 0 && (
-          <View className="mb-4">
-            <Text className="text-sm font-semibold text-gray-700 mb-1">
+          <View style={styles.ingredientsSection}>
+            <Text style={styles.ingredientsTitle}>
               Likely Ingredients
             </Text>
-            <View className="flex-row flex-wrap gap-1.5">
+            <View style={styles.ingredientsList}>
               {item.likelyIngredients.map((ingredient, i) => {
                 const isAllergen = item.allergensDetected.some(
                   (a) => ingredient.toLowerCase().includes(a.toLowerCase())
@@ -114,14 +114,16 @@ export default function DishDetailScreen() {
                 return (
                   <View
                     key={i}
-                    className={`px-2.5 py-1 rounded-full ${
-                      isAllergen ? 'bg-avoid-light' : 'bg-gray-100'
-                    }`}
+                    style={[
+                      styles.ingredientChip,
+                      isAllergen ? styles.ingredientChipAllergen : styles.ingredientChipNormal,
+                    ]}
                   >
                     <Text
-                      className={`text-xs font-medium ${
-                        isAllergen ? 'text-avoid-dark' : 'text-gray-600'
-                      }`}
+                      style={[
+                        styles.ingredientChipText,
+                        isAllergen ? styles.ingredientChipTextAllergen : styles.ingredientChipTextNormal,
+                      ]}
                     >
                       {ingredient}
                     </Text>
@@ -134,24 +136,24 @@ export default function DishDetailScreen() {
 
         {/* Modification suggestions */}
         {item.modificationSuggestions.length > 0 && (
-          <View className="bg-brand-light rounded-xl p-4 mb-4">
-            <Text className="text-sm font-semibold text-brand-dark mb-2">
+          <View style={styles.modificationsBox}>
+            <Text style={styles.modificationsTitle}>
               You could ask for...
             </Text>
             {item.modificationSuggestions.map((mod, i) => (
-              <Text key={i} className="text-sm text-brand-dark mb-1">• {mod}</Text>
+              <Text key={i} style={styles.modificationItem}>• {mod}</Text>
             ))}
           </View>
         )}
 
         {/* Server prompts */}
         {item.serverPrompts.length > 0 && (
-          <View className="bg-caution-light rounded-xl p-4 mb-4">
-            <Text className="text-sm font-semibold text-caution-dark mb-2">
+          <View style={styles.serverPromptsBox}>
+            <Text style={styles.serverPromptsTitle}>
               Ask your server...
             </Text>
             {item.serverPrompts.map((prompt, i) => (
-              <Text key={i} className="text-sm text-caution-dark mb-1">• {prompt}</Text>
+              <Text key={i} style={styles.serverPromptItem}>• {prompt}</Text>
             ))}
           </View>
         )}
@@ -161,3 +163,178 @@ export default function DishDetailScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notFoundContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  notFoundText: {
+    fontSize: 18,
+    color: '#6B7280',
+  },
+  goBackButton: {
+    marginTop: 16,
+  },
+  goBackText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  topBarSpacer: {
+    width: 40,
+  },
+  dragHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#D1D5DB',
+    borderRadius: 9999,
+  },
+  doneText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  dishName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  originalName: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 12,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 24,
+  },
+  allergensBox: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  allergensTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#991B1B',
+    marginBottom: 8,
+  },
+  allergenItem: {
+    fontSize: 14,
+    color: '#991B1B',
+  },
+  reasoningSection: {
+    marginBottom: 16,
+  },
+  reasoningTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 4,
+  },
+  reasoningBody: {
+    fontSize: 14,
+    color: '#4B5563',
+    lineHeight: 20,
+  },
+  ingredientsSection: {
+    marginBottom: 16,
+  },
+  ingredientsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 4,
+  },
+  ingredientsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  ingredientChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 9999,
+  },
+  ingredientChipAllergen: {
+    backgroundColor: '#FEE2E2',
+  },
+  ingredientChipNormal: {
+    backgroundColor: '#F3F4F6',
+  },
+  ingredientChipText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  ingredientChipTextAllergen: {
+    color: '#991B1B',
+  },
+  ingredientChipTextNormal: {
+    color: '#4B5563',
+  },
+  modificationsBox: {
+    backgroundColor: '#D1FAE5',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  modificationsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#065F46',
+    marginBottom: 8,
+  },
+  modificationItem: {
+    fontSize: 14,
+    color: '#065F46',
+    marginBottom: 4,
+  },
+  serverPromptsBox: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  serverPromptsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#92400E',
+    marginBottom: 8,
+  },
+  serverPromptItem: {
+    fontSize: 14,
+    color: '#92400E',
+    marginBottom: 4,
+  },
+});

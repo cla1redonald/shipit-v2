@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -21,21 +21,21 @@ export default function CustomRestrictionsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-8" contentContainerClassName="pb-8">
-        <Text className="text-xs font-medium text-brand bg-brand-light px-2 py-0.5 rounded-full self-start mb-2">
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.stepBadge}>
           Step 4 of 5
         </Text>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-2">
+        <Text style={styles.title}>
           Anything else we should know?
         </Text>
-        <Text className="text-base text-gray-500 mb-6">
+        <Text style={styles.subtitle}>
           Add any other dietary needs or preferences.
         </Text>
 
         <TextInput
-          className="w-full border border-gray-200 rounded-xl px-4 py-4 text-base bg-gray-50 min-h-[120px]"
+          style={styles.textInput}
           placeholder="e.g., No cilantro, avoid spicy food, no raw fish..."
           value={text}
           onChangeText={setText}
@@ -43,7 +43,7 @@ export default function CustomRestrictionsScreen() {
           textAlignVertical="top"
         />
 
-        <View className="gap-3 mt-8">
+        <View style={styles.buttonGroup}>
           <Button title="Next" onPress={handleNext} />
           <Button
             title="Skip"
@@ -59,3 +59,56 @@ export default function CustomRestrictionsScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  stepBadge: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#10B981',
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 9999,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 24,
+  },
+  textInput: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    fontSize: 16,
+    backgroundColor: '#F9FAFB',
+    minHeight: 120,
+  },
+  buttonGroup: {
+    gap: 12,
+    marginTop: 32,
+  },
+});

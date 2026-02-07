@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -31,21 +31,21 @@ export default function SignInScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        style={styles.flex1}
       >
         <ScrollView
-          className="flex-1"
-          contentContainerClassName="px-6 pt-12 pb-8 flex-grow justify-between"
+          style={styles.flex1}
+          contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
           <View>
-            <Text className="text-3xl font-bold text-gray-900 mb-2">Welcome back</Text>
-            <Text className="text-base text-gray-500 mb-8">Sign in to your account</Text>
+            <Text style={styles.title}>Welcome back</Text>
+            <Text style={styles.subtitle}>Sign in to your account</Text>
 
-            <View className="gap-4">
+            <View style={styles.inputGroup}>
               <Input
                 label="Email"
                 value={email}
@@ -66,7 +66,7 @@ export default function SignInScreen() {
             </View>
 
             {error ? (
-              <Text className="text-avoid text-sm mt-3">{error}</Text>
+              <Text style={styles.errorText}>{error}</Text>
             ) : null}
 
             <Button
@@ -77,7 +77,7 @@ export default function SignInScreen() {
             />
           </View>
 
-          <View className="gap-3 mt-8">
+          <View style={styles.buttonGroup}>
             <Button title="Sign In" onPress={handleSignIn} loading={loading} />
             <Button
               title="Back"
@@ -90,3 +90,43 @@ export default function SignInScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  flex1: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 32,
+    flexGrow: 1,
+    justifyContent: 'space-between',
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 32,
+  },
+  inputGroup: {
+    gap: 16,
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 14,
+    marginTop: 12,
+  },
+  buttonGroup: {
+    gap: 12,
+    marginTop: 32,
+  },
+});

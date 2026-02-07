@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -31,24 +31,24 @@ export default function ForgotPasswordScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1 px-6 pt-12"
+        style={styles.keyboardView}
       >
-        <Text className="text-3xl font-bold text-gray-900 mb-2">Reset password</Text>
-        <Text className="text-base text-gray-500 mb-8">
+        <Text style={styles.title}>Reset password</Text>
+        <Text style={styles.subtitle}>
           Enter your email and we'll send you a reset link.
         </Text>
 
         {sent ? (
-          <View className="bg-brand-light rounded-2xl p-6">
-            <Text className="text-brand-dark text-base font-medium text-center">
+          <View style={styles.sentContainer}>
+            <Text style={styles.sentText}>
               Check your email for a reset link.
             </Text>
           </View>
         ) : (
-          <View className="gap-4">
+          <View style={styles.formGroup}>
             <Input
               label="Email"
               value={email}
@@ -57,7 +57,7 @@ export default function ForgotPasswordScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-            {error ? <Text className="text-avoid text-sm">{error}</Text> : null}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
             <Button title="Send Reset Link" onPress={handleReset} loading={loading} />
           </View>
         )}
@@ -71,3 +71,44 @@ export default function ForgotPasswordScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  keyboardView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 48,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 32,
+  },
+  sentContainer: {
+    backgroundColor: '#D1FAE5',
+    borderRadius: 16,
+    padding: 24,
+  },
+  sentText: {
+    color: '#065F46',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  formGroup: {
+    gap: 16,
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 14,
+  },
+});

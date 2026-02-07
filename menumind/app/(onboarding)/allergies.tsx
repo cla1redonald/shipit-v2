@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -30,18 +30,18 @@ export default function AllergiesScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-8" contentContainerClassName="pb-8">
-        <View className="flex-row items-center gap-2 mb-2">
-          <Text className="text-xs font-medium text-brand bg-brand-light px-2 py-0.5 rounded-full">
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.stepRow}>
+          <Text style={styles.stepBadge}>
             Step 1 of 5
           </Text>
         </View>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-2">
+        <Text style={styles.title}>
           What are you allergic to?
         </Text>
-        <Text className="text-base text-gray-500 mb-6">
+        <Text style={styles.subtitle}>
           Select all that apply. You can change these later.
         </Text>
 
@@ -51,9 +51,9 @@ export default function AllergiesScreen() {
           onToggle={handleToggle}
         />
 
-        <View className="flex-row items-center gap-2 mt-6 mb-8">
+        <View style={styles.customInputRow}>
           <TextInput
-            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50"
+            style={styles.textInput}
             placeholder="Add another allergen..."
             value={customAllergen}
             onChangeText={setCustomAllergen}
@@ -61,30 +61,30 @@ export default function AllergiesScreen() {
             returnKeyType="done"
           />
           <TouchableOpacity
-            className="bg-brand px-4 py-3 rounded-xl"
+            style={styles.addButton}
             onPress={addCustom}
             disabled={!customAllergen.trim()}
           >
-            <Text className="text-white font-semibold">Add</Text>
+            <Text style={styles.addButtonText}>Add</Text>
           </TouchableOpacity>
         </View>
 
         {draftProfile.allergies.filter(
           (a) => !COMMON_ALLERGENS.some((c) => c.value === a)
         ).length > 0 && (
-          <View className="mb-6">
-            <Text className="text-sm font-medium text-gray-600 mb-2">Custom allergens:</Text>
-            <View className="flex-row flex-wrap gap-2">
+          <View style={styles.customSection}>
+            <Text style={styles.customLabel}>Custom allergens:</Text>
+            <View style={styles.chipRow}>
               {draftProfile.allergies
                 .filter((a) => !COMMON_ALLERGENS.some((c) => c.value === a))
                 .map((a) => (
                   <TouchableOpacity
                     key={a}
-                    className="bg-brand border border-brand px-3 py-1.5 rounded-full flex-row items-center gap-1"
+                    style={styles.customChip}
                     onPress={() => handleToggle(a)}
                   >
-                    <Text className="text-white text-sm">{a}</Text>
-                    <Text className="text-white text-xs">✕</Text>
+                    <Text style={styles.customChipText}>{a}</Text>
+                    <Text style={styles.customChipClose}>✕</Text>
                   </TouchableOpacity>
                 ))}
             </View>
@@ -99,3 +99,104 @@ export default function AllergiesScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  stepBadge: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#10B981',
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 9999,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 24,
+  },
+  customInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  textInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: '#F9FAFB',
+  },
+  addButton: {
+    backgroundColor: '#10B981',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  customSection: {
+    marginBottom: 24,
+  },
+  customLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4B5563',
+    marginBottom: 8,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  customChip: {
+    backgroundColor: '#10B981',
+    borderWidth: 1,
+    borderColor: '#10B981',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 9999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  customChipText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+  },
+  customChipClose: {
+    color: '#FFFFFF',
+    fontSize: 12,
+  },
+});

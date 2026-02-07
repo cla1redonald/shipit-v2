@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -16,45 +16,46 @@ export default function DisclaimerScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-8" contentContainerClassName="pb-8">
-        <View className="w-16 h-16 bg-caution-light rounded-2xl items-center justify-center mb-6">
-          <Text className="text-3xl">⚠️</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.iconContainer}>
+          <Text style={styles.iconText}>⚠️</Text>
         </View>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-4">
+        <Text style={styles.title}>
           Important Health Information
         </Text>
 
-        <View className="bg-gray-50 rounded-2xl p-5 mb-6">
-          <Text className="text-base text-gray-700 leading-6">
+        <View style={styles.infoBox}>
+          <Text style={styles.bodyText}>
             MenuMind uses AI to analyze restaurant menus. It is an informational aid,{' '}
-            <Text className="font-bold">NOT a medical device</Text>.
+            <Text style={styles.boldText}>NOT a medical device</Text>.
           </Text>
-          <Text className="text-base text-gray-700 leading-6 mt-3">
+          <Text style={styles.bodyTextSpaced}>
             AI analysis may contain errors. Hidden ingredients, cross-contamination, and kitchen practices cannot be detected from a menu photo alone.
           </Text>
-          <Text className="text-base text-gray-700 leading-6 mt-3 font-semibold">
+          <Text style={[styles.bodyTextSpaced, styles.semiboldText]}>
             Always confirm ingredients with your server, especially for severe allergies.
           </Text>
-          <Text className="text-base text-gray-700 leading-6 mt-3">
+          <Text style={styles.bodyTextSpaced}>
             MenuMind cannot guarantee the accuracy of its analysis and is not liable for allergic reactions or adverse health events.
           </Text>
         </View>
 
         <TouchableOpacity
-          className="flex-row items-start gap-3 mb-8"
+          style={styles.checkboxRow}
           onPress={() => setAccepted(!accepted)}
           activeOpacity={0.7}
         >
           <View
-            className={`w-6 h-6 rounded-md border-2 items-center justify-center mt-0.5 ${
-              accepted ? 'bg-brand border-brand' : 'border-gray-300'
-            }`}
+            style={[
+              styles.checkbox,
+              accepted ? styles.checkboxChecked : styles.checkboxUnchecked,
+            ]}
           >
-            {accepted && <Text className="text-white text-xs font-bold">✓</Text>}
+            {accepted && <Text style={styles.checkmark}>✓</Text>}
           </View>
-          <Text className="flex-1 text-sm text-gray-700 leading-5">
+          <Text style={styles.checkboxLabel}>
             I understand that MenuMind is an aid and not a substitute for confirming
             ingredients with restaurant staff.
           </Text>
@@ -69,3 +70,92 @@ export default function DisclaimerScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#FEF3C7',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  iconText: {
+    fontSize: 30,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  infoBox: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+  },
+  bodyText: {
+    fontSize: 16,
+    color: '#374151',
+    lineHeight: 24,
+  },
+  bodyTextSpaced: {
+    fontSize: 16,
+    color: '#374151',
+    lineHeight: 24,
+    marginTop: 12,
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  semiboldText: {
+    fontWeight: '600',
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 32,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: '#10B981',
+    borderColor: '#10B981',
+  },
+  checkboxUnchecked: {
+    borderColor: '#D1D5DB',
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  checkboxLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+  },
+});

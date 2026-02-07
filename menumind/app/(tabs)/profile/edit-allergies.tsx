@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -42,13 +42,13 @@ export default function EditAllergiesScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-6" contentContainerClassName="pb-8">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-brand font-medium">← Back</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-6">Edit Allergies</Text>
+        <Text style={styles.title}>Edit Allergies</Text>
 
         <ChipSelector
           options={COMMON_ALLERGENS}
@@ -56,16 +56,16 @@ export default function EditAllergiesScreen() {
           onToggle={handleToggle}
         />
 
-        <View className="flex-row items-center gap-2 mt-6 mb-8">
+        <View style={styles.customRow}>
           <TextInput
-            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-base bg-gray-50"
+            style={styles.customInput}
             placeholder="Add another..."
             value={customAllergen}
             onChangeText={setCustomAllergen}
             onSubmitEditing={addCustom}
           />
-          <TouchableOpacity className="bg-brand px-4 py-3 rounded-xl" onPress={addCustom}>
-            <Text className="text-white font-semibold">Add</Text>
+          <TouchableOpacity style={styles.addButton} onPress={addCustom}>
+            <Text style={styles.addButtonText}>Add</Text>
           </TouchableOpacity>
         </View>
 
@@ -74,3 +74,58 @@ export default function EditAllergiesScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  backButton: {
+    marginBottom: 16,
+  },
+  backText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 24,
+  },
+  customRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  customInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: '#F9FAFB',
+  },
+  addButton: {
+    backgroundColor: '#10B981',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+});

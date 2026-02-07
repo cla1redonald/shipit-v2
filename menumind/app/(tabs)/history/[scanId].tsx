@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
@@ -40,20 +40,20 @@ export default function HistoryDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
+      <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#10B981" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <View className="bg-white px-6 pt-4 pb-3 border-b border-gray-100">
-        <TouchableOpacity onPress={() => router.back()} className="mb-2">
-          <Text className="text-brand font-medium">← Back</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <Text className="text-sm text-gray-500 mb-2">
+        <Text style={styles.summaryText}>
           {counts.safe} safe, {counts.caution} caution, {counts.avoid} avoid
         </Text>
 
@@ -61,15 +61,17 @@ export default function HistoryDetailScreen() {
           {filters.map((f) => (
             <TouchableOpacity
               key={f.value}
-              className={`px-4 py-2 rounded-full mr-2 ${
-                filter === f.value ? 'bg-brand' : 'bg-gray-100'
-              }`}
+              style={[
+                styles.filterChip,
+                filter === f.value ? styles.filterChipActive : styles.filterChipInactive,
+              ]}
               onPress={() => setFilter(f.value)}
             >
               <Text
-                className={`text-sm font-medium ${
-                  filter === f.value ? 'text-white' : 'text-gray-600'
-                }`}
+                style={[
+                  styles.filterChipText,
+                  filter === f.value ? styles.filterChipTextActive : styles.filterChipTextInactive,
+                ]}
               >
                 {f.label}
               </Text>
@@ -78,7 +80,7 @@ export default function HistoryDetailScreen() {
         </ScrollView>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-3" contentContainerClassName="pb-4 gap-3">
+      <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
         {filteredItems.map((item) => (
           <DishCard
             key={item.id}
@@ -97,3 +99,67 @@ export default function HistoryDetailScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  header: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  backButton: {
+    marginBottom: 8,
+  },
+  backText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  summaryText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 8,
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    marginRight: 8,
+  },
+  filterChipActive: {
+    backgroundColor: '#10B981',
+  },
+  filterChipInactive: {
+    backgroundColor: '#F3F4F6',
+  },
+  filterChipText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  filterChipTextActive: {
+    color: '#FFFFFF',
+  },
+  filterChipTextInactive: {
+    color: '#4B5563',
+  },
+  list: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  listContent: {
+    paddingBottom: 16,
+    gap: 12,
+  },
+});

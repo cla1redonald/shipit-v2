@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -31,32 +31,36 @@ export default function EditSeverityScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-6" contentContainerClassName="pb-8">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-brand font-medium">← Back</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-6">Edit Severity Levels</Text>
+        <Text style={styles.title}>Edit Severity Levels</Text>
 
-        <View className="gap-4 mb-8">
+        <View style={styles.allergenList}>
           {draftProfile.allergies.map((allergen) => (
-            <View key={allergen} className="bg-gray-50 rounded-xl p-4">
-              <Text className="text-base font-semibold text-gray-900 mb-3">
+            <View key={allergen} style={styles.allergenCard}>
+              <Text style={styles.allergenName}>
                 {ALLERGEN_LABELS[allergen] || allergen}
               </Text>
-              <View className="flex-row gap-2">
+              <View style={styles.optionsRow}>
                 {SEVERITY_OPTIONS.map((option) => {
                   const isSelected = draftProfile.severityLevels[allergen] === option.value;
                   return (
                     <TouchableOpacity
                       key={option.value}
-                      className={`flex-1 py-2 rounded-lg border items-center ${
-                        isSelected ? 'bg-brand border-brand' : 'bg-white border-gray-200'
-                      }`}
+                      style={[
+                        styles.optionButton,
+                        isSelected ? styles.optionButtonSelected : styles.optionButtonUnselected,
+                      ]}
                       onPress={() => setDraftSeverity(allergen, option.value)}
                     >
-                      <Text className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                      <Text style={[
+                        styles.optionText,
+                        isSelected ? styles.optionTextSelected : styles.optionTextUnselected,
+                      ]}>
                         {option.label}
                       </Text>
                     </TouchableOpacity>
@@ -72,3 +76,75 @@ export default function EditSeverityScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  backButton: {
+    marginBottom: 16,
+  },
+  backText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 24,
+  },
+  allergenList: {
+    gap: 16,
+    marginBottom: 32,
+  },
+  allergenCard: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 16,
+  },
+  allergenName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  optionsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  optionButton: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  optionButtonSelected: {
+    backgroundColor: '#10B981',
+    borderColor: '#10B981',
+  },
+  optionButtonUnselected: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E5E7EB',
+  },
+  optionText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  optionTextSelected: {
+    color: '#FFFFFF',
+  },
+  optionTextUnselected: {
+    color: '#6B7280',
+  },
+});

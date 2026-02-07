@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -34,13 +34,13 @@ export default function EditDietScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-6" contentContainerClassName="pb-8">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-brand font-medium">← Back</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-6">Edit Diet Types</Text>
+        <Text style={styles.title}>Edit Diet Types</Text>
 
         <ChipSelector
           options={DIET_OPTIONS.map((d) => ({ value: d.value, label: d.label }))}
@@ -48,10 +48,41 @@ export default function EditDietScreen() {
           onToggle={handleToggle}
         />
 
-        <View className="mt-8">
+        <View style={styles.saveWrapper}>
           <Button title="Save Changes" onPress={handleSave} loading={loading} />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  backButton: {
+    marginBottom: 16,
+  },
+  backText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 24,
+  },
+  saveWrapper: {
+    marginTop: 32,
+  },
+});

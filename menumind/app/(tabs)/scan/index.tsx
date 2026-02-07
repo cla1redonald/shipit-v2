@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -22,22 +22,22 @@ export default function ScanHomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-      <View className="flex-1 px-6 pt-8">
-        <Text className="text-2xl font-bold text-gray-900 mb-1">Ready to scan</Text>
-        <Text className="text-base text-gray-500 mb-8">
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Ready to scan</Text>
+        <Text style={styles.subtitle}>
           Point your camera at any menu to get started.
         </Text>
 
-        <View className="flex-1 items-center justify-center">
-          <View className="w-40 h-40 bg-brand-light rounded-full items-center justify-center mb-6">
-            <Text className="text-6xl">🍽️</Text>
+        <View style={styles.centerArea}>
+          <View style={styles.iconCircle}>
+            <Text style={styles.iconEmoji}>🍽️</Text>
           </View>
           <Button
             title="Scan Menu"
             onPress={() => router.push('/(tabs)/scan/camera')}
           />
-          <View className="mt-3 w-full">
+          <View style={styles.buttonWrapper}>
             <Button
               title="Choose from Photos"
               variant="outline"
@@ -47,12 +47,12 @@ export default function ScanHomeScreen() {
         </View>
 
         {history.length > 0 && (
-          <Card className="mb-4" onPress={() => router.push('/(tabs)/history')}>
-            <Text className="text-sm font-medium text-gray-500">Most Recent Scan</Text>
-            <Text className="text-base font-semibold text-gray-900 mt-1">
+          <Card style={styles.recentCard} onPress={() => router.push('/(tabs)/history')}>
+            <Text style={styles.recentLabel}>Most Recent Scan</Text>
+            <Text style={styles.recentName}>
               {history[0].restaurantName || 'Menu scan'}
             </Text>
-            <Text className="text-sm text-gray-500 mt-0.5">
+            <Text style={styles.recentCount}>
               {history[0].itemCount} dishes analyzed
             </Text>
           </Card>
@@ -62,3 +62,66 @@ export default function ScanHomeScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 32,
+  },
+  centerArea: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconCircle: {
+    width: 160,
+    height: 160,
+    backgroundColor: '#D1FAE5',
+    borderRadius: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  iconEmoji: {
+    fontSize: 60,
+  },
+  buttonWrapper: {
+    marginTop: 12,
+    width: '100%',
+  },
+  recentCard: {
+    marginBottom: 16,
+  },
+  recentLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6B7280',
+  },
+  recentName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginTop: 4,
+  },
+  recentCount: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+});

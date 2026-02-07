@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfileStore } from '../../src/stores/profileStore';
@@ -6,11 +6,17 @@ import { ALLERGEN_LABELS } from '../../src/constants';
 import { Button } from '../../src/components/ui';
 import type { SeverityLevel } from '../../src/types';
 
-const SEVERITY_OPTIONS: { value: SeverityLevel; label: string; color: string }[] = [
-  { value: 'mild', label: 'Mild', color: 'bg-caution-light text-caution-dark border-caution' },
-  { value: 'moderate', label: 'Moderate', color: 'bg-orange-100 text-orange-800 border-orange-400' },
-  { value: 'severe', label: 'Severe', color: 'bg-avoid-light text-avoid-dark border-avoid' },
+const SEVERITY_OPTIONS: { value: SeverityLevel; label: string }[] = [
+  { value: 'mild', label: 'Mild' },
+  { value: 'moderate', label: 'Moderate' },
+  { value: 'severe', label: 'Severe' },
 ];
+
+const severitySelectedStyles: Record<SeverityLevel, { bg: string; text: string; border: string }> = {
+  mild: { bg: '#FEF3C7', text: '#92400E', border: '#F59E0B' },
+  moderate: { bg: '#FFEDD5', text: '#9A3412', border: '#FB923C' },
+  severe: { bg: '#FEE2E2', text: '#991B1B', border: '#EF4444' },
+};
 
 export default function SeverityScreen() {
   const router = useRouter();
@@ -18,41 +24,48 @@ export default function SeverityScreen() {
   const setDraftSeverity = useProfileStore((s) => s.setDraftSeverity);
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-8" contentContainerClassName="pb-8">
-        <Text className="text-xs font-medium text-brand bg-brand-light px-2 py-0.5 rounded-full self-start mb-2">
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.stepBadge}>
           Step 3 of 5
         </Text>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-2">
+        <Text style={styles.title}>
           How severe are your allergies?
         </Text>
-        <Text className="text-base text-gray-500 mb-6">
+        <Text style={styles.subtitle}>
           This helps us calibrate our warnings.
         </Text>
 
-        <View className="gap-4 mb-8">
+        <View style={styles.allergenList}>
           {draftProfile.allergies.map((allergen) => (
-            <View key={allergen} className="bg-gray-50 rounded-xl p-4">
-              <Text className="text-base font-semibold text-gray-900 mb-3">
+            <View key={allergen} style={styles.allergenCard}>
+              <Text style={styles.allergenName}>
                 {ALLERGEN_LABELS[allergen] || allergen}
               </Text>
-              <View className="flex-row gap-2">
+              <View style={styles.optionsRow}>
                 {SEVERITY_OPTIONS.map((option) => {
                   const isSelected = draftProfile.severityLevels[allergen] === option.value;
+                  const selectedColors = severitySelectedStyles[option.value];
                   return (
                     <TouchableOpacity
                       key={option.value}
-                      className={`flex-1 py-2 rounded-lg border items-center ${
-                        isSelected ? option.color : 'bg-white border-gray-200'
-                      }`}
+                      style={[
+                        styles.severityOption,
+                        isSelected
+                          ? { backgroundColor: selectedColors.bg, borderColor: selectedColors.border }
+                          : styles.severityOptionUnselected,
+                      ]}
                       onPress={() => setDraftSeverity(allergen, option.value)}
                       activeOpacity={0.7}
                     >
                       <Text
-                        className={`text-sm font-medium ${
-                          isSelected ? '' : 'text-gray-500'
-                        }`}
+                        style={[
+                          styles.severityOptionText,
+                          isSelected
+                            ? { color: selectedColors.text }
+                            : styles.severityOptionTextUnselected,
+                        ]}
                       >
                         {option.label}
                       </Text>
@@ -64,7 +77,7 @@ export default function SeverityScreen() {
           ))}
         </View>
 
-        <View className="gap-3">
+        <View style={styles.buttonGroup}>
           <Button
             title="Next"
             onPress={() => router.push('/(onboarding)/custom-restrictions')}
@@ -75,3 +88,81 @@ export default function SeverityScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  stepBadge: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#10B981',
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 9999,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 24,
+  },
+  allergenList: {
+    gap: 16,
+    marginBottom: 32,
+  },
+  allergenCard: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 16,
+  },
+  allergenName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  optionsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  severityOption: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  severityOptionUnselected: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E5E7EB',
+  },
+  severityOptionText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  severityOptionTextUnselected: {
+    color: '#6B7280',
+  },
+  buttonGroup: {
+    gap: 12,
+  },
+});

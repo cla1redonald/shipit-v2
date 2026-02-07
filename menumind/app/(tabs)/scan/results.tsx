@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -32,7 +32,7 @@ export default function ResultsScreen() {
 
   if (items.length === 0) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView style={styles.emptyContainer}>
         <EmptyState
           title="No dishes found"
           description="We couldn't identify any dishes in this photo. Try retaking the photo with better lighting."
@@ -47,16 +47,16 @@ export default function ResultsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <View className="bg-white px-6 pt-4 pb-3 border-b border-gray-100">
-        <View className="flex-row items-center justify-between mb-3">
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <View style={styles.headerRow}>
           <View>
             {currentScan.results?.restaurantName && (
-              <Text className="text-lg font-bold text-gray-900">
+              <Text style={styles.restaurantName}>
                 {currentScan.results.restaurantName}
               </Text>
             )}
-            <Text className="text-sm text-gray-500">
+            <Text style={styles.summaryText}>
               {counts.safe} safe, {counts.caution} caution, {counts.avoid} avoid
             </Text>
           </View>
@@ -66,23 +66,25 @@ export default function ResultsScreen() {
               router.replace('/(tabs)/scan/camera');
             }}
           >
-            <Text className="text-brand font-semibold text-sm">New Scan</Text>
+            <Text style={styles.newScanText}>New Scan</Text>
           </TouchableOpacity>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
           {filters.map((f) => (
             <TouchableOpacity
               key={f.value}
-              className={`px-4 py-2 rounded-full mr-2 ${
-                filter === f.value ? 'bg-brand' : 'bg-gray-100'
-              }`}
+              style={[
+                styles.filterChip,
+                filter === f.value ? styles.filterChipActive : styles.filterChipInactive,
+              ]}
               onPress={() => setFilter(f.value)}
             >
               <Text
-                className={`text-sm font-medium ${
-                  filter === f.value ? 'text-white' : 'text-gray-600'
-                }`}
+                style={[
+                  styles.filterChipText,
+                  filter === f.value ? styles.filterChipTextActive : styles.filterChipTextInactive,
+                ]}
               >
                 {f.label}
               </Text>
@@ -91,7 +93,7 @@ export default function ResultsScreen() {
         </ScrollView>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-3" contentContainerClassName="pb-4 gap-3">
+      <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
         {filteredItems.map((item) => (
           <DishCard
             key={item.id}
@@ -110,3 +112,76 @@ export default function ResultsScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  emptyContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  restaurantName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  summaryText: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  newScanText: {
+    color: '#10B981',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  filterRow: {
+    flexDirection: 'row',
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    marginRight: 8,
+  },
+  filterChipActive: {
+    backgroundColor: '#10B981',
+  },
+  filterChipInactive: {
+    backgroundColor: '#F3F4F6',
+  },
+  filterChipText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  filterChipTextActive: {
+    color: '#FFFFFF',
+  },
+  filterChipTextInactive: {
+    color: '#4B5563',
+  },
+  list: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  listContent: {
+    paddingBottom: 16,
+    gap: 12,
+  },
+});

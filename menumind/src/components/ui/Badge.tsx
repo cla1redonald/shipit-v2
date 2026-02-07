@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import type { DishClassification, ConfidenceLevel } from '../../types';
 
 interface ClassificationBadgeProps {
@@ -6,29 +6,47 @@ interface ClassificationBadgeProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const classificationConfig = {
-  safe: { bg: 'bg-safe-light', text: 'text-safe-dark', label: 'Safe', icon: '✓' },
-  caution: { bg: 'bg-caution-light', text: 'text-caution-dark', label: 'Caution', icon: '!' },
-  avoid: { bg: 'bg-avoid-light', text: 'text-avoid-dark', label: 'Avoid', icon: '✕' },
+const classificationStyles: Record<DishClassification, { bg: ViewStyle; text: TextStyle }> = {
+  safe: {
+    bg: { backgroundColor: '#DCFCE7' },
+    text: { color: '#166534' },
+  },
+  caution: {
+    bg: { backgroundColor: '#FEF3C7' },
+    text: { color: '#92400E' },
+  },
+  avoid: {
+    bg: { backgroundColor: '#FEE2E2' },
+    text: { color: '#991B1B' },
+  },
+};
+
+const classificationLabels: Record<DishClassification, { label: string; icon: string }> = {
+  safe: { label: 'Safe', icon: '\u2713' },
+  caution: { label: 'Caution', icon: '!' },
+  avoid: { label: 'Avoid', icon: '\u2715' },
+};
+
+const sizeContainerStyles: Record<string, ViewStyle> = {
+  sm: { paddingHorizontal: 8, paddingVertical: 2 },
+  md: { paddingHorizontal: 12, paddingVertical: 4 },
+  lg: { paddingHorizontal: 16, paddingVertical: 8 },
+};
+
+const sizeTextStyles: Record<string, TextStyle> = {
+  sm: { fontSize: 12 },
+  md: { fontSize: 14 },
+  lg: { fontSize: 16 },
 };
 
 export function ClassificationBadge({ classification, size = 'md' }: ClassificationBadgeProps) {
-  const config = classificationConfig[classification];
-  const sizeStyles = {
-    sm: 'px-2 py-0.5',
-    md: 'px-3 py-1',
-    lg: 'px-4 py-2',
-  };
-  const textSize = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-base',
-  };
+  const colorStyle = classificationStyles[classification];
+  const labels = classificationLabels[classification];
 
   return (
-    <View className={`${config.bg} ${sizeStyles[size]} rounded-full flex-row items-center gap-1`}>
-      <Text className={`${config.text} ${textSize[size]} font-bold`}>{config.icon}</Text>
-      <Text className={`${config.text} ${textSize[size]} font-semibold`}>{config.label}</Text>
+    <View style={[styles.badgeContainer, colorStyle.bg, sizeContainerStyles[size]]}>
+      <Text style={[colorStyle.text, sizeTextStyles[size], styles.iconText]}>{labels.icon}</Text>
+      <Text style={[colorStyle.text, sizeTextStyles[size], styles.labelText]}>{labels.label}</Text>
     </View>
   );
 }
@@ -37,17 +55,53 @@ interface ConfidenceBadgeProps {
   confidence: ConfidenceLevel;
 }
 
-const confidenceConfig = {
-  high: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'High confidence' },
-  medium: { bg: 'bg-yellow-50', text: 'text-yellow-700', label: 'Medium confidence' },
-  low: { bg: 'bg-orange-50', text: 'text-orange-700', label: 'Low — ask server' },
+const confidenceStyles: Record<ConfidenceLevel, { bg: ViewStyle; text: TextStyle; label: string }> = {
+  high: {
+    bg: { backgroundColor: '#F3F4F6' },
+    text: { color: '#374151' },
+    label: 'High confidence',
+  },
+  medium: {
+    bg: { backgroundColor: '#FEFCE8' },
+    text: { color: '#A16207' },
+    label: 'Medium confidence',
+  },
+  low: {
+    bg: { backgroundColor: '#FFF7ED' },
+    text: { color: '#C2410C' },
+    label: 'Low \u2014 ask server',
+  },
 };
 
 export function ConfidenceBadge({ confidence }: ConfidenceBadgeProps) {
-  const config = confidenceConfig[confidence];
+  const config = confidenceStyles[confidence];
   return (
-    <View className={`${config.bg} px-2 py-0.5 rounded-full`}>
-      <Text className={`${config.text} text-xs font-medium`}>{config.label}</Text>
+    <View style={[styles.confidenceContainer, config.bg]}>
+      <Text style={[styles.confidenceText, config.text]}>{config.label}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  badgeContainer: {
+    borderRadius: 9999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  iconText: {
+    fontWeight: 'bold',
+  },
+  labelText: {
+    fontWeight: '600',
+  },
+  confidenceContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 9999,
+  },
+  confidenceText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+});

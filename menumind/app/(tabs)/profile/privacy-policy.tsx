@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,20 +6,20 @@ export default function PrivacyPolicyScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-6" contentContainerClassName="pb-8">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-brand font-medium">← Back</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-6">Privacy Policy</Text>
+        <Text style={styles.pageTitle}>Privacy Policy</Text>
 
-        <Text className="text-sm text-gray-500 mb-4">Last updated: February 2026</Text>
+        <Text style={styles.dateText}>Last updated: February 2026</Text>
 
-        <View className="gap-4">
+        <View style={styles.sectionsContainer}>
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Data We Collect</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Data We Collect</Text>
+            <Text style={styles.sectionBody}>
               We collect your email address for authentication, your dietary profile
               (allergies, diet types, severity levels), and menu photos you scan for analysis.
               All data is stored securely on Supabase with encryption at rest.
@@ -27,8 +27,8 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">How We Use Your Data</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>How We Use Your Data</Text>
+            <Text style={styles.sectionBody}>
               Your dietary profile is used solely to analyze menu photos and provide
               personalized safety classifications. Menu photos are sent to our AI
               analysis service and stored for your scan history. We do not sell,
@@ -37,8 +37,8 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Data Storage & Security</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Data Storage & Security</Text>
+            <Text style={styles.sectionBody}>
               All data is encrypted at rest and in transit. Your dietary profile is
               treated as sensitive health information. Authentication tokens are
               stored in iOS Keychain. We use row-level security to ensure users can
@@ -47,8 +47,8 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Data Deletion</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Data Deletion</Text>
+            <Text style={styles.sectionBody}>
               You can delete your account at any time from the Profile screen. This
               permanently removes all your data including your profile, scan history,
               menu photos, and authentication credentials. This action is irreversible.
@@ -56,8 +56,8 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Third-Party Services</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Third-Party Services</Text>
+            <Text style={styles.sectionBody}>
               We use Supabase for data storage and authentication, and Anthropic's
               Claude API for AI menu analysis. Menu photos are processed by Claude's
               API to generate safety classifications. Please review Anthropic's
@@ -66,8 +66,8 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Contact</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Contact</Text>
+            <Text style={styles.sectionBody}>
               For privacy-related questions, contact us at privacy@menumind.app.
             </Text>
           </View>
@@ -76,3 +76,50 @@ export default function PrivacyPolicyScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  backButton: {
+    marginBottom: 16,
+  },
+  backText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 24,
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 16,
+  },
+  sectionsContainer: {
+    gap: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  sectionBody: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+  },
+});

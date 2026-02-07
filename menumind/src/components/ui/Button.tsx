@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, ActivityIndicator, View } from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator, View, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
 interface ButtonProps {
   title: string;
@@ -10,6 +10,22 @@ interface ButtonProps {
   icon?: React.ReactNode;
 }
 
+const variantContainerStyles: Record<string, ViewStyle> = {
+  primary: { backgroundColor: '#10B981' },
+  secondary: { backgroundColor: '#F3F4F6' },
+  outline: { borderWidth: 2, borderColor: '#10B981', backgroundColor: 'transparent' },
+  danger: { backgroundColor: '#EF4444' },
+  text: { backgroundColor: 'transparent' },
+};
+
+const variantTextStyles: Record<string, TextStyle> = {
+  primary: { color: '#FFFFFF', fontWeight: '600', fontSize: 16 },
+  secondary: { color: '#111827', fontWeight: '600', fontSize: 16 },
+  outline: { color: '#065F46', fontWeight: '600', fontSize: 16 },
+  danger: { color: '#FFFFFF', fontWeight: '600', fontSize: 16 },
+  text: { color: '#10B981', fontWeight: '600', fontSize: 16 },
+};
+
 export function Button({
   title,
   onPress,
@@ -19,25 +35,14 @@ export function Button({
   fullWidth = true,
   icon,
 }: ButtonProps) {
-  const baseStyle = 'py-4 px-6 rounded-2xl flex-row items-center justify-center';
-  const variantStyles = {
-    primary: 'bg-brand',
-    secondary: 'bg-gray-100',
-    outline: 'border-2 border-brand bg-transparent',
-    danger: 'bg-avoid',
-    text: 'bg-transparent',
-  };
-  const textStyles = {
-    primary: 'text-white font-semibold text-base',
-    secondary: 'text-gray-900 font-semibold text-base',
-    outline: 'text-brand-dark font-semibold text-base',
-    danger: 'text-white font-semibold text-base',
-    text: 'text-brand font-semibold text-base',
-  };
-
   return (
     <TouchableOpacity
-      className={`${baseStyle} ${variantStyles[variant]} ${fullWidth ? 'w-full' : ''} ${disabled || loading ? 'opacity-50' : ''}`}
+      style={[
+        styles.base,
+        variantContainerStyles[variant],
+        fullWidth && styles.fullWidth,
+        (disabled || loading) && styles.disabled,
+      ]}
       onPress={onPress}
       disabled={disabled || loading}
       activeOpacity={0.7}
@@ -45,11 +50,33 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={variant === 'primary' || variant === 'danger' ? '#fff' : '#10B981'} />
       ) : (
-        <View className="flex-row items-center gap-2">
+        <View style={styles.content}>
           {icon}
-          <Text className={textStyles[variant]}>{title}</Text>
+          <Text style={variantTextStyles[variant]}>{title}</Text>
         </View>
       )}
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  base: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fullWidth: {
+    width: '100%',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+});

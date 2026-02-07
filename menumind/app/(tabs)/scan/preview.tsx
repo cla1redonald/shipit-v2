@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
@@ -41,28 +41,28 @@ export default function PreviewScreen() {
 
   if (!currentScan.imageUri) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <Text className="text-gray-500">No image selected</Text>
+      <SafeAreaView style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No image selected</Text>
         <Button title="Go Back" variant="text" onPress={() => router.back()} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-4 pt-4">
+    <SafeAreaView style={styles.container}>
+      <View style={styles.imageWrapper}>
         <Image
           source={{ uri: currentScan.imageUri }}
-          className="flex-1 rounded-2xl"
+          style={styles.image}
           resizeMode="contain"
         />
       </View>
 
       {error ? (
-        <Text className="text-avoid text-sm text-center px-6 mt-2">{error}</Text>
+        <Text style={styles.errorText}>{error}</Text>
       ) : null}
 
-      <View className="px-6 pb-8 pt-4 gap-3">
+      <View style={styles.actions}>
         <Button
           title="Analyze This Menu"
           onPress={handleAnalyze}
@@ -79,3 +79,41 @@ export default function PreviewScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  emptyContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    color: '#6B7280',
+  },
+  imageWrapper: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  image: {
+    flex: 1,
+    borderRadius: 16,
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 14,
+    textAlign: 'center',
+    paddingHorizontal: 24,
+    marginTop: 8,
+  },
+  actions: {
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+    paddingTop: 16,
+    gap: 12,
+  },
+});

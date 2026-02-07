@@ -1,32 +1,32 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { ClassificationBadge, ConfidenceBadge } from './Badge';
-import type { ScanItem } from '../../types';
+import type { ScanItem, DishClassification } from '../../types';
 
 interface DishCardProps {
   item: ScanItem;
   onPress: () => void;
 }
 
-const borderColors = {
-  safe: 'border-l-safe',
-  caution: 'border-l-caution',
-  avoid: 'border-l-avoid',
+const borderLeftColors: Record<DishClassification, ViewStyle> = {
+  safe: { borderLeftColor: '#22C55E' },
+  caution: { borderLeftColor: '#F59E0B' },
+  avoid: { borderLeftColor: '#EF4444' },
 };
 
 export function DishCard({ item, onPress }: DishCardProps) {
   return (
     <TouchableOpacity
-      className={`bg-white rounded-xl p-4 border border-gray-100 border-l-4 ${borderColors[item.classification]} shadow-sm`}
+      style={[styles.card, borderLeftColors[item.classification]]}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View className="flex-row items-start justify-between mb-2">
-        <View className="flex-1 mr-3">
-          <Text className="text-base font-semibold text-gray-900" numberOfLines={1}>
+      <View style={styles.header}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.dishName} numberOfLines={1}>
             {item.dishName}
           </Text>
           {item.originalName && (
-            <Text className="text-sm text-gray-500 mt-0.5" numberOfLines={1}>
+            <Text style={styles.originalName} numberOfLines={1}>
               {item.originalName}
             </Text>
           )}
@@ -35,21 +35,77 @@ export function DishCard({ item, onPress }: DishCardProps) {
       </View>
 
       {item.allergensDetected.length > 0 && (
-        <Text className="text-sm text-avoid-dark mb-1.5" numberOfLines={1}>
+        <Text style={styles.allergens} numberOfLines={1}>
           Contains: {item.allergensDetected.join(', ')}
         </Text>
       )}
 
       {item.reasoning && (
-        <Text className="text-sm text-gray-600 mb-2" numberOfLines={2}>
+        <Text style={styles.reasoning} numberOfLines={2}>
           {item.reasoning}
         </Text>
       )}
 
-      <View className="flex-row items-center justify-between">
+      <View style={styles.footer}>
         <ConfidenceBadge confidence={item.confidence} />
-        <Text className="text-xs text-brand font-medium">View details →</Text>
+        <Text style={styles.viewDetails}>View details →</Text>
       </View>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+    borderLeftWidth: 4,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  titleContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  dishName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  originalName: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  allergens: {
+    fontSize: 14,
+    color: '#991B1B',
+    marginBottom: 6,
+  },
+  reasoning: {
+    fontSize: 14,
+    color: '#4B5563',
+    marginBottom: 8,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  viewDetails: {
+    fontSize: 12,
+    color: '#10B981',
+    fontWeight: '500',
+  },
+});

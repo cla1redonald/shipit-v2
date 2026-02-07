@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useCallback, useState } from 'react';
@@ -24,9 +24,9 @@ export default function HistoryScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <View className="bg-white px-6 pt-4 pb-3 border-b border-gray-100">
-        <Text className="text-2xl font-bold text-gray-900">Scan History</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Scan History</Text>
       </View>
 
       {history.length === 0 && !historyLoading ? (
@@ -36,8 +36,8 @@ export default function HistoryScreen() {
         />
       ) : (
         <ScrollView
-          className="flex-1 px-4 pt-3"
-          contentContainerClassName="pb-4 gap-3"
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#10B981" />
           }
@@ -47,32 +47,32 @@ export default function HistoryScreen() {
               key={scan.id}
               onPress={() => router.push(`/(tabs)/history/${scan.id}`)}
             >
-              <View className="flex-row items-start justify-between">
-                <View className="flex-1">
-                  <Text className="text-base font-semibold text-gray-900">
+              <View style={styles.cardRow}>
+                <View style={styles.cardLeft}>
+                  <Text style={styles.cardTitle}>
                     {scan.restaurantName || 'Menu Scan'}
                   </Text>
-                  <Text className="text-sm text-gray-500 mt-0.5">
+                  <Text style={styles.cardDate}>
                     {format(new Date(scan.createdAt), 'MMM d, yyyy · h:mm a')}
                   </Text>
                 </View>
-                <Text className="text-sm text-gray-500">
+                <Text style={styles.cardCount}>
                   {scan.itemCount} dishes
                 </Text>
               </View>
 
-              <View className="flex-row gap-3 mt-3">
-                <View className="flex-row items-center gap-1">
-                  <View className="w-2.5 h-2.5 rounded-full bg-safe" />
-                  <Text className="text-xs text-gray-600">{scan.safeCount} safe</Text>
+              <View style={styles.countsRow}>
+                <View style={styles.countItem}>
+                  <View style={[styles.countDot, styles.safeDot]} />
+                  <Text style={styles.countText}>{scan.safeCount} safe</Text>
                 </View>
-                <View className="flex-row items-center gap-1">
-                  <View className="w-2.5 h-2.5 rounded-full bg-caution" />
-                  <Text className="text-xs text-gray-600">{scan.cautionCount} caution</Text>
+                <View style={styles.countItem}>
+                  <View style={[styles.countDot, styles.cautionDot]} />
+                  <Text style={styles.countText}>{scan.cautionCount} caution</Text>
                 </View>
-                <View className="flex-row items-center gap-1">
-                  <View className="w-2.5 h-2.5 rounded-full bg-avoid" />
-                  <Text className="text-xs text-gray-600">{scan.avoidCount} avoid</Text>
+                <View style={styles.countItem}>
+                  <View style={[styles.countDot, styles.avoidDot]} />
+                  <Text style={styles.countText}>{scan.avoidCount} avoid</Text>
                 </View>
               </View>
             </Card>
@@ -82,3 +82,82 @@ export default function HistoryScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  header: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  list: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  listContent: {
+    paddingBottom: 16,
+    gap: 12,
+  },
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  cardLeft: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  cardDate: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  cardCount: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  countsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  countItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  countDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 9999,
+  },
+  safeDot: {
+    backgroundColor: '#22C55E',
+  },
+  cautionDot: {
+    backgroundColor: '#F59E0B',
+  },
+  avoidDot: {
+    backgroundColor: '#EF4444',
+  },
+  countText: {
+    fontSize: 12,
+    color: '#4B5563',
+  },
+});

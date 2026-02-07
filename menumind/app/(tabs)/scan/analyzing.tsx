@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect } from 'react';
@@ -20,11 +20,11 @@ export default function AnalyzingScreen() {
 
   if (status === 'error') {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center px-6">
-        <View className="items-center">
-          <View className="text-5xl mb-4">❌</View>
+      <SafeAreaView style={styles.errorContainer}>
+        <View style={styles.errorContent}>
+          <Text style={styles.errorEmoji}>❌</Text>
           <Button title="Try Again" onPress={() => router.replace('/(tabs)/scan')} />
-          <View className="mt-3 w-full">
+          <View style={styles.cancelButtonWrapper}>
             <Button
               title="Cancel"
               variant="text"
@@ -40,9 +40,9 @@ export default function AnalyzingScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.container}>
       <LoadingOverlay />
-      <View className="px-6 pb-8">
+      <View style={styles.bottomArea}>
         <Button
           title="Cancel"
           variant="text"
@@ -55,3 +55,32 @@ export default function AnalyzingScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  errorContent: {
+    alignItems: 'center',
+  },
+  errorEmoji: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  cancelButtonWrapper: {
+    marginTop: 12,
+    width: '100%',
+  },
+  bottomArea: {
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+  },
+});

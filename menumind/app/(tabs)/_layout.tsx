@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 function TabIcon({ name, focused }: { name: string; focused: boolean }) {
   const icons: Record<string, string> = {
@@ -8,8 +8,8 @@ function TabIcon({ name, focused }: { name: string; focused: boolean }) {
     profile: '👤',
   };
   return (
-    <View className="items-center">
-      <Text className="text-xl">{icons[name] || '•'}</Text>
+    <View style={styles.tabIconContainer}>
+      <Text style={styles.tabIconText}>{icons[name] || '•'}</Text>
     </View>
   );
 }
@@ -52,3 +52,12 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabIconContainer: {
+    alignItems: 'center',
+  },
+  tabIconText: {
+    fontSize: 20,
+  },
+});

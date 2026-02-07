@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,24 +8,24 @@ export default function WelcomeScreen() {
   const router = useRouter();
 
   return (
-    <LinearGradient colors={['#F0F7F4', '#D1FAE5', '#ECFDF5']} className="flex-1">
-      <SafeAreaView className="flex-1 px-6 justify-between pb-8">
-        <View className="flex-1 items-center justify-center">
-          <View className="w-24 h-24 bg-brand rounded-3xl items-center justify-center mb-6">
-            <Text className="text-5xl">🍽️</Text>
+    <LinearGradient colors={['#F0F7F4', '#D1FAE5', '#ECFDF5']} style={styles.gradient}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContent}>
+          <View style={styles.iconContainer}>
+            <Text style={styles.iconText}>🍽️</Text>
           </View>
-          <Text className="text-4xl font-bold text-gray-900 text-center mb-3">
+          <Text style={styles.title}>
             MenuMind
           </Text>
-          <Text className="text-lg text-gray-600 text-center px-4">
+          <Text style={styles.subtitle}>
             Snap a menu. Know what's safe.
           </Text>
-          <Text className="text-base text-gray-500 text-center px-8 mt-4">
+          <Text style={styles.description}>
             AI-powered menu analysis for your dietary needs. Works on any menu, any language.
           </Text>
         </View>
 
-        <View className="gap-3">
+        <View style={styles.buttonGroup}>
           <Button
             title="Get Started"
             onPress={() => router.push('/(auth)/sign-up')}
@@ -40,3 +40,55 @@ export default function WelcomeScreen() {
     </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    paddingHorizontal: 24,
+    justifyContent: 'space-between',
+    paddingBottom: 32,
+  },
+  centerContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconContainer: {
+    width: 96,
+    height: 96,
+    backgroundColor: '#10B981',
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  iconText: {
+    fontSize: 48,
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#4B5563',
+    textAlign: 'center',
+    paddingHorizontal: 16,
+  },
+  description: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    paddingHorizontal: 32,
+    marginTop: 16,
+  },
+  buttonGroup: {
+    gap: 12,
+  },
+});

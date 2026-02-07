@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Button } from './Button';
 
 interface EmptyStateProps {
@@ -10,12 +10,34 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, actionLabel, onAction }: EmptyStateProps) {
   return (
-    <View className="flex-1 items-center justify-center p-8">
-      <Text className="text-xl font-semibold text-gray-900 text-center mb-2">{title}</Text>
-      <Text className="text-base text-gray-500 text-center mb-6">{description}</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.description}>{description}</Text>
       {actionLabel && onAction && (
         <Button title={actionLabel} onPress={onAction} fullWidth={false} />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+});

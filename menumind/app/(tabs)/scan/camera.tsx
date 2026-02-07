@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -34,27 +34,27 @@ export default function CameraScreen() {
 
   if (!permission) {
     return (
-      <View className="flex-1 items-center justify-center bg-black">
-        <Text className="text-white">Loading camera...</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading camera...</Text>
       </View>
     );
   }
 
   if (!permission.granted) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-6">
-        <Text className="text-5xl mb-6">📷</Text>
-        <Text className="text-xl font-bold text-gray-900 text-center mb-2">
+      <View style={styles.permissionContainer}>
+        <Text style={styles.permissionEmoji}>📷</Text>
+        <Text style={styles.permissionTitle}>
           Camera Access Needed
         </Text>
-        <Text className="text-base text-gray-500 text-center mb-6">
+        <Text style={styles.permissionDescription}>
           MenuMind needs camera access to photograph restaurant menus for analysis.
         </Text>
         <Button title="Grant Camera Access" onPress={requestPermission} />
-        <View className="mt-3 w-full">
+        <View style={styles.permissionButtonWrapper}>
           <Button title="Use Photo Library Instead" variant="outline" onPress={handlePickImage} />
         </View>
-        <View className="mt-3 w-full">
+        <View style={styles.permissionButtonWrapper}>
           <Button title="Go Back" variant="text" onPress={() => router.back()} />
         </View>
       </View>
@@ -62,54 +62,201 @@ export default function CameraScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black">
-      <CameraView ref={cameraRef} className="flex-1" facing="back">
+    <View style={styles.container}>
+      <CameraView ref={cameraRef} style={styles.camera} facing="back">
         {/* Guide overlay */}
-        <View className="flex-1">
+        <View style={styles.overlay}>
           {/* Top bar */}
-          <View className="flex-row items-center justify-between px-4 pt-14 pb-4">
+          <View style={styles.topBar}>
             <TouchableOpacity
-              className="w-10 h-10 bg-black/50 rounded-full items-center justify-center"
+              style={styles.closeButton}
               onPress={() => router.back()}
             >
-              <Text className="text-white text-lg font-bold">✕</Text>
+              <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
-            <Text className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">
+            <Text style={styles.hintText}>
               Hold steady. Ensure good lighting.
             </Text>
-            <View className="w-10" />
+            <View style={styles.spacer10} />
           </View>
 
           {/* Center guide frame */}
-          <View className="flex-1 items-center justify-center px-8">
-            <View className="w-full aspect-[3/4] border-2 border-white/40 rounded-2xl items-center justify-end pb-6">
-              <Text className="text-white/80 text-sm font-medium bg-black/40 px-3 py-1 rounded-full">
+          <View style={styles.guideContainer}>
+            <View style={styles.guideFrame}>
+              <Text style={styles.guideText}>
                 Center the menu in the frame
               </Text>
             </View>
           </View>
 
           {/* Bottom controls */}
-          <View className="flex-row items-center justify-around px-8 pb-12 pt-4">
+          <View style={styles.bottomControls}>
             <TouchableOpacity
-              className="w-14 h-14 bg-black/50 rounded-full items-center justify-center"
+              style={styles.galleryButton}
               onPress={handlePickImage}
             >
-              <Text className="text-2xl">🖼️</Text>
+              <Text style={styles.galleryEmoji}>🖼️</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="w-20 h-20 rounded-full border-4 border-white items-center justify-center"
+              style={styles.captureButton}
               onPress={handleCapture}
               activeOpacity={0.7}
             >
-              <View className="w-16 h-16 rounded-full bg-white" />
+              <View style={styles.captureInner} />
             </TouchableOpacity>
 
-            <View className="w-14" />
+            <View style={styles.spacer14} />
           </View>
         </View>
       </CameraView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
+  camera: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+  },
+  loadingText: {
+    color: '#FFFFFF',
+  },
+  permissionContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+  },
+  permissionEmoji: {
+    fontSize: 48,
+    marginBottom: 24,
+  },
+  permissionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  permissionDescription: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  permissionButtonWrapper: {
+    marginTop: 12,
+    width: '100%',
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 56,
+    paddingBottom: 16,
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  hintText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 9999,
+    overflow: 'hidden',
+  },
+  spacer10: {
+    width: 40,
+  },
+  guideContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  guideFrame: {
+    width: '100%',
+    aspectRatio: 3 / 4,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.4)',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingBottom: 24,
+  },
+  guideText: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+    fontWeight: '500',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 9999,
+    overflow: 'hidden',
+  },
+  bottomControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingHorizontal: 32,
+    paddingBottom: 48,
+    paddingTop: 16,
+  },
+  galleryButton: {
+    width: 56,
+    height: 56,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  galleryEmoji: {
+    fontSize: 24,
+  },
+  captureButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 9999,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  captureInner: {
+    width: 64,
+    height: 64,
+    borderRadius: 9999,
+    backgroundColor: '#FFFFFF',
+  },
+  spacer14: {
+    width: 56,
+  },
+});

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,28 +6,28 @@ export default function TermsScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-6 pt-6" contentContainerClassName="pb-8">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-brand font-medium">← Back</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <Text className="text-2xl font-bold text-gray-900 mb-6">Terms of Service</Text>
+        <Text style={styles.pageTitle}>Terms of Service</Text>
 
-        <Text className="text-sm text-gray-500 mb-4">Last updated: February 2026</Text>
+        <Text style={styles.dateText}>Last updated: February 2026</Text>
 
-        <View className="gap-4">
+        <View style={styles.sectionsContainer}>
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Acceptance of Terms</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Acceptance of Terms</Text>
+            <Text style={styles.sectionBody}>
               By using MenuMind, you agree to these terms of service. If you do not
               agree, please do not use the app.
             </Text>
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Service Description</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Service Description</Text>
+            <Text style={styles.sectionBody}>
               MenuMind provides AI-powered analysis of restaurant menu photos to
               classify dishes based on your dietary profile. This is an informational
               aid only and does not constitute medical advice.
@@ -35,8 +35,8 @@ export default function TermsScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Disclaimer of Warranties</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Disclaimer of Warranties</Text>
+            <Text style={styles.sectionBody}>
               MenuMind is provided "as is" without warranties of any kind. We do not
               guarantee the accuracy, completeness, or reliability of AI analysis
               results. AI may produce incorrect results including failing to identify
@@ -45,8 +45,8 @@ export default function TermsScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">Limitation of Liability</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>Limitation of Liability</Text>
+            <Text style={styles.sectionBody}>
               MenuMind and its creators are not liable for any allergic reactions,
               adverse health events, or other damages resulting from reliance on the
               app's analysis. You are solely responsible for confirming ingredients
@@ -55,8 +55,8 @@ export default function TermsScreen() {
           </View>
 
           <View>
-            <Text className="text-base font-semibold text-gray-900 mb-1">User Responsibilities</Text>
-            <Text className="text-sm text-gray-700 leading-5">
+            <Text style={styles.sectionTitle}>User Responsibilities</Text>
+            <Text style={styles.sectionBody}>
               You are responsible for: (1) maintaining accurate dietary profile
               information, (2) always confirming ingredients with restaurant staff
               especially for severe allergies, (3) understanding that AI analysis is
@@ -69,3 +69,50 @@ export default function TermsScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  backButton: {
+    marginBottom: 16,
+  },
+  backText: {
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 24,
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 16,
+  },
+  sectionsContainer: {
+    gap: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  sectionBody: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+  },
+});
