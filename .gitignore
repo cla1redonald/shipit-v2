@@ -19,6 +19,7 @@ Thumbs.db
 # Claude Code local state (not committed)
 .claude/agent-memory-local/
 .claude/agent-memory/
+.claude/settings.local.json
 
 # Test projects
 counter-app/

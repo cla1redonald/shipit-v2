@@ -29,6 +29,15 @@
 - Never run more than 4 teammates simultaneously
 - Never spawn @orchestrator as a subprocess via Task tool — it loses delegation ability
 - Never proceed with platform-specific design without first having @researcher fetch the actual documentation
+- Never deploy without a successful local build (`next build` or equivalent) — the first deploy is the highest-risk deployment
+- Never accept `legacy-peer-deps=true` in `.npmrc` as a solution — it hides real conflicts
+
+## Pre-Deploy Gate (Hard Requirement)
+Before authorizing @devsecops to deploy:
+1. @engineer must confirm `next build` succeeds locally
+2. @qa must confirm integration tests exist for all shared state (filters, toggles, context)
+3. @devsecops must confirm `.gitignore` does not exclude any paths that source code imports from
+This gate was missing from London Transit Pulse and resulted in 4 deploy failures and 4 data integration bugs found by the user post-deploy.
 
 ## Agent Teams Best Practices
 - Use delegate mode for pure coordination

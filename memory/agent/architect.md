@@ -26,6 +26,20 @@
 **Action:** For every platform-specific structural decision, cite the exact documentation source. If no documentation has been fetched yet, request that @researcher fetch it before proceeding. "Based on common patterns" is not acceptable when official docs exist. "Based on [Platform] documentation, [section/URL]" is the standard. If the docs are unavailable, explicitly flag the decision as unverified.
 **Source:** ShipIt v2 plugin structure failure, 2026-02-06.
 
+## Scaffold Phase Must Validate Dependency Compatibility
+
+**Context:** When specifying the dependency list in TECH_STACK.md or during project scaffold
+**Learning:** London Transit Pulse specified Next.js 14 + react-leaflet@5 + React (unversioned). react-leaflet@5 requires React 19, but Next.js 14 requires React 18. The conflict was masked by `legacy-peer-deps=true` in `.npmrc` and only surfaced as a production crash.
+**Action:** The architecture spec must explicitly pin React version to match the Next.js version (Next.js 13-14 = React 18, Next.js 15 = React 19). All library versions in TECH_STACK.md must be validated against each other's peer dependency requirements. If a library requires a newer React than the Next.js version supports, choose a compatible library version (e.g., react-leaflet@4 for React 18).
+**Source:** London Transit Pulse, 2026-02-07. Client-side crash on first deploy.
+
+## Architecture Must Specify Data Flow Integration Points
+
+**Context:** When designing dashboards or apps with shared filter/toggle state
+**Learning:** London Transit Pulse architecture specified components and filter context independently but did not specify the integration contract: which components consume which filters, and how filter changes propagate to data recalculation. Each engineer built components in isolation, and none wired up the shared state correctly.
+**Action:** For apps with shared state, the architecture doc must include a "Data Flow" section that explicitly maps: (1) which context providers exist, (2) which components consume each provider, (3) what the expected behavior is when state changes (e.g., "when dateRange changes, KPISection must recalculate averages over the new range"). This contract enables integration tests and prevents components from importing static data instead of consuming context.
+**Source:** London Transit Pulse, 2026-02-07. 4 integration bugs from missing data flow spec.
+
 ## Supabase Typed Client: Database Type Shape
 
 **Context:** When using `createClient<Database>()` with @supabase/supabase-js v2.90+
