@@ -1,4 +1,4 @@
-import { supabase, supabaseUrl, supabaseAnonKey } from './supabase';
+import { supabase } from './supabase';
 import type { Scan, ScanItem, ScanSummary, DietaryProfile } from '../types';
 import type { AnalysisResponse } from '../types/analysis';
 
@@ -25,18 +25,8 @@ export async function analyzeMenu(
   imageUrl: string,
   dietaryProfile: DietaryProfile
 ): Promise<AnalysisResponse> {
-  // Use direct fetch to get real error messages from Edge Function
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error('Not authenticated');
-
-  const response = await fetch(`${supabaseUrl}/functions/v1/analyze-menu`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-      'apikey': supabaseAnonKey,
-    },
-    body: JSON.stringify({
+  const { data, error } = await supabase.functions.invoke('analyze-menu', {
+    body: {
       scanId,
       imageUrl,
       dietaryProfile: {
@@ -45,22 +35,25 @@ export async function analyzeMenu(
         severityLevels: dietaryProfile.severityLevels,
         customRestrictions: dietaryProfile.customRestrictions,
       },
-    }),
+    },
   });
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    let message = `Edge Function error (${response.status})`;
+  if (error) {
+    // Try to extract real error from FunctionsHttpError context
+    let message = error.message;
     try {
-      const body = JSON.parse(text);
-      message = body?.error || message;
-    } catch {
-      if (text) message = text;
-    }
+      const ctx = (error as any).context;
+      if (ctx?.error) {
+        message = ctx.error;
+      } else if (typeof ctx === 'string') {
+        message = ctx;
+      } else if (ctx) {
+        message = JSON.stringify(ctx);
+      }
+    } catch {}
     throw new Error(message);
   }
-
-  return await response.json() as AnalysisResponse;
+  return data as AnalysisResponse;
 }
 
 export async function fetchScanHistory(): Promise<ScanSummary[]> {
