@@ -219,6 +219,22 @@ The README listed 9 of 12 agents, omitting @pm, @devsecops, and @retro. Nobody c
 
 ---
 
+## Backend API Proxy Buffering Instead of Streaming
+
+### Buffering External API Responses in Serverless Functions
+
+**What happens:** Backend API routes (Next.js Route Handlers, Vercel Serverless Functions, etc.) use `await response.arrayBuffer()` or `await response.json()` to fully buffer responses from external APIs (ElevenLabs, OpenAI, Claude) before forwarding to the client. This adds latency, wastes memory, and blocks progressive rendering/playback. For large responses (audio, video, streaming text), users experience dead silence or blank screens while the serverless function buffers the entire response.
+
+**Root cause:** Developers default to familiar patterns (`await response.json()`) without considering whether buffering is necessary. The fetch API makes buffering the easiest pattern, so it gets copy-pasted across multiple routes. Streaming requires understanding `response.body` and `ReadableStream`, which feels more complex.
+
+**Prevention:** Default to stream-through for proxy routes. Use `return new Response(externalResponse.body, { headers: ... })` to pipe responses without buffering. Only use `await response.arrayBuffer()` or `.json()` if you need to transform the response body. This pattern works for binary content (audio, video, PDFs), large JSON, and Server-Sent Events. For serverless functions, streaming reduces memory usage and cold-start impact.
+
+**Detection:** Grep for `await.*\.arrayBuffer\(\)`, `await.*\.json\(\)`, or `await.*\.text\(\)` in API route files that proxy external services. If the response is immediately forwarded without transformation, the buffering is unnecessary.
+
+**Source:** Weather Mood audio performance overhaul, 2026-02-07. Three routes (music, SFX, narration) refactored from buffering to streaming, eliminating 5-30s latency. Third occurrence of this pattern across projects.
+
+---
+
 ## Feature Accumulation Without Removal
 
 ### Replacement Features Added Without Removing Originals

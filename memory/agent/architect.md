@@ -74,3 +74,17 @@
 **Learning:** Across 3 projects, replacement features were added without removing the original, causing downstream bugs. Weather Mood: Web Audio synth (v1) lingered after ElevenLabs (v2) was added, causing mute-state bugs across multiple sessions. Transit Pulse: multiple formatter functions duplicated with inconsistent behavior. ShipIt v1→v2: comparison tables and predecessor concepts leaked into rewrite. The replaced feature becomes technical debt that creates state complexity, inconsistent behavior, or UX confusion.
 **Action:** When designing a replacement system, the architecture spec must include a "Deprecated Features" section that explicitly lists which existing components/hooks/utilities will be REMOVED as part of the implementation. The spec should explain why the original is being replaced and what migration/cleanup work is required. If the original is intentionally kept for a transition period, specify the transition timeline and criteria for removal. "Adding X to replace Y" should always trigger "remove Y" as a linked task.
 **Source:** Weather Mood (synth removal), 2026-02-07. Third occurrence of this pattern.
+
+## AI-Generated Audio Duration Optimization
+
+**Context:** When designing audio generation features that produce looping content (background music, ambient sounds, sound effects)
+**Learning:** Weather Mood initially generated 90-second music loops, causing 5-30 second delays on every city click. When reduced to 30 seconds, generation time dropped dramatically with no UX impact — the audio loops seamlessly regardless of duration. The 90s duration was never questioned during initial design, yet it was the primary performance bottleneck.
+**Action:** For looping audio content, default to 20-30 second durations. Shorter loops generate faster and sound identical to longer loops when properly implemented. The generation latency scales roughly linearly with duration. Only use longer durations if there is a specific creative justification (e.g., evolving soundscape that requires more time to develop). When designing features with AI-generated audio, include "audio duration" as an explicit architecture decision with performance justification, not just a default value.
+**Source:** Weather Mood audio performance overhaul, 2026-02-07. 90s→30s reduction eliminated UX-blocking latency.
+
+## Unused AI Prompt Features Waste Tokens and Latency
+
+**Context:** When maintaining AI generation prompts (Claude, GPT, etc.) after removing features from the application
+**Learning:** Weather Mood's Claude prompt continued generating `SoundscapeProfile` (~700 tokens of synth parameters) across 2+ sessions after the Web Audio synth was removed from the app. The generated profile was completely unused but still consumed tokens and added latency to every request. This pattern is invisible without explicit audit — the prompt "works," it just does unnecessary work.
+**Action:** When a feature is removed from the implementation, immediately audit all AI prompts that may reference it. For structured output prompts (JSON schemas, TypeScript types), grep for the removed feature name in prompt files. Remove any fields, examples, or instructions related to the deprecated feature. Track prompt token usage over time — unexpected increases may indicate accumulated unused fields. During architecture changes that remove capabilities, add "audit AI prompts for unused output" to the cleanup checklist.
+**Source:** Weather Mood SoundscapeProfile removal, 2026-02-07. ~700 tokens/call wasted for 2+ sessions.

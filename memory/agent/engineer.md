@@ -16,6 +16,7 @@
 - Run `npm ls react` after scaffold to verify React version matches Next.js requirement
 - For dashboards: wire up shared state (filters, context) before writing component tests — test the integration, not just the component
 - For dashboards: write at least one integration test per component that verifies filter change -> rendered output change
+- Backend routes proxying external APIs should stream responses through with `response.body` pipe, not buffer with `await response.arrayBuffer()`
 
 ## File Creation: ALWAYS Use Write/Edit Tools, NEVER Bash Heredocs
 
@@ -58,6 +59,21 @@ When adding a required field to a type, grep entire codebase. The missed places 
 **Learning:** Transit Pulse combined build has `data/` at the project root (outside `src/`) but city components import from it using deep relative paths like `../../../../../data/nyc/daily.json` (15 occurrences). The `@/*` alias only maps to `./src/*`, so data imports cannot use the alias. This makes imports fragile, hard to read, and error-prone when files move.
 **Action:** When `tsconfig.json` defines path aliases, add aliases for every directory that source code imports from. If `data/` is outside `src/`, add `"@data/*": ["./data/*"]` to `paths`. Alternatively, move data inside `src/` so `@/data/*` works naturally. Deep relative paths with more than 2 levels (`../../..`) are a code smell indicating a missing alias.
 **Source:** Transit Pulse combined build, 2026-02-07. 15 imports use `../../../../../data/`.
+
+## Stream-Through Proxy Pattern for External APIs
+
+**Context:** When implementing Next.js API routes (or similar backend routes) that proxy external API calls (ElevenLabs, OpenAI, etc.)
+**Learning:** Weather Mood initially used `await response.arrayBuffer()` in 3 routes (music, SFX, narration), buffering the entire response in serverless memory before sending to client. This added latency and memory pressure. When refactored to stream-through with `return new Response(response.body)`, audio started playing immediately as chunks arrived.
+**Action:** Default to streaming for proxy routes. Use `return new Response(externalResponse.body, { headers: ... })` to pipe the response through without buffering. Only use `await response.arrayBuffer()` or `.json()` if you need to transform the response body. The stream-through pattern works for any binary content (audio, video, images, PDFs) and large JSON responses.
+**Anti-pattern:** Copy-pasting `await response.arrayBuffer()` across multiple proxy routes without considering whether buffering is necessary.
+**Source:** Weather Mood audio performance overhaul, 2026-02-07. Third occurrence of this pattern (see common-mistakes.md for related buffering issues).
+
+## Audit AI Prompts When Removing Features
+
+**Context:** When removing features from an application that uses AI-generated content
+**Learning:** Weather Mood's Claude prompt continued generating `SoundscapeProfile` (~700 tokens) after the Web Audio synth was removed. The unused output was invisible in normal testing but wasted tokens and latency on every request.
+**Action:** When removing a feature, grep prompt files for references to the removed feature. For TypeScript-based prompts, search for type names, field names, and examples. Remove unused output fields from AI prompts immediately. If using structured output schemas, ensure the schema matches only what the application actually uses.
+**Source:** Weather Mood SoundscapeProfile removal, 2026-02-07.
 
 ## Cross-Agent Feedback
 - Architecture gaps → tell @retro to update @architect's memory
