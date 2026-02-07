@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useScanStore } from '../../../src/stores/scanStore';
 import { LoadingOverlay } from '../../../src/components/ui';
 import { Button } from '../../../src/components/ui';
@@ -10,7 +10,9 @@ export default function AnalyzingScreen() {
   const router = useRouter();
   const status = useScanStore((s) => s.currentScan.status);
   const error = useScanStore((s) => s.currentScan.error);
+  const debugLogs = useScanStore((s) => s.currentScan.debugLogs);
   const cancelScan = useScanStore((s) => s.cancelScan);
+  const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
     if (status === 'complete') {
@@ -40,6 +42,24 @@ export default function AnalyzingScreen() {
               />
             </View>
           </View>
+
+          {debugLogs.length > 0 ? (
+            <View style={styles.debugSection}>
+              <Text
+                style={styles.debugToggle}
+                onPress={() => setShowDebug(!showDebug)}
+              >
+                {showDebug ? '▼ Hide Debug Log' : '▶ Show Debug Log'}
+              </Text>
+              {showDebug ? (
+                <ScrollView style={styles.debugScroll}>
+                  {debugLogs.map((log, i) => (
+                    <Text key={i} style={styles.debugLine}>{log}</Text>
+                  ))}
+                </ScrollView>
+              ) : null}
+            </View>
+          ) : null}
         </View>
       </SafeAreaView>
     );
@@ -48,6 +68,17 @@ export default function AnalyzingScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <LoadingOverlay />
+
+      {debugLogs.length > 0 ? (
+        <View style={styles.liveDebug}>
+          <ScrollView style={styles.liveDebugScroll}>
+            {debugLogs.map((log, i) => (
+              <Text key={i} style={styles.liveDebugLine}>{log}</Text>
+            ))}
+          </ScrollView>
+        </View>
+      ) : null}
+
       <View style={styles.bottomArea}>
         <Button
           title="Cancel"
@@ -76,6 +107,7 @@ const styles = StyleSheet.create({
   },
   errorContent: {
     alignItems: 'center',
+    width: '100%',
   },
   errorEmoji: {
     fontSize: 48,
@@ -104,5 +136,47 @@ const styles = StyleSheet.create({
   bottomArea: {
     paddingHorizontal: 24,
     paddingBottom: 32,
+  },
+  // Debug console (on error)
+  debugSection: {
+    marginTop: 24,
+    width: '100%',
+  },
+  debugToggle: {
+    fontSize: 13,
+    color: '#6B7280',
+    textAlign: 'center',
+    paddingVertical: 8,
+  },
+  debugScroll: {
+    maxHeight: 200,
+    backgroundColor: '#1F2937',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 4,
+  },
+  debugLine: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    color: '#D1D5DB',
+    lineHeight: 18,
+  },
+  // Live debug (while analyzing)
+  liveDebug: {
+    marginHorizontal: 24,
+    marginBottom: 12,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    padding: 12,
+    maxHeight: 120,
+  },
+  liveDebugScroll: {
+    maxHeight: 96,
+  },
+  liveDebugLine: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    color: '#374151',
+    lineHeight: 16,
   },
 });

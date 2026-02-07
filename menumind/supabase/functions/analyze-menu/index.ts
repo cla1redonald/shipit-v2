@@ -37,7 +37,17 @@ interface ClaudeResponse {
   dishes: DishAnalysis[];
 }
 
+const FUNCTION_VERSION = '3';
+
 Deno.serve(async (req: Request) => {
+  // Health check endpoint
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({ version: FUNCTION_VERSION, status: 'ok' }),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const { scanId, imageBase64, dietaryProfile } = (await req.json()) as AnalysisRequest;
 
