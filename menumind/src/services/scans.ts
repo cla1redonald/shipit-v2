@@ -113,7 +113,7 @@ export async function uploadMenuPhoto(uri: string, scanId: string): Promise<stri
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  const path = `menu-photos/${user.id}/${scanId}.jpg`;
+  const path = `${user.id}/${scanId}.jpg`;
 
   // Read the file as blob
   const response = await fetch(uri);
@@ -141,10 +141,10 @@ export async function deleteAllUserData(): Promise<void> {
   // Delete storage objects
   const { data: files } = await supabase.storage
     .from('menu-photos')
-    .list(`menu-photos/${user.id}`);
+    .list(`${user.id}`);
 
   if (files?.length) {
-    const paths = files.map(f => `menu-photos/${user.id}/${f.name}`);
+    const paths = files.map(f => `${user.id}/${f.name}`);
     await supabase.storage.from('menu-photos').remove(paths);
   }
 
