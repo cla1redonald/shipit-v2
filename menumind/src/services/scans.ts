@@ -38,7 +38,20 @@ export async function analyzeMenu(
     },
   });
 
-  if (error) throw error;
+  if (error) {
+    // Extract actual error from Edge Function response body
+    let message = error.message;
+    try {
+      const context = (error as any).context;
+      if (context && typeof context.json === 'function') {
+        const body = await context.json();
+        message = body?.error || message;
+      } else if (context && typeof context === 'object') {
+        message = context.error || JSON.stringify(context);
+      }
+    } catch {}
+    throw new Error(`Analysis error: ${message}`);
+  }
   return data as AnalysisResponse;
 }
 
