@@ -24,36 +24,50 @@ Agents work in parallel using Claude Code's native Agent Teams, communicate dire
 ## Prerequisites
 
 - **Claude Code** (latest version)
-- **Agent Teams** enabled (see Setup below)
+- **Node.js** (for hooks)
+- **jq** (`brew install jq` on macOS)
 
 ## Installation
 
-### Step 1: Enable Agent Teams
+```bash
+git clone https://github.com/cla1redonald/shipit-v2.git ~/shipit-v2
+cd ~/shipit-v2
+./setup.sh
+```
 
-Add this to your **user-level** Claude Code settings (`~/.claude/settings.json`):
+The setup script will:
+- Verify prerequisites (claude, node, jq)
+- Register ShipIt as a Claude Code plugin
+- Enable Agent Teams
+- Print a quick-start guide
+
+To uninstall:
+
+```bash
+cd ~/shipit-v2
+./setup.sh --uninstall
+```
+
+### Verify Installation
+
+Start a **new** Claude Code session and try:
+
+```
+Use @researcher to find existing solutions for task management apps
+```
+
+You should see ShipIt's agents listed when Claude loads.
+
+<details>
+<summary>Manual installation (if you prefer not to use the script)</summary>
+
+Add these keys to `~/.claude/settings.json` (merge — don't replace the whole file):
 
 ```json
 {
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  }
-}
-```
-
-If you already have a `~/.claude/settings.json`, merge the `env` key into it.
-
-### Step 2: Install the Plugin
-
-**Clone the repo** (if you haven't already):
-
-```bash
-git clone https://github.com/cla1redonald/shipit-v2.git ~/shipit-v2
-```
-
-**Register as a local marketplace** in your **user-level** settings (`~/.claude/settings.json`):
-
-```json
-{
+  },
   "extraKnownMarketplaces": {
     "shipit": {
       "source": {
@@ -68,29 +82,15 @@ git clone https://github.com/cla1redonald/shipit-v2.git ~/shipit-v2
 }
 ```
 
-> **Important:** Use the absolute path to your cloned `shipit-v2` directory. Merge these keys into your existing settings — don't replace the whole file.
+Use the absolute path to your cloned `shipit-v2` directory.
 
-**Alternative — Single session (no persistent install):**
+**Single session (no persistent install):**
 
 ```bash
 claude --plugin-dir ~/shipit-v2
 ```
 
-This loads the plugin for one session only. Use the marketplace method above for persistent access across all projects.
-
-### Step 3: Verify Installation
-
-Start a new Claude Code session and check that agents are available:
-
-```
-# Try invoking an agent
-Use @researcher to find existing solutions for task management apps
-
-# Try a skill
-/prd-review
-```
-
-You should see the agents listed in Claude Code's skill/agent list.
+</details>
 
 ## Quick Start
 
