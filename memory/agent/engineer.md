@@ -49,6 +49,9 @@
 - Hardcoding `data.slice(-N)` in components that should respond to filter range — downsample from the full filtered array instead
 - Assuming all numeric values are counts — add `valueFormat` props ('number' | 'percent' | 'currency') to display components from the start
 - Using `cat > file << 'EOF'` or Bash heredocs to create files — corrupts `settings.local.json` permission patterns; always use Write/Edit tools instead
+- Validating an ID with a regex that does not match the ID generator's alphabet — if you use nanoid, its default alphabet includes `_` and `-`; validate with `/^[a-zA-Z0-9_-]+$/`, not `/^[a-zA-Z0-9]+$/`
+- Spreading a full session/model object into `localStorage` or any persistence layer without stripping transient fields — fields like `isStreaming`, `isLoading`, `isPending` must be explicitly omitted before persist; use destructuring: `const { isStreaming, ...persistable } = session`
+- Duplicating validation constants between the client (e.g., `MAX_CHARS = 1000`) and the server schema (e.g., Zod `max(2000)`) — the server schema is the source of truth; derive or re-export the constant from there, never set it independently
 
 ## Type Propagation Rule
 When adding a required field to a type, grep entire codebase. The missed places are always: migration functions, test fixtures, factory functions, mock data, seed scripts, default objects.
@@ -74,6 +77,13 @@ When adding a required field to a type, grep entire codebase. The missed places 
 **Learning:** Weather Mood's Claude prompt continued generating `SoundscapeProfile` (~700 tokens) after the Web Audio synth was removed. The unused output was invisible in normal testing but wasted tokens and latency on every request.
 **Action:** When removing a feature, grep prompt files for references to the removed feature. For TypeScript-based prompts, search for type names, field names, and examples. Remove unused output fields from AI prompts immediately. If using structured output schemas, ensure the schema matches only what the application actually uses.
 **Source:** Weather Mood SoundscapeProfile removal, 2026-02-07.
+
+## Streaming State: Track Concerns Separately
+
+**Context:** When implementing streaming APIs (Anthropic, OpenAI) that interleave tool_use and text blocks in a single stream
+**Learning:** ProveIt's `searching:false` emission was gated on a `textBlockStarted` flag. The assumption: a text block would always precede a tool_use block. In practice, research-phase streams start immediately with `tool_use` (web search), so `textBlockStarted` was never set when `searching:false` needed to fire. The status indicator was stuck in "searching" state for the entire research phase.
+**Action:** Track each observable concern as an independent state variable. Do not reuse one flag (e.g., `textBlockStarted`) to proxy a different concern (e.g., "has the search phase ended"). Specifically: `searchingActive` should be set true on first `tool_use` block and false when the first substantive text block begins — these are two separate events, not one. When adding state to a streaming parser, ask "what exact event changes this state?" — if the answer involves an unrelated event, the state is incorrectly coupled.
+**Source:** ProveIt web build, 2026-02-22. `searching:false` was never emitted when streams started with tool_use blocks (~80% of Full Validation requests).
 
 ## Cross-Agent Feedback
 - Architecture gaps → tell @retro to update @architect's memory
