@@ -112,7 +112,7 @@ Use @reviewer to review the code
 
 ```
 /orchestrate    — Launch a full orchestrated build (main session)
-/shipit         — Enforced commit workflow (test → typecheck → build → commit → retro → docs → push)
+/shipit         — Enforced commit workflow (test → typecheck → build → commit → retro → docs → push → PR → review → retro → merge)
 /prd-review     — Review and improve a PRD
 /code-review    — Structured code review
 /prd-threads    — Convert a PRD into executable implementation threads
@@ -180,7 +180,9 @@ shipit-v2/
 │   ├── reasoning-levels.md  # Task complexity assessment
 │   ├── quality-gates.md     # Gate definitions
 │   ├── phase-checklists.md  # Phase checklists and deliverables
-│   └── recommended-hooks.md # Recommended project hooks
+│   ├── recommended-hooks.md # Recommended project hooks
+│   └── case-studies/        # Real builds documented end-to-end
+├── tests/                   # Framework validation suite (190 tests)
 ├── memory/                  # Hybrid learning system
 │   ├── shared/              # Institutional knowledge (all agents read)
 │   └── agent/               # Per-agent knowledge (graduated by @retro)
@@ -268,6 +270,18 @@ ShipIt coordinates multiple agents, each consuming tokens. Usage scales with pro
 - **Start with individual agents** (`@engineer`, `@reviewer`) to get value without the full orchestration overhead
 - **The orchestrator is lightweight** — it delegates to specialists and lets Claude coordinate natively
 - **Use `/orchestrate` for real projects**, individual agents for quick tasks
+
+## Built with ShipIt
+
+### Focus Timer (Pomodoro)
+
+A single-page Pomodoro timer built using the full orchestrated workflow. 361 tests, 93 kB bundle, zero deploy failures.
+
+- **Repo:** https://github.com/cla1redonald/focus-timer
+- **Live:** https://focus-timer-silk-seven.vercel.app
+- **Case study:** [docs/case-studies/focus-timer.md](docs/case-studies/focus-timer.md)
+
+The build used 11 agents across 7 phases, with parallel design (@architect + @designer) and parallel build threads (sound + keyboard shortcuts). The code review caught 3 must-fix bugs before shipping.
 
 ## License
 
