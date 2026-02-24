@@ -145,6 +145,7 @@ After completing any thread or phase, agents record what was done. This provides
 - [ ] Security issues addressed
 - [ ] Quality issues flagged with severity
 - [ ] No must-fix items remaining
+- [ ] Review findings evaluated by @retro for graduation to committed memory
 
 **@docs checklist:**
 - [ ] README complete
@@ -167,7 +168,7 @@ After completing any thread or phase, agents record what was done. This provides
 
 ### Phase 7: Ship
 **Responsible:** @orchestrator
-**Requires:** @retro invocation before final summary
+**Requires:** @retro invocation after Phase 6 review (post-review retro) AND before final summary
 
 **Ship Checklist (Final Gate):**
 

@@ -40,7 +40,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | Skill | Use For |
 |-------|---------|
 | `/orchestrate` | Launch full orchestrated build (orchestrator as main session) |
-| `/shipit` | Enforced commit workflow — test, typecheck, build, commit, retro, docs, push, PR, review, merge |
+| `/shipit` | Enforced commit workflow — test, typecheck, build, commit, retro, docs, push, PR, review, retro, merge |
 | `/prd-review` | Review and improve a PRD |
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |
@@ -151,7 +151,7 @@ If you find any of these terms in ShipIt files (outside this table), it is a bug
 | Single focused task (write code, review, research) | Individual agent (`@engineer`, `@reviewer`, etc.) |
 | Multi-perspective exploration or brainstorm | Native Agent Teams — create a team with custom roles |
 | Full product build or complex multi-phase feature | `/orchestrate` — loads orchestrator as team lead |
-| Commit and push with quality verification | `/shipit` — test, typecheck, build, commit, retro, docs, push |
+| Commit, review, and merge with quality verification | `/shipit` — test, typecheck, build, commit, retro, docs, push, PR, review, retro, merge |
 
 The orchestrator delegates to specialist agents — it never does the work itself. For simple tasks, invoke agents directly without the orchestrator.
 

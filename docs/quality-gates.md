@@ -99,10 +99,10 @@ The orchestrator verifies gates at phase transitions before spawning the next ag
 
 ---
 
-## Gate 4: Code Review
+## Gate 4: Code Review + Post-Review Retro
 
 **When:** After feature implementation, before merge
-**Gatekeeper:** @reviewer
+**Gatekeeper:** @reviewer (review) + @retro (learning capture)
 **Blocks:** Merge to main
 **Type:** Soft -- flags issues for later in autonomous mode
 **Hook Enforcement:** `pre-push-check.js` blocks `git push` if tests fail or build fails
@@ -119,12 +119,17 @@ The orchestrator verifies gates at phase transitions before spawning the next ag
 | Error handling present | Errors caught and handled gracefully |
 | FRONTEND_GUIDELINES.md followed | Colours, spacing, typography match design tokens |
 | TECH_STACK.md respected | No unapproved packages introduced |
+| Review findings captured | @retro invoked with review output, learnings evaluated for graduation |
 
 ### Severity Levels
 
 - **Must Fix** - Blocks merge
 - **Should Fix** - Fix before ship, doesn't block merge
 - **Nice to Have** - Optional improvements
+
+### Post-Review Retro
+
+After @reviewer completes the review, @retro is invoked to evaluate findings as potential learnings. This is part of Gate 4 completion — the gate is not fully passed until @retro has processed the review output. See `/shipit` Step 11 for the full workflow.
 
 ---
 
@@ -186,7 +191,7 @@ The orchestrator verifies gates at phase transitions before spawning the next ag
 | 1. PRD Approval | HARD | Orchestrator checkpoint | Stops. Requires human approval. |
 | 2. Architecture Review | Soft | Orchestrator checkpoint | Logs warning to memory. Continues. |
 | 3. Infrastructure Ready | Soft | Orchestrator checkpoint | Logs warning to memory. Continues if basics work. |
-| 4. Code Review | Soft | `pre-push-check.js` hook | Hook blocks `git push`. Warning logged. |
+| 4. Code Review + Post-Review Retro | Soft | `pre-push-check.js` hook | Hook blocks `git push`. @retro captures learnings. Warning logged. |
 | 5. Security Scan | HARD | `security-scan.js` hook | Hook blocks `vercel --prod`. Stops. |
 | 6. Ship Ready | HARD | `post-completion.js` hook | Hook validates on Stop. Stops if not ready. |
 

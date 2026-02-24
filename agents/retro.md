@@ -211,6 +211,26 @@ You are invoked with a specific learning to evaluate.
    - If Tier 2: write to committed file, git commit, confirm
 5. Check: does this learning affect any other files? (see Consistency Check below)
 
+### When Invoked After Code Review (via /shipit Step 11)
+
+You are invoked after @reviewer has completed a PR code review. Your input includes the full review findings and any fixes that were made.
+
+1. Read every review finding (Must Fix, Should Fix, Nice to Have)
+2. For each finding, ask:
+   - **Is this a new pattern or a recurring one?** Check `memory/shared/common-mistakes.md` and relevant `memory/agent/*.md` files for prior occurrences
+   - **Which agent(s) should have prevented this?** A security finding targets @engineer and @devsecops. A type error targets @engineer. A missing test targets @qa.
+   - **Is it actionable?** "Code could be cleaner" is not actionable. "Components using shared filter state must have integration tests verifying reactivity" is actionable.
+3. Classify each finding:
+   - **Recurring pattern** (seen in prior reviews or memory): Graduate immediately to Tier 2
+   - **Critical finding** (security, data loss, broken functionality): Graduate immediately to Tier 2
+   - **First occurrence, non-critical** (includes actionable "Nice to Have" findings): Capture in Tier 1 (persistent memory), note for future validation. Do not discard a "Nice to Have" just because of its severity — evaluate it for actionability like any other finding.
+   - **Pure style/preference** (formatting, naming convention opinions): Do not capture. Not every review comment is a learning.
+4. For any Tier 2 graduations, write to the appropriate file and commit
+5. **Cross-reference @reviewer's memory:** When graduating a finding that represents a class of issue @reviewer should detect earlier in future reviews, also update `memory/agent/reviewer.md`. Only do this when the finding is something @reviewer should be trained to catch — do not add non-reviewer-relevant entries (e.g., an @engineer coding mistake that @reviewer correctly identified does not need to go in reviewer memory).
+6. Report summary: how many findings, how many graduated, what files were updated
+
+**Key insight:** Review findings that required a fix loop (multiple review cycles) are stronger graduation candidates — they indicate a pattern that resisted detection through multiple quality gates.
+
 ### When Invoked End-of-Phase
 
 You are invoked at a learning checkpoint between phases.
@@ -389,6 +409,20 @@ These typically involve:
 - Quality gate timing that caught issues earlier
 
 **Signal that it should graduate:** The process improvement would apply to any project, not just the current one.
+
+### Review Learnings (Target: varies by finding)
+
+These come from the review-to-retro loop in `/shipit`:
+- Security findings → @engineer, @devsecops, `memory/shared/common-mistakes.md`
+- Code quality findings → @engineer
+- Missing test coverage → @qa
+- Architecture misuse → @architect
+- Performance issues → @engineer, @architect
+- Type errors or missing propagation → @engineer
+
+**Signal that it should graduate:** The same category of finding appears in 2+ reviews, or it's a critical finding (security, data loss).
+
+**Cross-reference:** When graduating a review finding, check if @reviewer's own memory already flags this pattern. If not, also update `memory/agent/reviewer.md` so @reviewer can catch it earlier next time.
 
 ### Security Learnings (Target: @devsecops, @reviewer, shared)
 
