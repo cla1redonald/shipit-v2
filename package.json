@@ -1,0 +1,13 @@
+{
+  "name": "shipit-v2",
+  "version": "2.0.0",
+  "description": "ShipIt — a team of 12 specialist AI agents for building products from idea to shipped software",
+  "private": true,
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8"
+  }
+}
