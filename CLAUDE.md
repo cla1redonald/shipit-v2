@@ -40,7 +40,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | Skill | Use For |
 |-------|---------|
 | `/orchestrate` | Launch full orchestrated build (orchestrator as main session) |
-| `/shipit` | Enforced commit workflow — test, typecheck, build, commit, retro, docs, push |
+| `/shipit` | Enforced commit workflow — test, typecheck, build, commit, retro, docs, push, PR, review, merge |
 | `/prd-review` | Review and improve a PRD |
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |

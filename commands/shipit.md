@@ -1,10 +1,10 @@
 ---
-description: Enforced commit workflow — test, typecheck, build, commit, retro, docs, push. Ensures quality gates pass and mandatory agents run before shipping.
+description: Enforced commit workflow — test, typecheck, build, commit, retro, docs, push, PR, review, merge. Ensures quality gates pass, mandatory agents run, and code is reviewed before shipping.
 ---
 
 # /shipit — Enforced Commit Workflow
 
-You are running the `/shipit` commit workflow. This skill enforces the correct sequence of steps before pushing code. Every step must pass before proceeding to the next.
+You are running the `/shipit` commit workflow. This skill enforces the correct sequence of steps before shipping code. Every step must pass before proceeding to the next.
 
 ## Workflow Steps
 
@@ -80,10 +80,84 @@ If @docs identifies updates needed, make them before proceeding.
 ### Step 7: Push
 
 ```bash
-git push
+git push -u origin HEAD
 ```
 
 The `pre-push-check.js` hook will verify tests and build one more time before allowing the push.
+
+### Step 8: Create PR (NEVER SKIP)
+
+**This step is mandatory.** After pushing, create a pull request.
+
+Check the current branch:
+
+```bash
+git branch --show-current
+```
+
+If on `main` or `master`, you must create a feature branch first:
+
+```bash
+git checkout -b [type]/[short-description]
+git push -u origin HEAD
+```
+
+Create the PR targeting the main branch:
+
+```bash
+gh pr create --title "[type]: [description]" --body "$(cat <<'EOF'
+## Summary
+[1-3 bullet points describing the change]
+
+## Test plan
+- [ ] Tests pass (`npm test`)
+- [ ] Types check (`tsc --noEmit`)
+- [ ] Build succeeds (`npm run build`)
+EOF
+)"
+```
+
+### Step 9: Code Review (NEVER SKIP)
+
+**This step is mandatory.** Invoke @reviewer to review the PR.
+
+```
+Use the Task tool to invoke @reviewer (model: "sonnet") with:
+- The PR number from Step 8
+- Instruction to run: gh pr diff [PR_NUMBER]
+- The full code-review checklist from commands/code-review.md
+- Instruction to report findings using the standard severity levels (Must Fix / Should Fix / Nice to Have)
+```
+
+Wait for the review to complete.
+
+**Evaluate the verdict:**
+
+| Verdict | Action |
+|---------|--------|
+| **Ready to ship** | Proceed to Step 10 |
+| **Fix and re-review** | Fix all "Must Fix" and "Should Fix" issues, re-run Steps 1-3 (test, typecheck, build), commit fixes, push, then re-run Step 9 |
+| **Major rework** | Stop. Present the review findings to the user for guidance before continuing |
+
+**Fix loop:** If fixing review feedback, commit fixes with prefix `fix(review):`, push, then re-invoke @reviewer on the updated PR. Repeat until the verdict is "Ready to ship". Maximum 3 review cycles — if not resolved after 3 rounds, stop and ask the user.
+
+### Step 10: Merge PR
+
+Once the review verdict is "Ready to ship":
+
+```bash
+gh pr merge [PR_NUMBER] --squash --delete-branch
+```
+
+Use `--squash` to keep the main branch history clean. The `--delete-branch` flag cleans up the feature branch.
+
+Confirm the merge succeeded:
+
+```bash
+gh pr view [PR_NUMBER] --json state -q '.state'
+```
+
+Expected output: `MERGED`.
 
 ## Failure Recovery
 
@@ -96,6 +170,9 @@ The `pre-push-check.js` hook will verify tests and build one more time before al
 | @retro | Retry invocation — never skip |
 | @docs | Retry invocation — never skip |
 | Push | Check hook output, fix issues, retry |
+| Create PR | Check `gh auth status`, ensure branch is pushed, retry |
+| Code review | If @reviewer fails to invoke, retry. If review finds issues, fix and re-review |
+| Merge | Check for merge conflicts, resolve, re-run Steps 1-3, push, retry merge |
 
 ## What This Skill Prevents
 
@@ -105,3 +182,5 @@ The `pre-push-check.js` hook will verify tests and build one more time before al
 - Skipping @retro (the most common failure mode in past projects)
 - Skipping @docs (documentation drift)
 - Pushing without quality gate verification
+- Merging unreviewed code to main
+- Shipping code with known Must Fix or Should Fix issues
