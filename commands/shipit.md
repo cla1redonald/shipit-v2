@@ -36,7 +36,23 @@ npm run build
 
 If build fails, fix it. The build command in `package.json` is what CI/Vercel runs — `tsc --noEmit` alone is insufficient.
 
-### Step 4: Commit
+### Step 4: Ensure Feature Branch
+
+Before committing, check the current branch:
+
+```bash
+git branch --show-current
+```
+
+If on `main` or `master`, create a feature branch first:
+
+```bash
+git checkout -b [type]/[short-description]
+```
+
+All work must be committed to a feature branch, never directly to main.
+
+### Step 5: Commit
 
 Stage and commit changes with a clear message:
 
@@ -47,7 +63,7 @@ git commit -m "[type]: [description]"
 
 Use conventional commit prefixes: `feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`.
 
-### Step 5: Run @retro (NEVER SKIP)
+### Step 6: Run @retro (NEVER SKIP)
 
 **This step is mandatory. There is no acceptable justification for skipping it.**
 
@@ -62,7 +78,7 @@ Use the Task tool to invoke @retro with:
 
 Wait for @retro to complete before proceeding.
 
-### Step 6: Run @docs (NEVER SKIP)
+### Step 7: Run @docs (NEVER SKIP)
 
 **This step is mandatory. There is no acceptable justification for skipping it.**
 
@@ -77,7 +93,17 @@ Use the Task tool to invoke @docs with:
 
 If @docs identifies updates needed, make them before proceeding.
 
-### Step 7: Push
+### Step 8: Push
+
+**Prerequisite:** Verify GitHub access before pushing:
+
+```bash
+gh auth status
+```
+
+If auth fails, stop and tell the user to run `gh auth login`.
+
+Push the feature branch:
 
 ```bash
 git push -u origin HEAD
@@ -85,24 +111,17 @@ git push -u origin HEAD
 
 The `pre-push-check.js` hook will verify tests and build one more time before allowing the push.
 
-### Step 8: Create PR (NEVER SKIP)
+### Step 9: Create PR (NEVER SKIP)
 
 **This step is mandatory.** After pushing, create a pull request.
 
-Check the current branch:
+First check if a PR already exists for this branch:
 
 ```bash
-git branch --show-current
+gh pr view --json number -q '.number' 2>/dev/null
 ```
 
-If on `main` or `master`, you must create a feature branch first:
-
-```bash
-git checkout -b [type]/[short-description]
-git push -u origin HEAD
-```
-
-Create the PR targeting the main branch:
+If a PR already exists, save that number and skip to Step 10. Otherwise, create one:
 
 ```bash
 gh pr create --title "[type]: [description]" --body "$(cat <<'EOF'
@@ -117,17 +136,33 @@ EOF
 )"
 ```
 
-### Step 9: Code Review (NEVER SKIP)
+**Capture the PR number** from the URL printed by `gh pr create` (the final number in the URL path). Save it for Steps 10 and 11. You can also retrieve it with:
 
-**This step is mandatory.** Invoke @reviewer to review the PR.
+```bash
+gh pr view --json number -q '.number'
+```
+
+### Step 10: Code Review (NEVER SKIP)
+
+**This step is mandatory.** Review the PR before merging.
+
+First, fetch the PR diff yourself:
+
+```bash
+gh pr diff [PR_NUMBER]
+```
+
+Then invoke @reviewer to review it:
 
 ```
 Use the Task tool to invoke @reviewer (model: "sonnet") with:
-- The PR number from Step 8
-- Instruction to run: gh pr diff [PR_NUMBER]
+- The PR number
+- The full PR diff output (paste the diff into the prompt)
 - The full code-review checklist from commands/code-review.md
-- Instruction to report findings using the standard severity levels (Must Fix / Should Fix / Nice to Have)
+- Instruction to report findings using severity levels (Must Fix / Should Fix / Nice to Have)
 ```
+
+Note: @reviewer does not have Bash access — you must provide the diff content in the task prompt.
 
 Wait for the review to complete.
 
@@ -135,13 +170,13 @@ Wait for the review to complete.
 
 | Verdict | Action |
 |---------|--------|
-| **Ready to ship** | Proceed to Step 10 |
-| **Fix and re-review** | Fix all "Must Fix" and "Should Fix" issues, re-run Steps 1-3 (test, typecheck, build), commit fixes, push, then re-run Step 9 |
+| **Ready to ship** | Proceed to Step 11 |
+| **Fix and re-review** | Fix all "Must Fix" and "Should Fix" issues, re-run Steps 1-3 (test, typecheck, build), commit with prefix `fix(review):`, push, then re-run Step 10 |
 | **Major rework** | Stop. Present the review findings to the user for guidance before continuing |
 
-**Fix loop:** If fixing review feedback, commit fixes with prefix `fix(review):`, push, then re-invoke @reviewer on the updated PR. Repeat until the verdict is "Ready to ship". Maximum 3 review cycles — if not resolved after 3 rounds, stop and ask the user.
+**Fix loop:** Maximum 3 review cycles. If not resolved after 3 rounds, stop and ask the user. Leave the PR open for the user to resolve manually.
 
-### Step 10: Merge PR
+### Step 11: Merge PR
 
 Once the review verdict is "Ready to ship":
 
@@ -157,7 +192,7 @@ Confirm the merge succeeded:
 gh pr view [PR_NUMBER] --json state -q '.state'
 ```
 
-Expected output: `MERGED`.
+Expected output: `MERGED`. If not, wait 5 seconds and retry once before reporting a failure.
 
 ## Failure Recovery
 
@@ -166,16 +201,18 @@ Expected output: `MERGED`.
 | Tests | Fix failing tests, re-run from Step 1 |
 | Type check | Fix type errors, re-run from Step 2 |
 | Build | Fix build errors, re-run from Step 3 |
-| Commit | Resolve staging issues, retry Step 4 |
+| Feature branch | If `git checkout -b` fails (branch exists), use `git checkout [branch]` |
+| Commit | Resolve staging issues, retry Step 5 |
 | @retro | Retry invocation — never skip |
 | @docs | Retry invocation — never skip |
-| Push | Check hook output, fix issues, retry |
-| Create PR | Check `gh auth status`, ensure branch is pushed, retry |
-| Code review | If @reviewer fails to invoke, retry. If review finds issues, fix and re-review |
+| Push | Check `gh auth status`, check hook output, fix issues, retry |
+| Create PR | If PR already exists, use `gh pr view --json number -q '.number'` and continue. If auth fails, run `gh auth login` |
+| Code review | If @reviewer fails to invoke, retry. If review finds issues: fix, re-run Steps 1-3, commit, push, then retry Step 10 |
 | Merge | Check for merge conflicts, resolve, re-run Steps 1-3, push, retry merge |
 
 ## What This Skill Prevents
 
+- Committing directly to main without a PR review
 - Pushing code without tests passing
 - Pushing code with type errors
 - Pushing code that doesn't build
