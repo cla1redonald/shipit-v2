@@ -1,5 +1,5 @@
 ---
-description: Enforced commit workflow — test, typecheck, build, commit, retro, docs, push, PR, review, merge. Ensures quality gates pass, mandatory agents run, and code is reviewed before shipping.
+description: Enforced commit workflow — test, typecheck, build, commit, retro, docs, push, PR, review, retro, merge. Ensures quality gates pass, mandatory agents run, and code is reviewed before shipping.
 ---
 
 # /shipit — Enforced Commit Workflow
@@ -170,7 +170,7 @@ Wait for the review to complete.
 
 | Verdict | Action |
 |---------|--------|
-| **Ready to ship** | Proceed to Step 11 |
+| **Ready to ship** | Proceed to Step 11 (Post-Review Retro) |
 | **Fix and re-review** | Fix all "Must Fix" and "Should Fix" issues, re-run Steps 1-3 (test, typecheck, build), commit with prefix `fix(review):`, push, then re-run Step 10 |
 | **Major rework** | Stop. Present the review findings to the user for guidance before continuing |
 
@@ -185,9 +185,10 @@ Use the Task tool to invoke @retro (model: "opus") with:
 - The complete review output (all Must Fix, Should Fix, and Nice to Have findings)
 - What was fixed during the review fix loop (if anything)
 - How many review cycles were needed
-- Whether any findings represent recurring patterns seen in past reviews
-- Instruction to evaluate each finding for Tier 1 vs Tier 2 graduation
+- Instruction to cross-reference findings against existing committed memory and evaluate each for Tier 1 vs Tier 2 graduation
 ```
+
+Note: Recurrence detection is @retro's responsibility — do not pre-classify findings yourself. Provide the raw review data and let @retro assess against its memory.
 
 @retro will:
 1. Evaluate each review finding as a potential learning
@@ -231,7 +232,7 @@ Expected output: `MERGED`. If not, wait 5 seconds and retry once before reportin
 | Push | Check `gh auth status`, check hook output, fix issues, retry |
 | Create PR | If PR already exists, use `gh pr view --json number -q '.number'` and continue. If auth fails, run `gh auth login` |
 | Code review | If @reviewer fails to invoke, retry. If review finds issues: fix, re-run Steps 1-3, commit, push, then retry Step 10 |
-| Post-review retro | Retry invocation — never skip. Review learnings must be captured before merge |
+| Post-review retro | Retry invocation — never skip |
 | Merge | Check for merge conflicts, resolve, re-run Steps 1-3, push, retry merge |
 
 ## What This Skill Prevents
@@ -245,3 +246,4 @@ Expected output: `MERGED`. If not, wait 5 seconds and retry once before reportin
 - Pushing without quality gate verification
 - Merging unreviewed code to main
 - Shipping code with known Must Fix or Should Fix issues
+- Losing review learnings that could prevent recurring issues across projects

@@ -28,7 +28,7 @@ When updating committed knowledge (memory/agent/ or memory/shared/), also check:
 
 **Context:** @retro is now invoked after every PR code review in the `/shipit` workflow (Step 11).
 **Learning:** Review findings are the second-highest-signal learning source after user corrections. A "Must Fix" that slipped through implementation reveals a gap in agent knowledge that, if not captured, will recur. Review findings that needed multiple fix cycles are the strongest graduation candidates.
-**Action:** When invoked after review, cross-reference every finding against existing committed memory. Recurring patterns graduate immediately. First-time non-critical findings go to Tier 1. Always update both the originating agent's memory AND `memory/agent/reviewer.md` so the pattern is caught earlier next time.
+**Action:** When invoked after review, cross-reference every finding against existing committed memory. Recurring patterns graduate immediately. First-time non-critical findings (including actionable "Nice to Have" items) go to Tier 1. Update `memory/agent/reviewer.md` only when the finding represents a class of issue @reviewer should detect earlier — not for every finding.
 **Source:** ShipIt workflow enhancement, 2026-02-24.
 
 ## Meta-Patterns About Learning
