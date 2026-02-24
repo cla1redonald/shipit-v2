@@ -136,7 +136,7 @@ EOF
 )"
 ```
 
-**Capture the PR number** from the URL printed by `gh pr create` (the final number in the URL path). Save it for Steps 10 and 11. You can also retrieve it with:
+**Capture the PR number** from the URL printed by `gh pr create` (the final number in the URL path). Save it for Steps 10-12. You can also retrieve it with:
 
 ```bash
 gh pr view --json number -q '.number'
@@ -176,7 +176,30 @@ Wait for the review to complete.
 
 **Fix loop:** Maximum 3 review cycles. If not resolved after 3 rounds, stop and ask the user. Leave the PR open for the user to resolve manually.
 
-### Step 11: Merge PR
+### Step 11: Post-Review Retro (NEVER SKIP)
+
+**This step is mandatory.** After the code review is complete (regardless of verdict), invoke @retro to capture learnings from the review.
+
+```
+Use the Task tool to invoke @retro (model: "opus") with:
+- The complete review output (all Must Fix, Should Fix, and Nice to Have findings)
+- What was fixed during the review fix loop (if anything)
+- How many review cycles were needed
+- Whether any findings represent recurring patterns seen in past reviews
+- Instruction to evaluate each finding for Tier 1 vs Tier 2 graduation
+```
+
+@retro will:
+1. Evaluate each review finding as a potential learning
+2. Check if any findings match patterns already seen in committed memory
+3. Graduate recurring patterns or critical findings to Tier 2 (`memory/agent/` or `memory/shared/`)
+4. Report what was captured and what was graduated
+
+Wait for @retro to complete before proceeding to merge.
+
+**Why this matters:** Review findings are high-signal learning material. A "Must Fix" that slipped through implementation reveals a gap in agent knowledge. Without this step, the same mistakes recur across projects.
+
+### Step 12: Merge PR
 
 Once the review verdict is "Ready to ship":
 
@@ -208,6 +231,7 @@ Expected output: `MERGED`. If not, wait 5 seconds and retry once before reportin
 | Push | Check `gh auth status`, check hook output, fix issues, retry |
 | Create PR | If PR already exists, use `gh pr view --json number -q '.number'` and continue. If auth fails, run `gh auth login` |
 | Code review | If @reviewer fails to invoke, retry. If review finds issues: fix, re-run Steps 1-3, commit, push, then retry Step 10 |
+| Post-review retro | Retry invocation — never skip. Review learnings must be captured before merge |
 | Merge | Check for merge conflicts, resolve, re-run Steps 1-3, push, retry merge |
 
 ## What This Skill Prevents
