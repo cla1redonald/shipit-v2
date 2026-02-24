@@ -24,8 +24,16 @@ When updating committed knowledge (memory/agent/ or memory/shared/), also check:
 - **Phaser PostFX pipeline init (Retro Pinball, 2026-02-06):** `new CRTFilter(game)` + `setPostPipeline(instance)` crashed at runtime because Phaser needs to instantiate the pipeline itself to compile the WebGL shader. Fix: pass the *class* to `setPostPipeline(CRTFilter)`, then retrieve with `getPostPipeline(CRTFilter)`. This passed code review and all 140 tests because unit tests don't run WebGL. **Lesson:** Framework lifecycle methods (Phaser pipelines, React refs, etc.) that require the framework to instantiate objects are invisible to static review and mocked tests — only caught by running the app.
 - **`Date.now()` vs game clock (Retro Pinball, 2026-02-06):** `GravityWell` used `Date.now()` for capture timing, which keeps ticking during pause. Fix: use `this.scene.time.now`. **Lesson:** Real-time clocks in pausable game loops are always wrong — use the engine's time source.
 
+## Review-to-Retro Loop
+
+**Context:** @retro is now invoked after every PR code review in the `/shipit` workflow (Step 11).
+**Learning:** Review findings are the second-highest-signal learning source after user corrections. A "Must Fix" that slipped through implementation reveals a gap in agent knowledge that, if not captured, will recur. Review findings that needed multiple fix cycles are the strongest graduation candidates.
+**Action:** When invoked after review, cross-reference every finding against existing committed memory. Recurring patterns graduate immediately. First-time non-critical findings go to Tier 1. Always update both the originating agent's memory AND `memory/agent/reviewer.md` so the pattern is caught earlier next time.
+**Source:** ShipIt workflow enhancement, 2026-02-24.
+
 ## Meta-Patterns About Learning
 - Corrections from users are highest-signal learning events — capture immediately
+- Review findings are second-highest-signal — always invoke @retro after code review
 - "We'll do it later" is the most common failure pattern across all categories
 - Structural enforcement beats documented rules every time
 - The summary/completion feeling triggers early stopping — put mandatory steps BEFORE the natural stopping point
