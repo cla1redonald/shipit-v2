@@ -118,24 +118,24 @@ describe('Eliminated Concepts — not referenced in ShipIt files', () => {
           // If this is an allowed file, check whether the occurrence is in a
           // legitimate context (the definition/elimination table).
           if (isAllowedFile && concept.legitimateContext) {
-            // Find lines containing the pattern and check if they're near the legitimate context
+            // Find the legitimate section (e.g., the "Eliminated Concepts" table) and check
+            // whether ALL occurrences of the pattern fall within that section's boundaries.
             const lines = content.split('\n');
-            let inLegitimateSection = false;
+            const sectionStart = lines.findIndex((l: string) => l.includes(concept.legitimateContext!));
+            // Section ends at the next ## heading (or end of file)
+            const sectionEnd = lines.findIndex(
+              (l: string, i: number) => i > sectionStart && sectionStart >= 0 && /^## /.test(l)
+            );
+            const effectiveEnd = sectionEnd === -1 ? lines.length : sectionEnd;
 
-            for (const line of lines) {
-              if (line.includes(concept.legitimateContext)) {
-                inLegitimateSection = true;
-              }
-              if (inLegitimateSection && line.includes(pattern)) {
-                // This is a legitimate occurrence (in the "Eliminated Concepts" table)
-                break;
-              }
-              // If we hit the pattern before the legitimate context section, it's a violation
-              if (!inLegitimateSection && line.includes(pattern)) {
+            for (let i = 0; i < lines.length; i++) {
+              if (!lines[i].includes(pattern)) continue;
+              const isInLegitimateSection =
+                sectionStart >= 0 && i >= sectionStart && i < effectiveEnd;
+              if (!isInLegitimateSection) {
                 violations.push(
-                  `${path.relative(ROOT, filePath)}: "${pattern}" found outside legitimate context`
+                  `${path.relative(ROOT, filePath)}:${i + 1}: "${pattern}" found outside legitimate context`
                 );
-                break;
               }
             }
           } else if (!isAllowedFile) {

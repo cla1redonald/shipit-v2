@@ -134,7 +134,7 @@ describe('Model Consistency — orchestrator.md agent table vs agent YAML', () =
   const orchestratorContent = readFile(ORCHESTRATOR_MD);
 
   // The orchestrator lists agents in a table with header "Agent | Model | Best For"
-  const orchestratorAgentRows = parseMarkdownTable(orchestratorContent, 'Agent');
+  const orchestratorAgentRows = parseMarkdownTable(orchestratorContent, 'Agent | Model | Best For');
 
   it('orchestrator.md agent table has rows', () => {
     expect(orchestratorAgentRows.length).toBeGreaterThan(0);

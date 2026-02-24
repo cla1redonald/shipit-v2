@@ -6,6 +6,11 @@ export const ROOT = path.resolve(__dirname, '..');
 /**
  * Parse YAML frontmatter from a markdown file.
  * Returns null if no frontmatter is found.
+ *
+ * LIMITATION: Only parses simple `key: value` pairs on a single line.
+ * Block sequences (e.g., `skills:\n  - value`) and multi-line values are
+ * intentionally excluded. Fields known to use block syntax: `skills`, `hooks`.
+ * Tests should not rely on these fields being present in the parsed output.
  */
 export function parseFrontmatter(content: string): Record<string, string> | null {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
@@ -15,10 +20,14 @@ export function parseFrontmatter(content: string): Record<string, string> | null
   const result: Record<string, string> = {};
 
   for (const line of yaml.split('\n')) {
-    // Only parse simple key: value pairs (not nested YAML)
-    const kv = line.match(/^(\w[\w-]*):\s*(.+)$/);
-    if (kv) {
-      result[kv[1]] = kv[2].trim();
+    // Match key: value (value required) or key: (empty value, used for block sequences)
+    const kv = line.match(/^(\w[\w-]*):\s*(.*)$/);
+    if (kv && !line.startsWith('  ')) {
+      const value = kv[2].trim();
+      if (value) {
+        result[kv[1]] = value;
+      }
+      // Empty values (block sequences) are intentionally not stored
     }
   }
 
@@ -32,8 +41,8 @@ export function listMdFiles(dir: string): string[] {
   if (!fs.existsSync(dir)) return [];
   return fs
     .readdirSync(dir)
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => path.join(dir, f));
+    .filter((f: string) => f.endsWith('.md'))
+    .map((f: string) => path.join(dir, f));
 }
 
 /**

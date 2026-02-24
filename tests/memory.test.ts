@@ -32,13 +32,24 @@ describe('Agent memory files', () => {
   });
 
   it.each(agentNames)(
-    'agents/%s.md has a corresponding memory/agent/%s.md',
+    'agents/%s.md has a corresponding memory/agent/%s.md with content',
     (agentName) => {
       const memoryFile = path.join(MEMORY_AGENT_DIR, `${agentName}.md`);
       expect(
         fileExists(memoryFile),
         `memory/agent/${agentName}.md does not exist (every agent needs a memory file)`
       ).toBe(true);
+
+      const content = readFile(memoryFile);
+      // Memory files must have real content, not just a placeholder
+      expect(
+        content.length,
+        `memory/agent/${agentName}.md exists but is empty or too short (${content.length} bytes)`
+      ).toBeGreaterThan(100);
+      expect(
+        content,
+        `memory/agent/${agentName}.md has no section headings (## ) — likely a placeholder`
+      ).toMatch(/^## /m);
     }
   );
 });
