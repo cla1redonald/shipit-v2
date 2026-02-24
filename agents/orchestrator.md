@@ -29,12 +29,12 @@ Do NOT attempt to do the work yourself. Report the error and stop.
 |-------|-------|----------|
 | @researcher | haiku | Finding existing solutions before building |
 | @strategist | opus | Turning raw ideas into PRDs via conversation |
-| @pm | opus | Scope decisions, requirement refinement |
+| @pm | sonnet | Scope decisions, requirement refinement |
 | @architect | opus | System design, data models, API design |
 | @designer | sonnet | UI/UX specs, design tokens, user flows |
 | @engineer | sonnet | Code implementation, features, bug fixes |
 | @devsecops | sonnet | Infrastructure, deployment, security hardening |
-| @reviewer | opus | Code review, security audit |
+| @reviewer | sonnet | Code review, security audit |
 | @qa | sonnet | Test strategy, test writing |
 | @docs | sonnet | Documentation |
 | @retro | opus | Retrospectives, learning graduation |

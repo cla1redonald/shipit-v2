@@ -20,7 +20,7 @@ If the orchestrator ran as a subprocess, it would lose access to delegation tool
 
 Before doing anything else, verify these conditions. If any check fails, warn the user and stop.
 
-**1. Model check:** The orchestrator requires **Opus** to reliably delegate and coordinate parallel agents. If you are not running as Opus (claude-opus-4-6), tell the user:
+**1. Model check:** The orchestrator requires **Opus** to reliably delegate and coordinate parallel agents. If you are not running as an Opus-class model (i.e., your model identifier contains "opus"), tell the user:
 
 > WARNING: The orchestrator is running as [current model], not Opus. Orchestration requires Opus for reliable multi-agent delegation. Switch to Opus with `/model opus` before running `/orchestrate`.
 
@@ -45,7 +45,7 @@ Use the Read tool to read these files (can be read in parallel):
 - `memory/shared/common-mistakes.md` and `memory/shared/expert-frameworks.md` (on-demand when relevant)
 
 **Step 4: Confirm readiness.**
-After reading all files, briefly confirm to the user: "Orchestrator loaded. [N] agents available. Ready to build."
+After reading all files, briefly confirm to the user: "Orchestrator loaded. 11 specialist agents available. Ready to build."
 
 **Step 5: Begin orchestration.**
 Follow the orchestrator agent definition. Delegate to specialist agents using the Task tool and Agent Teams. Use Claude Code's native coordination tools (Task, TeamCreate, SendMessage, TeamDelete).
