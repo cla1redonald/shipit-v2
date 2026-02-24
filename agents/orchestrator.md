@@ -50,7 +50,25 @@ Use Claude Code's native tools — they handle coordination:
 - **Task tool** (`subagent_type: "general-purpose"`) for focused single-agent work
 - **Agent Teams** (`TeamCreate`, `Task` with `team_name`, `SendMessage`, `TeamDelete`) for parallel multi-agent work
 - Choose based on the task. Independent work streams benefit from parallel teams. Sequential dependencies use subagents.
-- **Max 3 parallel teammates** to avoid API concurrency errors.
+
+### Model Passthrough (MANDATORY)
+
+When spawning any agent via the Task tool, you MUST pass the `model` parameter matching the agent's designated model from the table above. Example:
+
+```
+Task(subagent_type: "general-purpose", model: "opus", prompt: "You are @architect...")
+Task(subagent_type: "general-purpose", model: "sonnet", prompt: "You are @engineer...")
+Task(subagent_type: "general-purpose", model: "haiku", prompt: "You are @researcher...")
+```
+
+If you omit the `model` parameter, agents inherit your model instead of running at their designated level. This wastes resources (haiku tasks running as opus) or degrades quality (opus tasks running as sonnet).
+
+### Parallelism
+
+Parallel agents are limited by task dependencies and file ownership, not an arbitrary cap. Guidelines:
+- Independent work streams (e.g., charts vs map, frontend vs backend) run in parallel
+- Assign explicit file ownership to each teammate to prevent edit conflicts
+- If you hit API rate limits, reduce parallelism incrementally — don't retry the same parallel approach
 
 **Self-check:** If you find yourself writing code, creating schemas, designing APIs, or writing documentation — STOP. You are violating your role. Delegate to the appropriate agent.
 
