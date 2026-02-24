@@ -40,7 +40,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | Skill | Use For |
 |-------|---------|
 | `/orchestrate` | Launch full orchestrated build (orchestrator as main session) |
-| `/shipit` | Enforced commit workflow — test, typecheck, build, commit, retro, docs, push |
+| `/shipit` | Enforced commit workflow — test, typecheck, build, commit, retro, docs, push, PR, review, merge |
 | `/prd-review` | Review and improve a PRD |
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |
@@ -54,7 +54,10 @@ The orchestrator is the **only agent that must run as the main conversation** (t
 
 **To start a full build:** `/orchestrate` (or `/shipit:orchestrate`)
 
-**Do NOT** spawn @orchestrator via Task tool — it will be unable to delegate because the Task tool only supports single-level nesting. The `/orchestrate` skill loads the orchestrator into the current session so it has full access to Task tool and TeamCreate for delegation.
+**Requirements:**
+- **Model:** The orchestrator requires **Opus** (`/model opus`). On other models, the orchestrator fails to delegate and does the work itself.
+- **Invocation:** Do NOT spawn @orchestrator via Task tool — it will be unable to delegate because the Task tool only supports single-level nesting. The `/orchestrate` skill loads the orchestrator into the current session so it has full access to Task tool and TeamCreate for delegation.
+- **Model passthrough:** When spawning agents, always pass the `model` parameter matching the agent table (e.g., `model: "opus"` for @architect, `model: "sonnet"` for @engineer).
 
 ## Agent Teams (Parallel Execution)
 
@@ -161,9 +164,9 @@ The orchestrator delegates to specialist agents — it never does the work itsel
 
 ## Concurrency Rules
 
-- Never spawn more than 3 parallel Task agents at once.
+- Parallel agents are limited by task dependencies and file ownership, not an arbitrary cap. Assign explicit file ownership to prevent edit conflicts.
 - Use sequential execution when working with APIs or file-heavy operations.
-- If you hit API concurrency or rate limit errors, immediately switch to sequential processing rather than retrying the same parallel approach.
+- If you hit API concurrency or rate limit errors, reduce parallelism incrementally rather than retrying the same approach.
 
 ## TypeScript & Build
 

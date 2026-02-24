@@ -235,6 +235,54 @@ The README listed 9 of 12 agents, omitting @pm, @devsecops, and @retro. Nobody c
 
 ---
 
+## Validation Schema / Generation Schema Mismatch
+
+### ID Generator Alphabet Not Reflected in Validation Regex
+
+**What happens:** An ID is generated with a library (e.g., nanoid) whose default alphabet includes characters (`_`, `-`) that the validation regex does not permit. IDs are generated successfully but rejected by the validator, causing silent failures for a fraction of requests — the fraction corresponding to IDs that happen to contain the excluded characters.
+
+**Root cause:** The developer writes a validation regex (`/^[a-zA-Z0-9]+$/`) based on their mental model of "alphanumeric IDs" without checking the actual output alphabet of the generator. nanoid's default alphabet is `A-Za-z0-9_-` (64 chars). The `_` and `-` appear in roughly 2/64 positions, so ~3% of IDs fail per character; a 21-char nanoid ID has ~48% probability of containing at least one `_` or `-`.
+
+**Prevention:** When adding a validation regex for a generated field, look up the generator's output alphabet first. For nanoid: use `/^[a-zA-Z0-9_-]+$/`. For UUID v4: use the full UUID pattern. Never assume "alphanumeric only" without verifying.
+
+**Detection:** @reviewer should cross-reference ID validation regexes against the ID generation call at the same codepath. If the regex does not explicitly allow every character in the generator's alphabet, flag as a must-fix blocker.
+
+**Source:** ProveIt web build, 2026-02-22. Full Validation was broken for ~40% of requests. @reviewer found this during spec review.
+
+---
+
+## Transient State Spreading Into Persistent Storage
+
+### Object Spread Leaks Ephemeral Fields Into localStorage / Database
+
+**What happens:** A session or model object contains both persistent fields (e.g., `messages`, `mode`, `sessionId`) and transient UI state fields (e.g., `isStreaming`, `isLoading`, `isPending`). When the object is saved to `localStorage` or a database using a spread (`{ ...session, updatedAt: now }`), the transient fields are included. On page reload or session resume, these fields are restored with stale values — e.g., `isStreaming: true` causes a perpetual streaming cursor on a finished session.
+
+**Root cause:** The developer adds a transient field to the session type for UI convenience without marking it as non-persistent. The persistence function uses a spread and silently includes every field.
+
+**Prevention:** Persistence functions must explicitly allowlist the fields they store, OR explicitly strip transient fields using destructuring before spreading. Convention: any field prefixed with `is` that refers to an async UI state (`isStreaming`, `isLoading`, `isSaving`) should be stripped before persistence. Document the allowlist/exclusion list in the session type as a comment.
+
+**Detection:** @qa should look for `isStreaming`, `isLoading`, `isPending`, `isFetching` fields in any type that is serialized to `localStorage`, Supabase, or any database. Any match is a likely bug.
+
+**Source:** ProveIt web build, 2026-02-22. `isStreaming: true` persisted across sessions, showing a stuck streaming cursor on resume.
+
+---
+
+## Duplicated Validation Constants Across Client and Server
+
+### Client-Side Constant Set Independently From Server Schema
+
+**What happens:** A validation limit (e.g., `MAX_CHARS`) is hardcoded in two places: the UI component (`const MAX_CHARS = 1000`) and the server-side schema (Zod `z.string().max(2000)`). The two values diverge, causing the UI to reject valid inputs that the server would accept, or vice versa. Users see a validation error they can't explain, or data that bypasses client validation hits the server and fails there.
+
+**Root cause:** The developer sets the client constant "by feel" without checking the server schema. Or the server schema is updated during a later task but the client constant is not.
+
+**Prevention:** The server schema is the authoritative source. The client constant must be derived from the server schema or re-exported from a shared constants file. Never set a validation limit independently in two places. If the two must live in different files, add a comment: `// Must match Zod schema in api/validate.ts` or enforce with a test that imports both.
+
+**Detection:** Grep for `MAX_`, `MIN_`, `MAX_LENGTH`, `maxLength`, or similar constants in client files. If the same concept appears in a Zod schema elsewhere with a different value, it is a bug.
+
+**Source:** ProveIt web build, 2026-02-22. `MAX_CHARS = 1000` in UI, `max(2000)` in Zod schema. Found by @reviewer.
+
+---
+
 ## Feature Accumulation Without Removal
 
 ### Replacement Features Added Without Removing Originals

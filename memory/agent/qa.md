@@ -62,5 +62,18 @@ This is the minimum viable test suite for dashboards. Without it, 100% unit test
 **Action:** `next build` (or equivalent build command) succeeding locally is a QA gate before first deploy. This is not optional and should be part of the @qa pre-deploy checklist.
 **Source:** London Transit Pulse, 2026-02-07.
 
+## Session Persistence Verification
+
+### Transient State Fields Must Not Survive Session Resume
+
+**Context:** Any app that serializes session or model state to localStorage, IndexedDB, or a database for resume/persistence
+**Learning:** ProveIt's `updateSession` spread the full session object into localStorage, including `isStreaming: true`. On resume, the session restored with a stale streaming cursor visible to the user. The bug was invisible during happy-path testing (start fresh, complete, close) but surfaced on resume testing.
+**Action:** QA must include a session-resume test for any app with persistent sessions:
+1. Start a session and bring it to a streaming/loading state
+2. Simulate page reload (or navigate away and back)
+3. Assert that no transient UI state (`isStreaming`, `isLoading`, `isPending`, `isFetching`) persists — the UI should render as a completed/idle session
+Fields to check: search for `is[A-Z]` fields in any type that is passed to a persistence function. If any such field is boolean and represents async/streaming UI state, test that it is not restored on reload.
+**Source:** ProveIt web build, 2026-02-22. Found by @qa before deploy.
+
 ## Safari vs Chrome
 - Camera/media APIs behave differently on Safari — always test both
