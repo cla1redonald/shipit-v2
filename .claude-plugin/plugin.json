@@ -1,14 +1,10 @@
 {
   "name": "shipit",
-  "description": "A team of 12 specialist AI agents for building products — from idea to shipped software. Uses Agent Teams for parallel execution and hybrid memory for self-improvement.",
-  "version": "2.1.0",
-  "author": {
-    "name": "Claire Donald"
-  },
-  "homepage": "https://github.com/cla1redonald/shipit-v2",
+  "description": "A team of 12 specialist AI agents for building products from idea to shipped software. Coordinates parallel work across research, strategy, architecture, design, engineering, QA, security, and documentation.",
+  "version": "2.0.0",
+  "author": { "name": "Claire Donald" },
   "license": "MIT",
-  "keywords": ["agents", "product", "development", "automation", "team", "parallel", "orchestration"],
+  "keywords": ["agents", "build", "product", "orchestration", "tdd", "fullstack"],
   "commands": "./commands/",
-  "agents": "./agents/",
-  "hooks": "./hooks/hooks.json"
+  "agents": "./agents/"
 }
