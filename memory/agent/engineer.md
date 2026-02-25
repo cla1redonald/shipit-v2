@@ -31,6 +31,27 @@
 
 **Acceptable Bash file operations:** `mkdir -p` (directories), `cp`/`mv` (copy/move), `chmod` (permissions), `rm` (deletion), `touch` (empty files). These are metadata operations that produce short, safe permission patterns.
 
+## Scaffold Must Include .gitignore
+
+**Context:** When creating a new project scaffold (Thread 1)
+**Learning:** Focus Timer scaffold created package.json, tsconfig, and source directories but omitted .gitignore. The first `git add -A` committed node_modules/ and .next/, requiring git history rewriting. This is the second scaffold infrastructure failure after London Transit Pulse.
+**Action:** Every scaffold MUST create a `.gitignore` file before the first git commit. Standard template: `node_modules/`, `.next/`, `.env.local`, `.env`, `dist/`, `.DS_Store`, `*.log`. Verify with `git status` that generated directories are excluded before committing.
+**Source:** Focus Timer, 2026-02-25.
+
+## Integration Tests: Write WITH Features, Not After
+
+**Context:** When implementing any feature that interacts with app state, context providers, or other components
+**Learning:** Three projects have now deferred integration tests to a "later" thread that never executes: London Transit Pulse (4 integration bugs post-deploy), NYC Transit Pulse (shallow integration tests), Focus Timer (empty integration test folder). This pattern is not dashboard-specific -- it happens on simple apps too.
+**Action:** Write at least one integration test per feature, IN the feature thread, before marking the thread complete. Do not accept "Thread N will add integration tests" -- that thread will be cut when feature threads overrun. The definition of done for any feature thread includes: "integration test exists proving this feature works with real app state."
+**Source:** Focus Timer, 2026-02-25. Third occurrence across projects.
+
+## Async/Void Interface Mismatch
+
+**Context:** When implementing interfaces or type declarations for functions that involve browser APIs (notifications, permissions, audio, WebSocket)
+**Learning:** TypeScript allows `async () => Promise<void>` to satisfy `() => void` without error. In Focus Timer, `useNotifications` declared `notify` as returning `void` but the implementation was `async`. The first notification silently failed because the Promise rejection was swallowed.
+**Action:** If an implementation needs to be `async`, the interface must declare `Promise<void>`, not `void`. When writing hooks or utilities that wrap browser APIs (Notification, getUserMedia, AudioContext), always check whether the underlying API returns a Promise. If it does, the interface must reflect that.
+**Source:** Focus Timer, 2026-02-25.
+
 ## Common Mistakes
 - Creating Supabase client at module level (crashes if env vars missing)
 - Running `tsc --noEmit` instead of actual build command from package.json

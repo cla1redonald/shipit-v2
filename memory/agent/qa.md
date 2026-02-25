@@ -24,6 +24,14 @@
 **Action:** Test files must always import and call the actual source functions. If a function is not exported, refactor to export it rather than duplicating it in tests. During test review, grep for function signatures that appear in both source and test files — duplicates indicate this anti-pattern.
 **Source:** London Transit Pulse build, 2026-02-07.
 
+## Integration Tests: Universal Rule (Not Dashboard-Specific)
+
+### Integration Tests Must Be Written IN Feature Threads, Not Deferred
+**Context:** Any project where the PRD or thread plan allocates a separate thread for integration tests
+**Learning:** Three projects have deferred integration tests to a dedicated "later" thread: London Transit Pulse (4 integration bugs post-deploy), NYC Transit Pulse (shallow integration tests), Focus Timer (Thread 6 for integration tests was never executed -- @reviewer caught an empty folder). This pattern occurs on dashboards AND simple apps. The "integration test thread" is always the first to be cut when feature threads overrun.
+**Action:** Flag any PRD or thread plan that has a standalone "Integration Tests" thread as a risk. Integration tests must be written IN the same thread as the feature. The thread's definition of done includes: "at least one integration test proving this feature works with real app context/state." If @qa is reviewing test coverage and finds an empty or missing integration test directory, escalate immediately -- do not wait for the "integration test thread" to run.
+**Source:** Focus Timer, 2026-02-25. Third occurrence across projects -- pattern proven for all app types, not just dashboards.
+
 ## Dashboard / Shared State Testing
 
 ### Integration Tests for Filter-to-Component Pipelines Are Mandatory

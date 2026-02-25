@@ -18,6 +18,15 @@ Four consecutive commits shipped without tests because the project had no test r
 ### Running Wrong Build Command
 `tsc --noEmit` and `tsc -b` can produce different results. Always run the project's ACTUAL build command from package.json. The command CI/Vercel runs is the one that matters.
 
+## Scaffold Failures
+
+### Missing .gitignore in Project Scaffold
+**What happens:** Thread 1 (scaffold) creates package.json, tsconfig.json, and source directories but does not create a `.gitignore`. The first `git add -A` commits `node_modules/`, `.next/`, `.env.local`, and other generated/secret files to the repository. Cleaning this requires git history rewriting (`git filter-branch` or `git filter-repo`), which is destructive and time-consuming.
+**Root cause:** The scaffold task focuses on "what the app needs to run" (dependencies, config, source structure) and overlooks "what the repo needs to stay clean" (.gitignore, .env.example, .editorconfig). The `.gitignore` is not a build dependency, so it is not missed until after the damage is done.
+**Prevention:** Scaffold task checklist must include `.gitignore` as a required deliverable alongside `package.json` and `tsconfig.json`. Use a standard template: `node_modules/`, `.next/`, `.env.local`, `.env`, `dist/`, `.DS_Store`, `*.log`. @devsecops should verify `.gitignore` exists before the first `git add`.
+**Detection:** Before the first commit, run `git status` and verify that `node_modules/` and `.next/` are NOT listed as untracked files. If they appear, `.gitignore` is missing or incomplete.
+**Source:** Focus Timer, 2026-02-25. Second scaffold infrastructure failure (London Transit Pulse had data/ in .gitignore blocking imports; this time .gitignore was missing entirely).
+
 ## Infrastructure Failures
 
 ### Vercel 4.5MB Body Size Limit
@@ -67,6 +76,13 @@ Security risk. Never expose service role keys client-side.
 **Source:** Weather Mood, 2026-02-07. Three debugging rounds (mute desync, prompt engineering, cache removal) before discovering both ANTHROPIC_API_KEY and ELEVENLABS_API_KEY were missing from `.env.local`.
 
 ## Code Failures
+
+### Async Function Assigned to Sync Interface (async/void Mismatch)
+**What happens:** A TypeScript interface declares a method as returning `void` (e.g., `notify: (title: string) => void`), but the implementation is `async` and returns `Promise<void>`. TypeScript does NOT flag this as an error because `Promise<void>` is assignable to `void` in TypeScript's type system. The function appears to work in tests, but at runtime the first call may silently fail because the caller does not await the result, and any errors inside the async function are swallowed as unhandled promise rejections.
+**Root cause:** TypeScript's structural typing allows `() => Promise<void>` to satisfy `() => void` because the return value of a void-returning function is ignored. This is by design in TypeScript but creates a class of silent runtime failures when the async behavior matters (e.g., requesting notification permissions, initializing audio contexts, establishing WebSocket connections).
+**Prevention:** When defining interfaces for functions that MAY be async in implementation, declare the return type as `Promise<void>` in the interface, not `void`. If the interface must stay synchronous, the implementation must not be async. During code review, cross-reference interface declarations with their implementations -- any `async` implementation of a `void`-typed interface method is a potential silent failure.
+**Detection:** Grep for `async` function implementations and cross-reference against their interface/type declarations. If the interface says `void` but the implementation says `async`, flag it. Pay special attention to notification APIs, permission requests, and any browser API that returns a Promise.
+**Source:** Focus Timer, 2026-02-25. `useNotifications` interface declared `notify` as `void` but implementation was `async Promise<void>`. First notification silently failed on first visit.
 
 ### Type Propagation Rule
 When adding a required field to a TypeScript type, grep the ENTIRE codebase for every construction site. The places that get missed: migration functions, test fixtures, factory functions, mock data, seed scripts, default objects.
@@ -121,6 +137,13 @@ When building on a platform (Claude Code, Vercel, Supabase), do not assume featu
 **Detection:** @reviewer's review checklist includes a "Source Verification" step: for every platform-specific structural decision, verify the cited documentation source exists and matches the implementation.
 
 ## Integration Testing Failures
+
+### Integration Tests Deferred to "Later" Thread That Never Runs
+**What happens:** The PRD or thread plan allocates a dedicated thread for integration tests (e.g., "Thread 6: Integration Tests"), but no build thread actually writes them. The thread is perpetually deferred because feature threads take longer than estimated, and the "integration test thread" has no blocking dependency that forces it to execute. The project ships with unit tests only.
+**Root cause:** Integration tests are treated as a separate phase rather than a requirement of each feature thread. When feature threads overrun, the integration test thread is the first to be cut because "we have tests" (unit tests). This is the same "We'll Add Tests Later" pattern applied specifically to integration tests.
+**Prevention:** Integration tests must be written IN the same thread as the feature they test, not in a separate thread. The thread's definition of done must include: "At least one integration test verifying this feature works with the app's shared state/context." A standalone "integration test thread" in the PRD is a red flag -- it means integration testing will be deferred and cut.
+**Detection:** If the PRD has a dedicated "Integration Tests" thread that is not part of a feature thread, flag it during PRD review. If @reviewer finds an empty test directory for integration tests, the pattern has already failed.
+**Source:** Focus Timer, 2026-02-25. Third occurrence: London Transit Pulse (177 unit tests, 4 integration bugs found post-deploy), NYC Transit Pulse (shallow integration tests), Focus Timer (Thread 6 for integration tests was never executed). Pattern proven across dashboard AND non-dashboard apps.
 
 ### Components Built in Isolation Without Shared State Integration
 **What happens:** Dashboard components are unit-tested with mock data and pass, but they never integrate with the shared filter/state system. The result: filters appear to work (UI changes) but displayed data never changes. Users discover this by clicking through the deployed app.

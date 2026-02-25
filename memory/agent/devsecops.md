@@ -39,10 +39,18 @@
 This is especially important in repos where the root settings deliberately restrict Bash for security reasons.
 **Source:** ProveIt web build, 2026-02-22.
 
+## Scaffold Verification: .gitignore Must Exist Before First Commit
+
+**Context:** When verifying scaffold output before the first `git add` / `git commit`
+**Learning:** Focus Timer scaffold omitted .gitignore entirely. The first `git add -A` committed node_modules/ and .next/ to the repo. This required destructive git history rewriting before the repo could be pushed. This is the second scaffold infrastructure failure (London Transit Pulse had data/ in .gitignore that blocked imports).
+**Action:** Add to scaffold verification: before the first commit, confirm `.gitignore` exists and excludes at minimum: `node_modules/`, `.next/`, `.env.local`, `.env`, `dist/`, `.DS_Store`. Run `git status` and verify no generated directories appear as untracked. If .gitignore is missing, create it BEFORE `git add`.
+**Source:** Focus Timer, 2026-02-25.
+
 ## Pre-Deploy Checklist
-1. `next build` succeeds locally (or project's actual build command)
-2. `npm ls react` shows correct React version for the Next.js version
-3. No `.npmrc` workarounds for peer dependency warnings
-4. Every gitignored directory cross-referenced against imports (no "Module not found" risk)
-5. `.env.example` lists all required environment variables
-6. After first deploy, verify production URL serves the new deployment (not cached old one)
+1. `.gitignore` exists and excludes generated/secret directories (verify before first commit)
+2. `next build` succeeds locally (or project's actual build command)
+3. `npm ls react` shows correct React version for the Next.js version
+4. No `.npmrc` workarounds for peer dependency warnings
+5. Every gitignored directory cross-referenced against imports (no "Module not found" risk)
+6. `.env.example` lists all required environment variables
+7. After first deploy, verify production URL serves the new deployment (not cached old one)

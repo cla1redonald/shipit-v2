@@ -28,6 +28,20 @@
 **Action:** When authorizing @devsecops to scaffold a subdirectory app, include this in the task: "Create `{subdir}/.claude/settings.json` with Bash allowed before running npm install or any shell commands." This prevents permission interruptions from blocking the scaffold phase and keeps the root security policy intact.
 **Source:** ProveIt web build, 2026-02-22.
 
+## Integration Tests: Never Defer to a Standalone Thread
+
+**Context:** When reviewing or approving a PRD/thread plan that includes a dedicated "Integration Tests" thread
+**Learning:** Three projects have allocated a standalone thread for integration tests, and all three times the thread was either cut, deferred, or produced shallow tests: London Transit Pulse (4 integration bugs post-deploy), NYC Transit Pulse (shallow), Focus Timer (empty folder caught by @reviewer). The pattern: feature threads overrun, the integration test thread gets deprioritized, and the project ships without integration coverage.
+**Action:** During PRD review or thread planning, reject any plan that has a standalone "Integration Tests" thread. Instead, require each feature thread to include integration test(s) in its definition of done. When spawning @engineer for a feature thread, include in the task description: "Thread is not complete until at least one integration test exists proving this feature works with real app context." When spawning @qa, include: "Verify integration tests exist per feature, not in a separate thread."
+**Source:** Focus Timer, 2026-02-25. Third occurrence -- pattern proven.
+
+## Retro Agent Invocation: Use Narrow, Enumerated Prompts
+
+**Context:** When invoking @retro at end-of-project or end-of-phase
+**Learning:** Focus Timer's @retro was given a broad "evaluate the entire build" prompt and timed out after 43 minutes without producing output. The same retro, re-invoked with 5 specific enumerated learnings and explicit scope boundaries ("do NOT read the entire codebase"), completed successfully.
+**Action:** When invoking @retro, always provide: (1) a numbered list of specific learnings to evaluate, (2) the target agents for each learning, (3) an explicit scope boundary ("evaluate ONLY these N learnings, do not read the full codebase"). Never give @retro an open-ended "evaluate the entire build" prompt. If the build produced many learnings, batch them into groups of 5-7 with separate @retro invocations.
+**Source:** Focus Timer, 2026-02-25.
+
 ## Patterns to Avoid
 - Never resolve merge conflicts yourself — delegate to @engineer
 - Never do agent work yourself — always delegate via Task tool or Agent Teams

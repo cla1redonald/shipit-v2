@@ -18,6 +18,13 @@
 - Should Fix (address before next release)
 - Nice to Have (suggestion for improvement)
 
+## Async/Void Interface Mismatch Detection
+
+**Context:** When reviewing any code that defines interfaces/types for callback functions or hook return values
+**Learning:** TypeScript silently allows `async () => Promise<void>` to satisfy `() => void`. In Focus Timer, `useNotifications` declared `notify` as `void` but the implementation was `async`. This caused the first notification to silently fail. TypeScript will never flag this, so it must be caught in review.
+**Action:** During review, cross-reference interface method signatures with their implementations. Any `async` implementation of a `void`-typed interface method is a Must Fix. Pay special attention to: notification APIs, permission requests (`Notification.requestPermission()`), audio context initialization, WebSocket connection setup, and any browser API that returns a Promise. Grep pattern: search for `async` in implementation files and verify the corresponding interface/type uses `Promise<void>`, not `void`.
+**Source:** Focus Timer, 2026-02-25.
+
 ## Platform Source Verification
 
 **Context:** When reviewing any system that targets a specific platform (Claude Code plugin, Vercel integration, etc.)
