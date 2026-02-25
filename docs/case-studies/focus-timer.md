@@ -58,7 +58,7 @@ A single-page Pomodoro timer web app with a calm, professional aesthetic. Standa
 @engineer (review fixes + integration tests)
     |
     v
-@retro (attempted, timed out)
+@retro (4 learnings graduated to Tier 2)
     |
     v
 Ship
@@ -74,7 +74,7 @@ Ship
 | @engineer (x7 invocations) | sonnet | All build threads + review fixes |
 | @reviewer | sonnet | Code review |
 | @docs | sonnet | README |
-| @retro | opus | Retrospective (timed out) |
+| @retro | opus | Retrospective — graduated 4 learnings to Tier 2 |
 
 ---
 
@@ -128,9 +128,9 @@ Despite the PRD allocating Thread 6 specifically for integration tests, no build
 
 **Learning:** Integration tests should be part of each feature thread's definition of done, not deferred to a separate "testing thread." The PRD thread structure encouraged this deferral by making T6 a dedicated testing thread.
 
-### @retro Timed Out
+### @retro Required a Second Invocation
 
-The @retro agent was invoked with opus model and a comprehensive prompt covering the full build. It ran for 43 minutes before timing out. For future builds, @retro prompts should be scoped more narrowly — focus on the review findings and the 2-3 most impactful learnings rather than asking for a full end-of-project retrospective.
+The first @retro invocation timed out due to a connectivity issue. A second invocation with a narrower, enumerated prompt (5 specific learnings to evaluate) completed successfully and graduated 4 patterns to Tier 2 memory across 6 files. Lesson: narrow prompts with explicit scope boundaries are more resilient than broad "evaluate the whole build" prompts.
 
 ### .gitignore Was Missing From Scaffold
 
@@ -139,6 +139,18 @@ Thread 1 (scaffold) did not create a `.gitignore`. The first `git add -A` commit
 ### Should-Fix Items Were Already Correct
 
 5 of the reviewer's "should fix" items turned out to already be implemented correctly. This suggests the reviewer may have been working from a slightly stale snapshot of the codebase, or the review prompt did not emphasize checking current state before flagging issues.
+
+---
+
+## Learnings Graduated by @retro
+
+| # | Learning | Tier | Target Files |
+|---|----------|------|--------------|
+| 1 | Missing .gitignore in scaffold — 2nd scaffold infrastructure failure across projects | Tier 2 | common-mistakes.md, engineer.md, devsecops.md |
+| 2 | Integration tests deferred to standalone thread — 3rd occurrence (London, NYC, Focus Timer) | Tier 2 | common-mistakes.md, engineer.md, qa.md, orchestrator.md |
+| 3 | async/void type mismatch — TypeScript silently allows, notifications fail at runtime | Tier 2 | common-mistakes.md, engineer.md, reviewer.md |
+| 4 | Double aria-live="assertive" — screen reader double-announcements | Tier 1 | Persistent memory only (first occurrence) |
+| 5 | @retro needs narrow enumerated prompts, not broad "evaluate everything" | Tier 2 | orchestrator.md |
 
 ---
 
@@ -152,7 +164,7 @@ This build was the first to use several new ShipIt features added earlier in the
 | Mandatory model passthrough | Confirmed working | All agents ran at designated model level |
 | Removed 3-agent parallel cap | Confirmed working | Parallel pairs ran without artificial limit |
 | `/shipit` PR + review + merge workflow | Not tested | Build used `/orchestrate`, not `/shipit` |
-| Review-to-retro loop | Partially tested | @reviewer produced findings, @retro was invoked but timed out |
+| Review-to-retro loop | Confirmed working | @reviewer found 3 must-fix issues, @retro graduated 4 learnings to Tier 2 |
 | 190-test framework validation suite | Not run during build | Framework tests validate ShipIt itself, not project builds |
 
 ---
