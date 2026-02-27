@@ -61,6 +61,13 @@ Before authorizing @devsecops to deploy:
 3. @devsecops must confirm `.gitignore` does not exclude any paths that source code imports from
 This gate was missing from London Transit Pulse and resulted in 4 deploy failures and 4 data integration bugs found by the user post-deploy.
 
+## When NOT to Use Agent Teams
+
+**Context:** When deciding between single-agent delegation (Task tool) and Agent Teams (TeamCreate) for a build
+**Learning:** Portfolio build session (2026-02-27) completed 3 projects using single @engineer delegation per project. Each project was 10-15 source files with a "polished but not production-grade" quality bar. Parallel coordination overhead would have exceeded build time savings. AI Interview Coach: ~29 min. Prompt Evaluator: ~16 min. AI Cost Calculator: ~9 min.
+**Action:** Use single-agent delegation (not Agent Teams) when: (a) the project is small (under ~20 source files), (b) the quality bar is below production-grade, (c) there are no independent parallel workstreams with distinct file ownership. Agent Teams are for projects with 3+ parallel workstreams that have clear file boundaries. Do not default to teams just because multiple phases exist — sequential single-agent delegation is simpler and faster for small projects.
+**Source:** Portfolio build session, 2026-02-27.
+
 ## Agent Teams Best Practices
 - Use delegate mode for pure coordination
 - Use plan approval for complex implementations
