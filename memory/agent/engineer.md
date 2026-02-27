@@ -35,7 +35,7 @@
 
 **Context:** When creating a new project scaffold (Thread 1)
 **Learning:** Focus Timer scaffold created package.json, tsconfig, and source directories but omitted .gitignore. The first `git add -A` committed node_modules/ and .next/, requiring git history rewriting. This is the second scaffold infrastructure failure after London Transit Pulse.
-**Action:** Every scaffold MUST create a `.gitignore` file before the first git commit. Standard template: `node_modules/`, `.next/`, `.env.local`, `.env`, `dist/`, `.DS_Store`, `*.log`. Verify with `git status` that generated directories are excluded before committing.
+**Action:** Every scaffold MUST create a `.gitignore` file before the first git commit. Standard template: `node_modules/`, `.next/`, `.env.local`, `.env`, `.claude/settings.local.json`, `dist/`, `.DS_Store`, `*.log`. Verify with `git status` that generated directories are excluded before committing. The `.claude/settings.local.json` entry is critical — this file stores Bash command permission patterns that may contain API keys passed through shell commands.
 **Source:** Focus Timer, 2026-02-25.
 
 ## Integration Tests: Write WITH Features, Not After

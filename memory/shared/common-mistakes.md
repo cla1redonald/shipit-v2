@@ -212,6 +212,29 @@ Always test text colors visually. `text-slate-800` on `bg-slate-100` can be hard
 **Detection:** Grep for `cat >`, `cat >>`, `<< 'EOF'`, `<< EOF`, `echo >` in Bash commands being executed by agents. Any match involving file content creation is a bug.
 **Source:** London Transit Pulse, 2026-02-07. 16 corrupted entries in `settings.local.json` including full TSX components and test files.
 
+## Security Failures
+
+### .claude/settings.local.json Committed With API Keys
+
+**What happens:** Claude Code's `settings.local.json` stores Bash command permission patterns. When an agent runs a command containing an API key (e.g., `echo "sk-ant-..." | vercel env add ANTHROPIC_API_KEY production`), the full command including the key is saved as an allow pattern. If `settings.local.json` is tracked by git (it is by default unless explicitly gitignored), the API keys are committed to the repository. When the repo is made public, the keys are exposed in git history.
+
+**Root cause:** `.claude/settings.local.json` is not in the default `.gitignore` created by `create-next-app` or most scaffold tools. Unlike `.env.local`, there is no widespread convention to gitignore Claude Code's settings files. The file is committed alongside other `.claude/` files (like `settings.json`) that ARE meant to be shared, making it easy to miss that `settings.local.json` contains sensitive command patterns.
+
+**Impact:** API keys (Anthropic, ElevenLabs, and any other key passed through Bash commands) are committed in plaintext. Making the repo public exposes them. Even after removing the file, keys remain in git history unless scrubbed with `git filter-repo`.
+
+**Prevention:**
+1. **Every project scaffold must add `.claude/settings.local.json` to `.gitignore`.** This is as critical as ignoring `.env.local`.
+2. @devsecops must verify this entry exists before the first commit.
+3. When making a private repo public, scan for `settings.local.json` in git history: `git log --all -- .claude/settings.local.json`
+4. If found, scrub with `git filter-repo --invert-paths --path .claude/settings.local.json --force` and force push.
+5. Rotate all exposed keys immediately — scrubbing history does not invalidate keys already seen by GitHub's cache or any clones.
+
+**Detection:** Before any repo visibility change (private → public): `git ls-files .claude/settings.local.json` — if tracked, check contents for `sk-ant-`, `api_key=`, or other credential patterns.
+
+**Source:** Portfolio build, 2026-02-27. ProveIt and Weather Mood both had Anthropic API keys committed in `settings.local.json`. Discovered during security review after repos were made public. Required `git filter-repo` scrub and key rotation.
+
+---
+
 ## Delegation Failures
 
 ### Orchestrator Does Everything Itself
