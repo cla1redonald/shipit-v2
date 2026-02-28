@@ -111,6 +111,7 @@ The orchestrator verifies gates at phase transitions before spawning the next ag
 
 | Check | Pass Criteria |
 |-------|---------------|
+| **PRD Coverage verified** | @reviewer has read the PRD and classified every requirement as Delivered/Partial/Missing/Deviated. Any non-Delivered item is a Must Fix. |
 | Functionality works | Core feature does what PRD says |
 | Tests exist | Tests written for happy path + key errors |
 | Tests pass | All tests green |
@@ -168,12 +169,14 @@ After @reviewer completes the review, @retro is invoked to evaluate findings as 
 | Check | Pass Criteria |
 |-------|---------------|
 | All gates passed | Gates 1-5 documented and passed |
+| PRD requirements delivered | @retro has verified every PRD requirement against actual build output |
 | Definition of Done met | See checklist below |
 | User has dogfooded | Used it themselves |
 | No blocking bugs | No known critical issues |
 
 ### Definition of Done Checklist
 
+- [ ] PRD requirements verified — every requirement Delivered, or deviation explicitly approved
 - [ ] Not embarrassing to show someone
 - [ ] Core functionality works end-to-end
 - [ ] Live on Vercel (not localhost)

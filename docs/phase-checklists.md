@@ -141,10 +141,11 @@ After completing any thread or phase, agents record what was done. This provides
 **Coordinated by:** @orchestrator
 
 **@reviewer checklist:**
+- [ ] **PRD Coverage verified** (mandatory first step — read PRD, classify every requirement as Delivered/Partial/Missing/Deviated)
 - [ ] Code review complete
 - [ ] Security issues addressed
 - [ ] Quality issues flagged with severity
-- [ ] No must-fix items remaining
+- [ ] No must-fix items remaining (including any non-Delivered PRD requirements)
 - [ ] Review findings evaluated by @retro for graduation to committed memory
 
 **@docs checklist:**
@@ -172,6 +173,7 @@ After completing any thread or phase, agents record what was done. This provides
 
 **Ship Checklist (Final Gate):**
 
+- [ ] **PRD requirements delivered** - @retro has verified every PRD requirement against the actual build; any gap flagged explicitly
 - [ ] **Not embarrassing** - would show this to someone
 - [ ] **Works end-to-end** - core flow completes successfully
 - [ ] **Deployed** - live on Vercel, not just localhost

@@ -88,7 +88,7 @@ Gates are enforced automatically via hooks. No manual checking needed. Hooks are
 | 1: PRD Approval | HARD | Human approval required |
 | 2: Architecture Review | Soft | Warning logged to memory |
 | 3: Infrastructure Ready | Soft | Warning logged to memory |
-| 4: Code Review | Soft | Hook blocks `git push` without review |
+| 4: Code Review + PRD Coverage | Soft | Hook blocks `git push` without review; @reviewer verifies PRD requirements |
 | 5: Security Scan | HARD | Hook blocks production deploy |
 | 6: Ship Ready | HARD | Hook validates all gates on Stop event |
 
