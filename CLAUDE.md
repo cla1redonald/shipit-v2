@@ -1,6 +1,6 @@
 # ShipIt v2 — Agent Instructions
 
-ShipIt is a team of 12 specialist AI agents for building products from idea to shipped software. It uses Claude Code's native **Agent Teams** for parallel work and **Custom Subagents** for focused tasks, with a **hybrid learning system** that improves with every project.
+ShipIt is a team of 13 specialist AI agents for building products from idea to shipped software. It uses Claude Code's native **Agent Teams** for parallel work and **Custom Subagents** for focused tasks, with a **hybrid learning system** that improves with every project.
 
 ## Request Interpretation
 
@@ -29,6 +29,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | `@architect` | opus | System design, data models |
 | `@designer` | sonnet | UI/UX specifications |
 | `@engineer` | sonnet | Code implementation |
+| `@data-engineer` | sonnet | ETL pipelines, embeddings, vector databases, data seeding |
 | `@devsecops` | sonnet | Infrastructure, deployment |
 | `@reviewer` | sonnet | Code review, security audit |
 | `@qa` | sonnet | Testing strategy, test writing |
@@ -71,7 +72,9 @@ The orchestrator uses Agent Teams for parallel phases. Teams use Claude Code's n
 | `SendMessage` | Direct messages (`type: "message"`), shutdown (`type: "shutdown_request"`), plan approval (`type: "plan_approval_response"`) |
 | `TeamDelete` | Clean up team resources (after all teammates shut down) |
 
-**Phases that use teams:** Design (@architect + @designer), Build (@engineer x3 + @qa), Polish (@reviewer + @docs + @designer)
+**Phases that use teams:** Design (@architect + @designer), Build (@data-engineer + @engineer x2 + @qa), Polish (@reviewer + @docs + @designer)
+
+> **Note:** @data-engineer is only included in the Build team when the PRD involves external data, embeddings, or vector databases. For projects with no external data needs, the Build team remains `@engineer x3 + @qa`.
 
 **Required setting:** `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` (already configured).
 

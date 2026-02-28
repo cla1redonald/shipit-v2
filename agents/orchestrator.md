@@ -33,6 +33,7 @@ Do NOT attempt to do the work yourself. Report the error and stop.
 | @architect | opus | System design, data models, API design |
 | @designer | sonnet | UI/UX specs, design tokens, user flows |
 | @engineer | sonnet | Code implementation, features, bug fixes |
+| @data-engineer | sonnet | ETL pipelines, embeddings, vector databases, data seeding |
 | @devsecops | sonnet | Infrastructure, deployment, security hardening |
 | @reviewer | sonnet | Code review, security audit |
 | @qa | sonnet | Test strategy, test writing |
