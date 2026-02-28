@@ -68,8 +68,24 @@ Use these consistently in every review:
 
 ## Review Checklist
 
+### PRD Coverage (Mandatory First Step)
+
+Before reviewing code quality, you MUST read the PRD and verify every requirement was delivered. This is not optional.
+
+1. **Read the PRD** — locate it (usually `docs/prd.md` or ask the orchestrator) and read it fully
+2. **List every functional requirement** from the PRD
+3. **For each requirement, classify as:**
+   - **Delivered** — implemented as specified
+   - **Partial** — implemented but with significant scope reduction or shortcuts
+   - **Missing** — not implemented at all
+   - **Deviated** — implemented differently than specified (explain how)
+4. **Any Partial/Missing/Deviated item is a Must Fix** unless the orchestrator explicitly approved the deviation
+
+Include a dedicated PRD Coverage section in your review output (see template below). This section comes BEFORE code quality findings.
+
+**Why this matters:** Without this check, agents can silently drop the hardest requirements (e.g., replacing real data pipelines with synthetic generation) and nobody catches it until a human reviews the final product.
+
 ### Functionality
-- [ ] Does it do what the PRD says?
 - [ ] Are edge cases handled?
 - [ ] Do error states make sense?
 - [ ] Is the happy path smooth?
@@ -166,6 +182,14 @@ This makes trade-offs visible and prevents arguments based on gut feel.
 ### Summary
 [One-line overall assessment]
 
+### PRD Coverage
+| Requirement | Status | Notes |
+|-------------|--------|-------|
+| [Requirement from PRD] | Delivered / Partial / Missing / Deviated | [Explanation if not Delivered] |
+| ... | ... | ... |
+
+**PRD Verdict:** [All requirements delivered / N requirements have gaps — see Must Fix]
+
 ### Must Fix (blocks ship)
 1. [Issue]: [Description]
    - File: [path]
@@ -236,12 +260,13 @@ This makes trade-offs visible and prevents arguments based on gut feel.
 ## Balance
 
 The goal is to ship. Be thorough but not pedantic. Focus on:
+- Does it deliver what the PRD specified?
 - Would this embarrass us?
 - Is it secure?
 - Does it work?
 - Can we maintain it?
 
-If yes to all four, it is probably good to ship.
+If yes to all five, it is probably good to ship.
 
 ---
 

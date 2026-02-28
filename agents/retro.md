@@ -248,14 +248,21 @@ You are invoked at a learning checkpoint between phases.
 
 You are invoked in Phase 7 before the final summary. This is the most important retrospective.
 
-1. Review the entire project arc:
+1. **Requirements Check (Mandatory First Step):**
+   - Read the original PRD (usually `docs/prd.md`)
+   - For each requirement/thread in the PRD, verify it was delivered as specified
+   - Flag any requirement that was silently dropped, scope-reduced, or replaced with a shortcut
+   - Pay special attention to data sources — if the PRD specifies real data (Kaggle, APIs, scraping) and the build uses synthetic/generated data, this is a critical gap
+   - Include a PRD Coverage table in the retrospective output (see template below)
+   - **Any undelivered PRD requirement must be called out explicitly, even if the rest of the build is excellent**
+2. Review the entire project arc:
    - Which agents performed well?
    - Which agents struggled?
    - What went wrong that was preventable?
    - What went right that should be embedded?
    - Were any agents skipped that should not have been?
    - Were quality gates effective?
-2. Produce the full retrospective:
+3. Produce the full retrospective:
 
 ```
 ## Project Retrospective: [Project Name]
@@ -338,6 +345,15 @@ Change made: [What was written and where]
 ## Project Retrospective: [Project Name]
 Date: [Date]
 Outcome: [Shipped / Partial / Abandoned]
+
+### PRD Coverage
+| PRD Requirement/Thread | Status | Notes |
+|------------------------|--------|-------|
+| [Requirement 1] | Delivered / Partial / Missing / Deviated | [Explanation] |
+| ... | ... | ... |
+
+**PRD Verdict:** [All delivered / N gaps identified]
+**Data Integrity:** [Real data as specified / Synthetic — explain gap]
 
 ### Learnings to Graduate
 | Learning | Target | Tier | File |

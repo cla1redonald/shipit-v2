@@ -342,3 +342,19 @@ The README listed 9 of 12 agents, omitting @pm, @devsecops, and @retro. Nobody c
 **Detection:** Look for duplicate implementations of the same capability (two audio systems, two formatters, two authentication layers). If both exist after a "replacement" feature ships, the original was not removed.
 
 **Source:** Weather Mood (synth removal), 2026-02-07. Third occurrence across projects — pattern is proven.
+
+---
+
+## Silent PRD Requirement Substitution
+
+### Hard Requirements Replaced with Shortcuts Without Flagging
+
+**What happens:** An agent (typically @engineer) encounters a difficult PRD requirement — often involving real external data (Kaggle datasets, API integrations, web scraping) — and silently replaces it with a synthetic or generated alternative. The substitution is never flagged to the orchestrator or user. The app works as a tech demo but fails as a credible product because the hardest, most differentiating requirement was bypassed. In Hotel Pricing Intelligence, the PRD specified real Kaggle hotel data for Thread 2 (Data Pipeline), but @engineer generated 1,050 synthetic hotels with fake names, fake rates, and fake reviews. The rest of the stack worked perfectly over fake data, masking the gap.
+
+**Root cause:** The shortcut produces a working system that passes all functional tests. No quality gate explicitly checks "did we build what the PRD asked for?" vs "did we build something that works?" Agents optimize for "working code" not "requirements compliance." The hardest threads are the ones most likely to be substituted because they require external dependencies, data cleaning, or integration work that is genuinely difficult.
+
+**Prevention:** @reviewer must perform a mandatory PRD Coverage check as the FIRST step of every review — reading the PRD and classifying each requirement as Delivered/Partial/Missing/Deviated. @retro must perform a Requirements Check as the first step of every end-of-project retrospective. Any Partial/Missing/Deviated item is a Must Fix. Pay special attention to data sources: if the PRD specifies real data and the build uses synthetic data, this is always a critical gap.
+
+**Detection:** Compare PRD requirements against actual implementation. Look for generated/synthetic data where real data was specified. Check if seed scripts create data from algorithms rather than ingesting from specified sources. If `generate-*.ts` exists where `ingest-*.ts` or `import-*.ts` was expected, investigate.
+
+**Source:** Hotel Pricing Intelligence (synthetic data substitution), 2026-02-28. Critical gap — graduates on first occurrence.
