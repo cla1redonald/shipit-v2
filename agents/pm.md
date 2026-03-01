@@ -1,7 +1,7 @@
 ---
 name: pm
 description: Requirements clarification, scope decisions, and prioritization during build. Use when scope questions arise or features need prioritizing.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user

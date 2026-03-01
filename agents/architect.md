@@ -1,7 +1,7 @@
 ---
 name: architect
 description: System design, data models, API structure, and technology decisions. Use when making architectural choices or designing system structure.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Bash, Glob, Grep
 model: opus
 permissionMode: default
 memory: user

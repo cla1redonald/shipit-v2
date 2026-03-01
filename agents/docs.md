@@ -1,7 +1,7 @@
 ---
 name: docs
 description: Documentation writer for READMEs, user guides, API docs, and technical documentation. Use when documentation needs creating or updating.
-tools: Read, Edit, Write, Glob, Grep
+tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user

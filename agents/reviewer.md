@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Code quality and security review specialist. Use proactively after code changes for thorough review.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user

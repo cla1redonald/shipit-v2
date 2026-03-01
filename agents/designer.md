@@ -1,7 +1,7 @@
 ---
 name: designer
 description: User experience and interface design specifications. Use for UI/UX decisions, design system definition, and user flow design.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Bash, Glob, Grep
 model: sonnet
 permissionMode: default
 memory: user

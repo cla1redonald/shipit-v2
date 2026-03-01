@@ -162,7 +162,7 @@ Use the Task tool to invoke @reviewer (model: "sonnet") with:
 - Instruction to report findings using severity levels (Must Fix / Should Fix / Nice to Have)
 ```
 
-Note: @reviewer does not have Bash access — you must provide the diff content in the task prompt.
+Note: Provide the diff content in the task prompt so @reviewer has full context for the review.
 
 Wait for the review to complete.
 
