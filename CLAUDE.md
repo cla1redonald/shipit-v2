@@ -46,6 +46,7 @@ All agents are defined in `agents/` with YAML frontmatter. Claude auto-delegates
 | `/code-review` | Structured code review |
 | `/prd-threads` | Convert PRD to executable threads |
 | `/tdd-build` | Test-driven build — write failing tests first, implement iteratively until green, refactor |
+| `/build-feature` | Autonomous TDD pipeline — architect → tests → build (5 iterations max) → QA review → push. Use `--skip-architect` to skip design phase |
 
 > **Note:** If installed as a plugin, commands are invoked with the `shipit:` prefix (e.g., `/shipit:orchestrate`).
 
@@ -154,6 +155,7 @@ If you find any of these terms in ShipIt files (outside this table), it is a bug
 | Single focused task (write code, review, research) | Individual agent (`@engineer`, `@reviewer`, etc.) |
 | Multi-perspective exploration or brainstorm | Native Agent Teams — create a team with custom roles |
 | Full product build or complex multi-phase feature | `/orchestrate` — loads orchestrator as team lead |
+| Autonomous feature build with TDD pipeline | `/build-feature` — architect → tests → build → QA → push. Add `--skip-architect` if codebase is familiar |
 | Commit, review, and merge with quality verification | `/shipit` — test, typecheck, build, commit, retro, docs, push, PR, review, retro, merge |
 
 The orchestrator delegates to specialist agents — it never does the work itself. For simple tasks, invoke agents directly without the orchestrator.
